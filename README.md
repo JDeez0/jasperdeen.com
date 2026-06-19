@@ -1,10 +1,10 @@
-# 🌐 jasperhdeen.com
+# 🌐 jasperdeen.com
 
 Personal website built with GitHub Pages.
 
 ## 🚀 Setup
 
-This site is configured to work with GitHub Pages and the custom domain `jasperhdeen.com`.
+This site is configured to work with GitHub Pages and the custom domain `jasperdeen.com`.
 
 ## 📁 Project Structure
 
@@ -21,7 +21,7 @@ This site is configured to work with GitHub Pages and the custom domain `jasperh
 
 ### DNS Records (Namecheap)
 
-**For jasperhdeen.com (apex domain):**
+**For jasperdeen.com (apex domain):**
 ```
 Type: A Records
 Name: @
@@ -32,7 +32,7 @@ Values:
   185.199.111.153
 ```
 
-**For www.jasperhdeen.com:**
+**For www.jasperdeen.com:**
 ```
 Type: CNAME
 Name: www
@@ -41,8 +41,8 @@ Value: JDeez0.github.io
 
 ### GitHub Pages Settings
 
-- Repository: JDeez0/jasperhdeen.com
-- Custom domain: jasperhdeen.com
+- Repository: JDeez0/jasperdeen.com
+- Custom domain: jasperdeen.com
 - HTTPS: Enabled (automatic)
 - Source: Main branch
 
@@ -66,7 +66,7 @@ Changes are automatically deployed when you push to the main branch.
 
 ## 📧 Contact
 
-Email: jasperhdeen@gmail.com
+Email: jasperdeen@gmail.com
 GitHub: [@JDeez0](https://github.com/JDeez0)
 
 ---
