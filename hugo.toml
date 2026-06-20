@@ -1,0 +1,84 @@
+baseURL = "https://jasperdeen.com/"
+languageCode = "en-us"
+title = "Jasper H. Deen"
+theme = "quint"
+
+# Enable Git Info for last modified dates
+enableGitInfo = true
+
+# Pagination
+paginate = 10
+
+# Build settings
+[build]
+  renderStatic = true
+
+# Markup
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true
+  [markup.tableOfContents]
+    startLevel = 2
+    endLevel = 4
+
+# Site params (theme-specific)
+[params]
+  description = "Personal portfolio of Jasper H. Deen — showcasing blogs, projects, and writing."
+  author = "Jasper H. Deen"
+  email = "jasperdeen@gmail.com"
+  github = "JDeez0"
+  twitter = ""
+  linkedin = ""
+  intro = "Developer, writer, and student."
+  subtitle = "Blogs, Projects & Writing"
+
+  # Quint theme features
+  enableSearch = true
+  enableImageBanner = true
+  showReadingTime = true
+  defaultTheme = "light" # light or dark or auto
+
+  # Navigation menu (combines book-style sidebar with quint's minimal nav)
+  [[params.menu]]
+    identifier = "home"
+    name = "Home"
+    url = "/"
+    weight = 1
+
+  [[params.menu]]
+    identifier = "blogs"
+    name = "Blogs"
+    url = "/blogs/"
+    weight = 2
+
+  [[params.menu]]
+    identifier = "school-blogs"
+    name = "School Writing"
+    url = "/blogs/school/"
+    weight = 3
+    parent = "blogs"
+
+  [[params.menu]]
+    identifier = "company-blogs"
+    name = "Company Writing"
+    url = "/blogs/company/"
+    weight = 4
+    parent = "blogs"
+
+  [[params.menu]]
+    identifier = "about"
+    name = "About"
+    url = "/about/"
+    weight = 5
+
+# Output formats
+[outputs]
+  home = ["HTML", "RSS"]
+  section = ["HTML", "RSS"]
+  taxonomy = ["HTML", "RSS"]
+
+# Social links (for footer)
+[social]
+  github = "JDeez0"
+  email = "jasperdeen@gmail.com"
