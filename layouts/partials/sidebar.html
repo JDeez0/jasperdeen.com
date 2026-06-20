@@ -1,0 +1,41 @@
+<aside class="sidebar-nav">
+  <div class="sidebar-inner">
+    <a href="/" class="sidebar-logo">
+      <h2>Jasper H. Deen</h2>
+    </a>
+    <nav class="sidebar-menu">
+      <ul>
+        <li>
+          <a href="/about/" {{ if eq .RelPermalink "/about/" }}class="active"{{ end }}>
+            <span class="icon">📖</span>
+            <span>About</span>
+          </a>
+        </li>
+        <li>
+          <a href="/long-form/" {{ if eq .Section "long-form" }}class="active"{{ end }}>
+            <span class="icon">📝</span>
+            <span>Long form</span>
+          </a>
+        </li>
+        <li>
+          <a href="/short-form/" {{ if eq .Section "short-form" }}class="active"{{ end }}>
+            <span class="icon">⚡</span>
+            <span>Short form</span>
+          </a>
+        </li>
+        <li>
+          <a href="/projects/" {{ if eq .Section "projects" }}class="active"{{ end }}>
+            <span class="icon">🚀</span>
+            <span>Projects</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+    <div class="sidebar-footer">
+      <a href="mailto:jasperdeen@gmail.com" class="sidebar-contact">Get in touch</a>
+    </div>
+  </div>
+</aside>
+<button class="sidebar-toggle" aria-label="Toggle menu" onclick="document.querySelector('.sidebar-nav').classList.toggle('open')">
+  ☰
+</button>

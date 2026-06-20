@@ -6,16 +6,17 @@ draft: false
 type: "landing"
 ---
 
-# Welcome
+# Jasper H. Deen
 
 Developer, writer, and student. This is my personal corner of the internet — a curated collection of my writing and work.
 
-## What You'll Find Here
+## Explore
 
-- **[School Blogs](/blogs/school/)** — Academic writing and assignments
-- **[Company Blogs](/company/)** — Professional writing and published articles
-- **[About Me](/about/)** — Learn more about who I am
+- **[About](/about/)** — Who I am and what I do
+- **[Long form](/long-form/)** — In-depth essays and articles
+- **[Short form](/short-form/)** — Quick takes and short posts
+- **[Projects](/projects/)** — Personal projects and side work
 
 ---
 
-I'm passionate about technology, coding, and creating meaningful digital experiences. Browse my writing below or [get in touch](mailto:jasperdeen@gmail.com).
+I'm passionate about technology, coding, and creating meaningful digital experiences. Browse the sections above or [get in touch](mailto:jasperdeen@gmail.com).
