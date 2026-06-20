@@ -618,3 +618,137 @@ code {
     word-break: break-word;
     overflow-wrap: break-word;
 }
+/* === BOOK SIDEBAR (Hugo Book layout with Quint styling) === */
+body {
+    display: flex;
+    min-height: 100vh;
+}
+
+.book-sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 280px;
+    overflow-y: auto;
+    background: var(--primary-bg);
+    border-right: 1px solid var(--shadow-color);
+    z-index: 100;
+}
+
+.book-menu-content {
+    padding: 1.5rem;
+}
+
+.book-brand {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--shadow-color);
+}
+
+.book-brand a {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--secondary-text);
+    text-decoration: none;
+}
+
+.book-brand a:hover {
+    color: var(--link-color);
+}
+
+.book-menu-content nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.book-menu-content nav li {
+    margin: 0;
+}
+
+.book-menu-content input[type="checkbox"].toggle {
+    display: none;
+}
+
+.book-menu-content label.flex {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.book-menu-content label.flex a {
+    flex: 1;
+}
+
+.book-menu-content nav ul ul {
+    display: none;
+    margin-left: 1rem;
+    padding-left: 0.75rem;
+    border-left: 1px solid var(--shadow-color);
+}
+
+.book-menu-content input[type="checkbox"].toggle:checked ~ ul {
+    display: block;
+}
+
+.book-menu-content nav a {
+    display: block;
+    padding: 0.4rem 0.5rem;
+    color: var(--link-color);
+    text-decoration: none;
+    font-size: 0.95rem;
+    line-height: 1.4;
+    transition: color 0.3s ease, background 0.3s ease;
+}
+
+.book-menu-content nav a:hover {
+    color: var(--primary-text);
+    background: var(--shadow-color);
+}
+
+.book-menu-content nav a.active {
+    color: var(--primary-text);
+    font-weight: bold;
+    background: var(--shadow-color);
+}
+
+.book-menu-content label.flex::after {
+    content: "›";
+    font-size: 1rem;
+    color: var(--link-color);
+    margin-left: auto;
+    transition: transform 0.3s ease;
+}
+
+.book-menu-content input[type="checkbox"].toggle:checked ~ label.flex::after {
+    transform: rotate(90deg);
+}
+
+/* Main content offset for sidebar */
+header,
+section.hero,
+main,
+footer {
+    margin-left: 280px;
+    flex: 1;
+    min-height: 100vh;
+    width: calc(100% - 280px);
+}
+
+@media (max-width: 768px) {
+    .book-sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+    .book-sidebar.open {
+        transform: translateX(0);
+    }
+    header,
+    section.hero,
+    main,
+    footer {
+        margin-left: 0;
+        width: 100%;
+    }
+}

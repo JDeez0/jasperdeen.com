@@ -39,6 +39,9 @@ paginate = 10
   showReadingTime = true
   defaultTheme = "light" # light or dark or auto
 
+  # Override quint's default css array - sidebar styles are in quint's styles.css directly
+  css = []
+
   # Navigation menu (combines book-style sidebar with quint's minimal nav)
   [[params.menu]]
     identifier = "home"
