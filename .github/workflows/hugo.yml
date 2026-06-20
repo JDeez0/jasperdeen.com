@@ -30,21 +30,6 @@ jobs:
           hugo-version: '0.163.3'
           extended: true
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install dependencies
-        run: npm ci || npm install || true
-
-      - name: Cache Hugo resources
-        uses: actions/cache@v4
-        with:
-          path: resources/_gen
-          key: ${{ runner.os }}-hugo-${{ github.ref }}
-          restore-keys: ${{ runner.os }}-hugo-
-
       - name: Build with Hugo
         run: hugo --minify --baseURL "https://jasperdeen.com/"
 

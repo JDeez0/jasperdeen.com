@@ -1,6 +1,66 @@
+{{ define "partials/sidebar" }}
 <aside class="book-sidebar">
   <div class="book-menu-content">
     {{ template "book-brand" . }}
     {{ template "book-menu-filetree" . }}
   </div>
 </aside>
+{{ end }}
+
+{{ define "book-brand" }}
+<div class="book-brand">
+  <a href="{{ .Site.BaseURL }}">
+    <span>{{ .Site.Title }}</span>
+  </a>
+</div>
+{{ end }}
+
+{{ define "book-menu-filetree" }}
+<nav>
+  <ul>
+    {{ range (where .Site.Sections "Params.bookHidden" "ne" true) }}
+      {{ template "book-nav-item" (dict "Page" . "CurrentPage" $) }}
+    {{ end }}
+  </ul>
+</nav>
+{{ end }}
+
+{{ define "book-nav-item" }}
+{{ $current := eq .CurrentPage .Page }}
+{{ $ancestor := .Page.IsAncestor .CurrentPage }}
+{{ $hasChildren := gt (len (where .Page.Pages "Params.bookHidden" "ne" true)) 0 }}
+
+<li>
+  {{ if and $hasChildren (or $ancestor $current) }}
+    <input type="checkbox" id="nav-{{ .Page.UniqueID }}" class="toggle" checked />
+    <label for="nav-{{ .Page.UniqueID }}" class="flex">
+      <a href="{{ .Page.RelPermalink }}" class="{{ if $current }}active{{ end }}">
+        {{ .Page.Title }}
+      </a>
+    </label>
+    <ul>
+      {{ range (where .Page.Pages "Params.bookHidden" "ne" true) }}
+        {{ template "book-nav-item" (dict "Page" . "CurrentPage" $.CurrentPage) }}
+      {{ end }}
+    </ul>
+  {{ else if $hasChildren }}
+    <input type="checkbox" id="nav-{{ .Page.UniqueID }}" class="toggle" />
+    <label for="nav-{{ .Page.UniqueID }}" class="flex">
+      <a href="{{ .Page.RelPermalink }}" class="{{ if $current }}active{{ end }}">
+        {{ .Page.Title }}
+      </a>
+    </label>
+    <ul>
+      {{ range (where .Page.Pages "Params.bookHidden" "ne" true) }}
+        {{ template "book-nav-item" (dict "Page" . "CurrentPage" $.CurrentPage) }}
+      {{ end }}
+    </ul>
+  {{ else }}
+    <a href="{{ .Page.RelPermalink }}" class="{{ if $current }}active{{ end }}">
+      {{ .Page.Title }}
+    </a>
+  {{ end }}
+</li>
+{{ end }}
+
+{{ template "partials/sidebar" . }}
