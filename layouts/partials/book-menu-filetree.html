@@ -1,0 +1,38 @@
+{{ define "book-menu-filetree" }}
+<ul>
+  {{ range (where .Site.Pages "Params.bookHidden" "ne" true) }}
+    {{ if and .IsSection (eq .Parent .Site.Home) }}
+      {{ template "book-nav-section" (dict "Page" . "CurrentPage" $) }}
+    {{ end }}
+  {{ end }}
+</ul>
+{{ end }}
+
+{{ define "book-nav-section" }}
+{{ $current := eq .CurrentPage .Page }}
+{{ $ancestor := .Page.IsAncestor .CurrentPage }}
+{{ $hasChildren := gt (len (where .Page.Pages "Params.bookHidden" "ne" true)) 0 }}
+
+<li>
+  {{ if $hasChildren }}
+    <input type="checkbox" id="section-{{ .Page.UniqueID }}" class="toggle" {{ if or $current $ancestor }}checked{{ end }} />
+    <label for="section-{{ .Page.UniqueID }}" class="flex">
+      <a href="{{ if .Page.Content }}{{ .Page.RelPermalink }}{{ end }}" class="{{ if $current }}active{{ end }}">
+        {{ .Page.Title }}
+      </a>
+    </label>
+  {{ else }}
+    <a href="{{ .Page.RelPermalink }}" class="{{ if $current }}active{{ end }}">
+      {{ .Page.Title }}
+    </a>
+  {{ end }}
+
+  {{ if $hasChildren }}
+    <ul>
+      {{ range (where .Page.Pages "Params.bookHidden" "ne" true) }}
+        {{ template "book-nav-section" (dict "Page" . "CurrentPage" $.CurrentPage) }}
+      {{ end }}
+    </ul>
+  {{ end }}
+</li>
+{{ end }}
