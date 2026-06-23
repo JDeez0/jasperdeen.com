@@ -1,0 +1,48 @@
+{{ $currentSection := .Section }}
+{{ $pages := where .Site.RegularPages "Section" $currentSection }}
+{{ if .IsHome }}
+  {{ $pages = where .Site.RegularPages "Section" "in" (slice "long-form" "short-form" "projects") }}
+{{ end }}
+{{ $paginator := .Paginate $pages }}
+
+<div class="cards" id="results">
+    {{ range $paginator.Pages }}
+        <article class="card h-entry">
+            <a href="{{ .RelPermalink }}" class="u-url blog-link">
+                {{ with .Params.image }}
+                    <img src="{{ . }}" alt="{{ $.Title }}" class="u-photo">
+                {{ else }}
+                    {{ partial "randImage" . }}
+                {{ end }}
+                <div class="text">
+                    <h2 class="p-name">{{ .Title }}</h2>
+                    <p class="small e-content">{{ .Summary }}</p>
+                    <span class="card-meta">
+                        <time datetime="{{ .Date }}">{{ .Date | time.Format ":date_medium" }}</time>
+                        {{ with .Params.tags }}<span class="tag">{{ index . 0 }}</span>{{ end }}
+                    </span>
+                </div>
+            </a>
+        </article>
+    {{ end }}
+</div>
+
+{{ if gt $paginator.TotalPages 1 }}
+    <nav class="pagination" aria-label="Pagination">
+        {{ if $paginator.HasPrev }}
+            <a href="{{ $paginator.Prev.URL }}" class="btn btn-small btn-secondary">← Previous</a>
+        {{ else }}
+            <span></span>
+        {{ end }}
+        <div class="pages">
+            {{ range $paginator.Pagers }}
+                <a href="{{ .URL }}" class="btn btn-small {{ if eq . $paginator }}active{{ end }}">{{ .PageNumber }}</a>
+            {{ end }}
+        </div>
+        {{ if $paginator.HasNext }}
+            <a href="{{ $paginator.Next.URL }}" class="btn btn-small">Next →</a>
+        {{ else }}
+            <span></span>
+        {{ end }}
+    </nav>
+{{ end }}

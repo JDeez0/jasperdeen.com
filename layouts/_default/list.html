@@ -1,0 +1,14 @@
+{{ define "main" }}
+    <section class="hero section-hero">
+        <div>
+            <h1 class="p-name">{{ .Title }}</h1>
+            {{ with .Params.description }}<p class="subtitle">{{ . }}</p>{{ end }}
+        </div>
+    </section>
+    <main class="h-entry e-content container col">
+        <div class="section-intro">
+            {{ .Content }}
+        </div>
+        {{ partial "cards" . }}
+    </main>
+{{ end }}

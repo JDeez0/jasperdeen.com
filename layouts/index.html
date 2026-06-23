@@ -1,0 +1,15 @@
+{{ define "main" }}
+    <section class="hero landing-hero">
+        <div class="landing-content">
+            <h1 class="p-name">{{ .Title }}</h1>
+            <p class="subtitle">{{ .Params.description }}</p>
+            <div class="landing-actions">
+                <a href="/long-form/" class="btn">Read long form</a>
+                <a href="/projects/" class="btn btn-secondary">View projects</a>
+            </div>
+        </div>
+    </section>
+    <main class="h-entry e-content container col landing-main">
+        {{ .Content }}
+    </main>
+{{ end }}

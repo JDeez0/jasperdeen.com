@@ -24,12 +24,10 @@ paginate = 10
 
 # Site params (theme-specific)
 [params]
-  description = "Personal portfolio of Jasper H. Deen — showcasing blogs, projects, and writing."
+  description = "Personal portfolio of Jasper H. Deen — blogs, projects, and writing."
   author = "Jasper H. Deen"
   email = "jasperdeen@gmail.com"
   github = "JDeez0"
-  twitter = ""
-  linkedin = ""
   intro = "Developer, writer, and student."
   subtitle = "Blogs, Projects & Writing"
 
@@ -37,43 +35,40 @@ paginate = 10
   enableSearch = true
   enableImageBanner = true
   showReadingTime = true
-  defaultTheme = "light" # light or dark or auto
+  defaultTheme = "auto"
 
-  # Override quint's default css array - sidebar styles are in quint's styles.css directly
-  css = []
+  # Number of random banner images available
+  numImages = 10
 
-  # Navigation menu (combines book-style sidebar with quint's minimal nav)
-  [[params.menu]]
-    identifier = "home"
-    name = "Home"
-    url = "/"
-    weight = 1
+  # Override quint's default css array - custom styles bundled in assets/css/custom.css
+  css = ["css/custom.css"]
 
-  [[params.menu]]
-    identifier = "blogs"
-    name = "Blogs"
-    url = "/blogs/"
-    weight = 2
+  # Table of contents on posts
+  useToc = true
 
-  [[params.menu]]
-    identifier = "school-blogs"
-    name = "School Writing"
-    url = "/blogs/school/"
-    weight = 3
-    parent = "blogs"
+  # Contact copy for footer
+  contact = "You can write me an [email](mailto:jasperdeen@gmail.com)."
 
-  [[params.menu]]
-    identifier = "company-blogs"
-    name = "Company Writing"
-    url = "/blogs/company/"
-    weight = 4
-    parent = "blogs"
+# Social links (used in footer)
+[[params.social]]
+  name = "GitHub"
+  url = "https://github.com/JDeez0"
+  icon = "/social/github.svg"
 
-  [[params.menu]]
-    identifier = "about"
-    name = "About"
-    url = "/about/"
-    weight = 5
+[[params.social]]
+  name = "X"
+  url = "https://x.com"
+  icon = "/social/x.svg"
+
+[[params.social]]
+  name = "Instagram"
+  url = "https://instagram.com"
+  icon = "/social/instagram.svg"
+
+[[params.social]]
+  name = "Email"
+  url = "mailto:jasperdeen@gmail.com"
+  icon = "/social/email.png"
 
 # Output formats
 [outputs]
@@ -81,7 +76,16 @@ paginate = 10
   section = ["HTML", "RSS"]
   taxonomy = ["HTML", "RSS"]
 
-# Social links (for footer)
-[social]
-  github = "JDeez0"
-  email = "jasperdeen@gmail.com"
+# Main menu (top header; kept minimal because sidebar handles navigation)
+[menu]
+  [[menu.main]]
+    identifier = "home"
+    name = "Home"
+    url = "/"
+    weight = 1
+
+  [[menu.main]]
+    identifier = "about"
+    name = "About"
+    url = "/about/"
+    weight = 2

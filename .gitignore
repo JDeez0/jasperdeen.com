@@ -28,3 +28,7 @@ Thumbs.db
 node_modules
 dist
 build
+
+# Hugo build output (built by GitHub Actions locally; do not commit)
+/public/
+/resources/

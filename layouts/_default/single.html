@@ -1,0 +1,57 @@
+{{ define "main" }}
+{{ $hasImage := or .Params.image .Params.banner }}
+{{ $min := 1 }}{{ $max := .Site.Params.numImages }}{{ $randomNumber := (add (mul (math.Rand) (add (sub $max $min) 1)) $min) | int }}
+
+<section class="hero{{ if not $hasImage }} section-hero{{ end }}"
+    style='{{ if $hasImage }}background-image: url("{{ with .Params.image }}{{ . }}{{ else }}{{ .Params.banner }}{{ end }}"); background-size: cover; background-position: center; background-repeat: no-repeat; width: 100%;{{ end }}'
+    id="heroSection">
+    <div>
+        <h1 class="p-name" id="textOverlay">{{ .Title }}</h1>
+        {{ with .Params.description }}<p class="subtitle">{{ . }}</p>{{ end }}
+    </div>
+</section>
+
+<main class="post h-entry container row">
+    <div class="post">
+        <div class="post-data row">
+            <time class="dt-published" datetime="{{ .Date }}">
+                <a class="u-url" href="{{ .Permalink }}">{{ .Date | time.Format ":date_medium" }}</a>
+            </time>
+            {{ if .Params.author }}
+            <span rel="author" class="p-author h-card">
+                <span class="p-name">{{ .Params.author }}</span>
+            </span>
+            {{ end }}
+        </div>
+        <div class="e-content">
+            {{ .Content }}
+            {{ with .Params.tags }}
+            <span class="tag-container">
+                {{ range . }}
+                <a class="p-category tag" href="{{ "tags/" | relURL }}{{ . | urlize }}/">{{ . }}</a>&nbsp;
+                {{ end }}
+            </span>
+            {{ end }}
+        </div>
+        {{ if or .PrevInSection .NextInSection }}
+        <nav class="post-nav">
+            {{ with .PrevInSection }}
+            <a href="{{ .RelPermalink }}" class="btn btn-small btn-secondary">← {{ .Title }}</a>
+            {{ end }}
+            {{ with .NextInSection }}
+            <a href="{{ .RelPermalink }}" class="btn btn-small">{{ .Title }} →</a>
+            {{ end }}
+        </nav>
+        {{ end }}
+    </div>
+    {{ if .Site.Params.useToc }}
+        {{ $headingsCount := replaceRE "[^0-9]" "" (trim (partial "count-headings.html" .Content) " \n\r") }}
+        {{ if ge $headingsCount 1 }}
+            <aside class="tableOfContentContainer" id="tableOfContentContainer">
+                <h3>On this page</h3>
+                {{ .TableOfContents }}
+            </aside>
+        {{ end }}
+    {{ end }}
+</main>
+{{ end }}
