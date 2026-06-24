@@ -13,19 +13,25 @@
 
     {{ if .RegularPages }}
     <div class="post-list">
-        {{ range .Paginator.Pages }}
-        <article class="post-card h-entry">
-            <a href="{{ .RelPermalink }}" class="card-link">
-                {{ with .Params.image }}
-                    <img src="{{ . }}" alt="{{ $.Title }}" class="post-card-image u-photo">
-                {{ else }}
-                    {{ partial "randImage" . }}
-                {{ end }}
-                <h3 class="post-card-title p-name">{{ .Title }}</h3>
-                <p class="post-card-meta">
-                    <time datetime="{{ .Date }}">{{ .Date | time.Format ":date_medium" }}</time>
-                    {{ with .Params.tags }}<span> · {{ index . 0 }}</span>{{ end }}
-                </p>
+        {{ range $i, $p := .Paginator.Pages }}
+        {{ $layout := cond (eq (mod $i 2) 0) "left" "right" }}
+        <article class="post-block post-block--{{ $layout }} h-entry">
+            <a href="{{ $p.RelPermalink }}" class="block-link">
+                <figure class="block-media">
+                    {{ with $p.Params.image }}
+                        <img src="{{ . }}" alt="{{ $p.Title }}" class="u-photo">
+                    {{ else }}
+                        {{ partial "randImage" $p }}
+                    {{ end }}
+                </figure>
+                <div class="block-body">
+                    <h3 class="post-card-title p-name">{{ $p.Title }}</h3>
+                    <p class="block-meta">
+                        <time datetime="{{ $p.Date }}">{{ $p.Date | time.Format ":date_medium" }}</time>
+                        {{ with $p.Params.tags }}<span> · {{ index . 0 }}</span>{{ end }}
+                    </p>
+                    {{ with $p.Params.description }}<p class="block-summary">{{ . }}</p>{{ end }}
+                </div>
             </a>
         </article>
         {{ end }}

@@ -1,0 +1,8 @@
+<header class="site-header">
+    <a class="site-brand" href="{{ .Site.Home.RelPermalink }}">{{ .Site.Title }}</a>
+    <nav class="site-nav" aria-label="Main">
+        <a href="{{ .Site.Home.RelPermalink }}" class="{{ if .IsHome }}active{{ end }}">Home</a>
+        <a href="/about/" class="{{ if eq .RelPermalink `/about/` }}active{{ end }}">About</a>
+        <a href="/blog/" class="{{ if eq .Section `blog` }}active{{ end }}">Blog</a>
+    </nav>
+</header>
