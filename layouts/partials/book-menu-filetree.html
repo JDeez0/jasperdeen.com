@@ -1,10 +1,7 @@
 <nav class="book-nav">
   <ul>
-    <li>
-      <a href="{{ .Site.Home.RelPermalink }}" class="{{ if .IsHome }}active{{ end }}">Home</a>
-    </li>
-    {{ range (where .Site.Sections "Params.bookHidden" "ne" true) }}
-      {{ partial "book-nav-item.html" (dict "Page" . "CurrentPage" $) }}
-    {{ end }}
+    <li><a href="{{ .Site.Home.RelPermalink }}" class="{{ if .IsHome }}active{{ end }}">Home</a></li>
+    <li><a href="/about/" class="{{ if eq .RelPermalink `/about/` }}active{{ end }}">About</a></li>
+    <li><a href="/blog/" class="{{ if eq .Section `blog` }}active{{ end }}">Blog</a></li>
   </ul>
 </nav>

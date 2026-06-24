@@ -1,33 +1,58 @@
 {{ define "main" }}
-<section class="hero landing-hero">
-    <div>
+<section class="section section-hero" id="top">
+    <div class="orb orb-hero parallax layer-distant"></div>
+    <div class="hero-content parallax layer-mid">
         <h1 class="p-name">{{ .Site.Title }}</h1>
-        <p class="subtitle">{{ .Params.description }}</p>
+        <p class="hero-subtitle layer-fast">{{ .Site.Params.description }}</p>
+        <p class="scroll-hint layer-rise">Scroll</p>
     </div>
 </section>
 
-<main class="container col">
-    <section class="featured-posts">
-        <h2 class="section-heading">Latest writing</h2>
-        <div class="post-grid">
-            {{ range first 4 (where .Site.RegularPages "Section" "blog") }}
-            <a href="{{ .RelPermalink }}" class="post-card h-entry">
-                {{ with .Params.image }}
-                    <img src="{{ . }}" alt="{{ $.Title }}" class="post-card-image u-photo">
-                {{ else }}
-                    {{ partial "randImage" . }}
-                    <style>.post-card img { width: 100%; height: 220px; object-fit: cover; }</style>
-                {{ end }}
-                <div class="post-card-body">
-                    <h3 class="post-card-title p-name">{{ .Title }}</h3>
+{{ with .Site.GetPage "/about" }}
+<section class="section section-about" id="about">
+    <div class="orb orb-about parallax layer-distant"></div>
+    <div class="panel parallax layer-mid">
+        <h2>{{ .Title }}</h2>
+        {{ .Content }}
+    </div>
+</section>
+{{ end }}
+
+<section class="section section-writing" id="writing">
+    <div class="orb orb-writing parallax layer-slow"></div>
+    <div class="writing-inner">
+        <h2 class="section-title parallax layer-fast">Selected writing</h2>
+        <div class="post-list">
+            {{ range $i, $p := first 4 (where .Site.RegularPages "Section" "blog") }}
+            {{ $speed := index (slice "layer-slow" "layer-rise" "layer-slow" "layer-rise") (mod $i 4) }}
+            <article class="post-card h-entry parallax {{ $speed }}">
+                <a href="{{ $p.RelPermalink }}" class="card-link">
+                    {{ with $p.Params.image }}
+                        <img src="{{ . }}" alt="{{ $p.Title }}" class="post-card-image u-photo">
+                    {{ else }}
+                        {{ partial "randImage" $p }}
+                    {{ end }}
+                    <h3 class="post-card-title p-name">{{ $p.Title }}</h3>
                     <p class="post-card-meta">
-                        <time datetime="{{ .Date }}">{{ .Date | time.Format ":date_medium" }}</time>
-                        {{ with .Params.tags }}<span> · {{ index . 0 }}</span>{{ end }}
+                        <time datetime="{{ $p.Date }}">{{ $p.Date | time.Format ":date_medium" }}</time>
+                        {{ with $p.Params.tags }}<span> · {{ index . 0 }}</span>{{ end }}
                     </p>
-                </div>
-            </a>
+                </a>
+            </article>
             {{ end }}
         </div>
-    </section>
-</main>
+    </div>
+</section>
+
+<section class="section section-contact" id="contact">
+    <div class="contact-block parallax layer-mid">
+        <h2>Get in touch</h2>
+        <p><a href="mailto:{{ .Site.Params.email }}">{{ .Site.Params.email }}</a></p>
+        <div class="social-media">
+            {{ range .Site.Params.social }}
+                <a href="{{ .url }}" aria-label="{{ .name }}"><img alt="{{ .name }}" src="{{ .icon }}"/></a>
+            {{ end }}
+        </div>
+    </div>
+</section>
 {{ end }}

@@ -1,18 +1,4 @@
-<footer>
-    <div class="social-media">
-        {{ range .Site.Params.social }}
-            <a href="{{ .url }}" aria-label="{{ .name }}"><img alt="{{ .name }}" src="{{ .icon }}"/></a>
-        {{ end }}
-    </div>
-    <div class="footer-copy">
-        <p>© {{ now.Format "2006" }} {{ .Site.Title }}</p>
-    </div>
-    <nav class="footer-nav">
-        <ul>
-            <li><a href="/">Home</a></li>
-            <li><a href="/about/">About</a></li>
-            <li><a href="/blog/">Blog</a></li>
-        </ul>
-    </nav>
-    {{ partial "search-index.html" . }}
+<footer class="site-footer">
+    <p>© {{ now.Format "2006" }} {{ .Site.Title }}</p>
+    {{- partial "search-index.html" . -}}
 </footer>
