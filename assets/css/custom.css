@@ -1,25 +1,18 @@
-/* ===== Jasper Deen — Quint + Book layout overrides ===== */
+/* ===== Jasper Deen overrides — Quint native look + book sidebar ===== */
 
-/*
-   These styles layer on top of the Quint theme stylesheet.
-   They preserve Quint's typography and colour palette while adding:
-   - rounded Quint-style buttons
-   - a polished book-layout sidebar
-   - cleaner landing hero and section pages
-   - responsive mobile behaviour
-*/
-
-/* ---- Root tweaks ---- */
 :root {
     --sidebar-width: 280px;
-    --radius-sm: 9999px;
-    --radius-md: 16px;
-    --radius-lg: 24px;
-    --shadow-sm: 0 2px 8px var(--shadow-color);
-    --shadow-md: 0 8px 30px var(--shadow-color);
 }
 
-/* ---- Layout wrapper ---- */
+/* ---- Layout ---- */
+html, body {
+    min-height: 100vh;
+}
+
+body {
+    margin: 0;
+}
+
 .layout-wrapper {
     display: flex;
     min-height: 100vh;
@@ -37,17 +30,17 @@
     flex: 1;
 }
 
-/* ---- Sidebar (book style, quint colours) ---- */
+/* ---- Sidebar ---- */
 .book-sidebar {
     position: fixed;
     top: 0;
     left: 0;
     bottom: 0;
     width: var(--sidebar-width);
+    overflow-y: auto;
     background: var(--primary-bg);
     border-right: 1px solid var(--shadow-color);
     z-index: 100;
-    overflow-y: auto;
 }
 
 .book-menu-content {
@@ -56,12 +49,13 @@
 
 .book-brand {
     margin-bottom: 2rem;
-    padding-bottom: 1.25rem;
+    padding-bottom: 1rem;
     border-bottom: 1px solid var(--shadow-color);
 }
 
 .book-brand a {
-    font-size: 1.35rem;
+    font-family: 'OpenSauceOne', sans-serif;
+    font-size: 1.2rem;
     font-weight: bold;
     color: var(--secondary-text);
     text-decoration: none;
@@ -109,24 +103,19 @@
 
 .book-nav a {
     display: block;
-    padding: 0.55rem 0.85rem;
+    padding: 0.5rem 0.75rem;
     color: var(--link-color);
     text-decoration: none;
     font-size: 0.95rem;
     line-height: 1.4;
-    border-radius: var(--radius-md);
-    transition: color 0.25s ease, background 0.25s ease;
+    border-radius: 4px;
+    transition: color 0.3s ease, background 0.3s ease;
 }
 
-.book-nav a:hover {
-    color: var(--primary-text);
-    background: rgba(135, 144, 148, 0.12);
-}
-
+.book-nav a:hover,
 .book-nav a.active {
     color: var(--primary-text);
-    font-weight: bold;
-    background: rgba(135, 144, 148, 0.18);
+    background: var(--shadow-color);
 }
 
 .book-nav label.flex::after {
@@ -134,8 +123,7 @@
     font-size: 1rem;
     color: var(--link-color);
     margin-left: auto;
-    padding-right: 0.35rem;
-    transition: transform 0.25s ease;
+    transition: transform 0.3s ease;
 }
 
 .book-nav input[type="checkbox"].toggle:checked ~ label.flex::after {
@@ -144,291 +132,221 @@
 
 /* ---- Header ---- */
 header {
-    display: none;
+    display: none !important;
 }
 
-/* ---- Hero sections ---- */
-.hero {
-    min-height: 280px;
+/* ---- Landing hero ---- */
+.landing-hero {
+    min-height: 45vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     text-align: center;
     padding: 3rem 1.5rem;
-    background: transparent;
 }
 
-.hero h1,
-.hero .subtitle {
+.landing-hero h1 {
+    font-size: 3rem;
+    color: var(--primary-text);
     margin: 0;
 }
 
-.hero h1 {
-    font-size: 2.75rem;
-    color: var(--primary-text);
-}
-
-.hero .subtitle {
+.landing-hero .subtitle {
     color: var(--link-color);
-    margin-top: 0.75rem;
+    margin-top: 0.5rem;
     font-size: 1.1rem;
 }
 
-.landing-hero {
-    min-height: 55vh;
+/* ---- Featured posts grid ---- */
+.featured-posts {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
 }
 
-.landing-content {
-    max-width: 640px;
+.section-heading {
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--link-color);
+    margin: 0 0 1.5rem;
 }
 
-.landing-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    justify-content: center;
-    margin-top: 2.5rem;
+.post-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
 }
 
-.section-hero {
-    min-height: 220px;
-    background: linear-gradient(180deg, rgba(135, 144, 148, 0.08) 0%, transparent 100%);
+@media (max-width: 700px) {
+    .post-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
-.landing-main {
-    margin-top: 1rem;
+.post-card {
+    display: block;
+    text-decoration: none;
+    background: var(--primary-bg);
+    border: 1px solid var(--shadow-color);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px var(--shadow-color);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
-.landing-main h2 {
-    margin-top: 2.5rem;
+.post-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 32px var(--shadow-color);
+}
+
+.post-card:hover .post-card-title {
+    color: var(--link-color);
+}
+
+.post-card-image {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+}
+
+.post-card-body {
+    padding: 1.25rem;
+}
+
+.post-card-title {
+    font-size: 1.15rem;
     color: var(--primary-text);
+    margin: 0 0 0.5rem;
+    line-height: 1.3;
 }
 
-.landing-main ul {
-    padding-left: 1.25rem;
+.post-card-meta {
+    font-size: 0.8rem;
+    color: var(--link-color);
 }
 
-.landing-main li {
-    margin: 0.5rem 0;
-}
-
-.section-intro {
-    max-width: 720px;
-    margin: 0 auto 2.5rem;
-}
-
-/* ---- Buttons ---- */
+/* ---- Buttons (Quint-native feel) ---- */
 .btn,
 a.btn,
 a.btn:visited {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.35rem;
-    padding: 0.75rem 1.6rem;
+    display: inline-block;
+    padding: 10px 20px;
     background-color: var(--primary-text);
     color: var(--primary-bg) !important;
-    border: 1.5px solid var(--primary-text);
-    border-radius: var(--radius-sm);
+    border: none;
+    border-radius: 4px;
+    font-family: 'OpenSauceOne', sans-serif;
     font-size: 0.95rem;
-    font-weight: 600;
+    font-weight: bold;
     text-decoration: none !important;
     cursor: pointer;
-    transition: transform 0.2s ease, background-color 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
-    box-shadow: var(--shadow-sm);
+    transition: background-color 0.3s ease;
 }
 
 .btn:hover,
 a.btn:hover {
-    background-color: transparent;
-    color: var(--primary-text) !important;
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
+    background-color: var(--link-color);
+    color: var(--primary-bg) !important;
 }
 
-.btn-secondary,
-a.btn-secondary,
-a.btn-secondary:visited {
+.btn-outline,
+a.btn-outline,
+a.btn-outline:visited {
     background-color: transparent;
     color: var(--primary-text) !important;
+    border: 1.5px solid var(--primary-text);
 }
 
-.btn-secondary:hover,
-a.btn-secondary:hover {
+.btn-outline:hover,
+a.btn-outline:hover {
     background-color: var(--primary-text);
     color: var(--primary-bg) !important;
 }
 
-.btn-small {
-    padding: 0.45rem 1rem;
-    font-size: 0.85rem;
-}
-
-/* Pagination buttons */
-.pagination .pages .btn {
-    min-width: 2.25rem;
-    padding: 0.45rem 0.65rem;
-}
-
-.pagination .pages .btn.active {
-    background-color: var(--link-color);
-    border-color: var(--link-color);
-    color: var(--primary-bg) !important;
-}
-
-/* ---- Cards ---- */
-.cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 2rem;
-    padding: 0;
-    width: 100%;
-    max-width: 1000px;
+/* ---- About page ---- */
+.about-page {
+    max-width: 660px;
     margin: 0 auto;
+    padding: 3rem 1.5rem;
 }
 
-.card {
-    background: var(--primary-bg);
-    border: 1px solid var(--shadow-color);
-    border-radius: var(--radius-md);
-    overflow: hidden;
-    transition: transform 0.25s ease, box-shadow 0.25s ease;
-    box-shadow: var(--shadow-sm);
-}
-
-.card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-md);
-}
-
-.card a {
-    display: block;
-    text-decoration: none !important;
-    color: inherit;
-}
-
-.card img {
-    width: 100%;
-    height: 180px;
-    object-fit: cover;
-    border-radius: 0;
-    box-shadow: none;
-}
-
-.card .text {
-    padding: 1.25rem;
-}
-
-.card h2 {
-    font-size: 1.2rem;
-    margin: 0 0 0.5rem;
+.about-page h1 {
+    font-size: 2.5rem;
     color: var(--primary-text);
+    margin-bottom: 1.5rem;
 }
 
-.card .small {
-    font-size: 0.9rem;
-    color: var(--link-color);
-    margin: 0;
-}
-
-.card-meta {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 1rem;
-    font-size: 0.8rem;
-    color: var(--link-color);
-}
-
-.card-meta .tag {
-    background: var(--link-color);
-    color: var(--primary-bg);
-    padding: 0.15rem 0.7rem;
-    border-radius: var(--radius-sm);
-    font-size: 0.75rem;
+.about-page p {
+    font-size: 1.05rem;
+    line-height: 1.7;
 }
 
 /* ---- Post page ---- */
 .post {
-    padding: 0 1rem;
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
 }
 
-.post-data {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
+.post-header {
+    margin-bottom: 2rem;
+}
+
+.post-header h1 {
+    font-size: 2rem;
+    color: var(--primary-text);
+    margin: 0 0 0.5rem;
+}
+
+.post-header time {
     font-size: 0.85rem;
     color: var(--link-color);
-    margin-bottom: 1.5rem;
 }
 
-.post-data a {
-    color: var(--link-color);
+.post-content {
+    line-height: 1.7;
 }
 
-.post-nav {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-    margin-top: 3rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--shadow-color);
+.post-content h2 {
+    margin-top: 2.5rem;
 }
 
-/* ---- Tags ---- */
+/* ---- Tags (Quint-native) ---- */
 .tag {
     display: inline-block;
-    padding: 0.2rem 0.85rem;
-    font-size: 0.8rem;
-    border-radius: var(--radius-sm);
+    padding: 0px 10px;
+    font-size: 14px;
+    border-radius: 15px;
+    text-decoration: none;
     background-color: var(--link-color);
     color: var(--primary-bg);
-    text-decoration: none !important;
-    transition: background-color 0.25s ease, transform 0.2s ease;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .tag:hover {
     background-color: var(--primary-text);
     color: var(--primary-bg);
-    transform: translateY(-1px);
 }
 
 /* ---- Footer ---- */
 footer {
+    margin-left: var(--sidebar-width);
+    width: calc(100% - var(--sidebar-width));
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-left: var(--sidebar-width);
-    width: calc(100% - var(--sidebar-width));
-    padding: 1.5rem 2rem;
-    color: var(--link-color);
-    font-size: 0.85rem;
+    padding: 20px;
+    color: var(--primary-text);
+    font-size: 0.8rem;
     border-top: 1px solid var(--shadow-color);
 }
 
-footer .social-media {
-    display: flex;
-    gap: 0.75rem;
-}
-
-footer .social-media a {
-    opacity: 0.7;
-    transition: opacity 0.2s ease, transform 0.2s ease;
-}
-
-footer .social-media a:hover {
-    opacity: 1;
-    transform: translateY(-2px);
-}
-
 footer .social-media a img {
-    height: 22px;
-    padding: 0;
-}
-
-.footer-copy {
-    text-align: center;
+    height: 20px;
+    padding: 0.5rem;
 }
 
 .footer-copy p {
@@ -437,7 +355,7 @@ footer .social-media a img {
 
 .footer-nav ul {
     display: flex;
-    gap: 1.25rem;
+    gap: 1rem;
     list-style: none;
     margin: 0;
     padding: 0;
@@ -445,150 +363,24 @@ footer .social-media a img {
 
 .footer-nav a {
     color: var(--link-color);
-    font-size: 0.85rem;
+    font-size: 0.8rem;
 }
 
 .footer-nav a:hover {
     color: var(--primary-text);
 }
 
-/* ---- Search form ---- */
-.form-inline {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: 0.75rem;
-    padding: 0.5rem;
-    background: var(--primary-bg);
-    border: 1px solid var(--shadow-color);
-    border-radius: var(--radius-sm);
-    max-width: 460px;
-    margin: 1.5rem auto 0;
-    box-shadow: var(--shadow-sm);
-}
-
-.form-inline input[type="text"] {
-    flex-grow: 1;
-    padding: 0.65rem 1rem;
-    border: none;
-    border-radius: var(--radius-sm);
-    outline: none;
-    background: transparent;
-    color: var(--primary-text);
-    box-shadow: none;
-    min-width: 0;
-}
-
-.form-inline input[type="text"]::placeholder {
-    color: var(--link-color);
-}
-
-.form-inline button {
-    width: auto;
-    margin: 0;
-    padding: 0.65rem 1.25rem;
-    background-color: var(--primary-text);
-    color: var(--primary-bg);
-    border: 1.5px solid var(--primary-text);
-    border-radius: var(--radius-sm);
-    font-weight: 600;
-    transition: background-color 0.25s ease, color 0.25s ease;
-}
-
-.form-inline button:hover {
-    background-color: transparent;
-    color: var(--primary-text);
-}
-
-/* ---- Contact section ---- */
-.contact {
-    text-align: center;
-    margin: 4rem auto;
-    padding: 2rem;
-    border: 1px solid var(--shadow-color);
-    border-radius: var(--radius-md);
-    max-width: 540px;
-}
-
-.contact h1 {
-    margin-top: 0;
-    font-size: 1.5rem;
-    color: var(--primary-text);
-}
-
-/* ---- 404 ---- */
-.not-found {
-    text-align: center;
-    padding: 3rem 1rem;
-}
-
-.not-found p {
-    margin-bottom: 2rem;
-    color: var(--link-color);
-}
-
-/* ---- Table of contents ---- */
-aside.tableOfContentContainer {
-    position: sticky;
-    top: 100px;
-    align-self: start;
-    min-width: 200px;
-    font-size: 0.9rem;
-}
-
-aside.tableOfContentContainer h3 {
-    font-size: 0.95rem;
-    color: var(--primary-text);
-    margin-bottom: 0.75rem;
-}
-
-nav#TableOfContents ul {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    padding: 0;
-    margin: 0;
-}
-
-nav#TableOfContents li {
-    margin: 0.25rem 0;
-}
-
-nav#TableOfContents a {
-    color: var(--link-color);
-}
-
-nav#TableOfContents li.active::before {
-    content: "\279c";
-    display: inline-block;
-    width: 20px;
-    margin-left: -20px;
-    color: var(--primary-text);
+@media (prefers-color-scheme: dark) {
+    footer .social-media a,
+    footer .social-media a img {
+        filter: brightness(50%) invert(75%);
+    }
 }
 
 /* ---- Responsive ---- */
 @media (max-width: 768px) {
     :root {
         --sidebar-width: 240px;
-    }
-
-    header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1rem;
-        margin-left: 0;
-        width: 100%;
-    }
-
-    header .menu-button {
-        background: var(--primary-text);
-        color: var(--primary-bg);
-        border: none;
-        border-radius: var(--radius-sm);
-        padding: 0.5rem 1rem;
-        font-weight: 600;
-        cursor: pointer;
     }
 
     .book-sidebar {
@@ -606,36 +398,13 @@ nav#TableOfContents li.active::before {
         width: 100%;
     }
 
-    .hero {
-        min-height: 220px;
-    }
-
-    .hero h1 {
-        font-size: 2rem;
-    }
-
-    .cards {
-        grid-template-columns: 1fr;
+    .landing-hero h1 {
+        font-size: 2.25rem;
     }
 
     footer {
         flex-direction: column;
         gap: 1rem;
         text-align: center;
-    }
-
-    .footer-nav ul {
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-}
-
-@media (min-width: 1024px) {
-    .container {
-        max-width: 900px;
-    }
-
-    .post {
-        max-width: 900px;
     }
 }

@@ -3,17 +3,12 @@ languageCode = "en-us"
 title = "Jasper H. Deen"
 theme = "quint"
 
-# Enable Git Info for last modified dates
 enableGitInfo = true
-
-# Pagination
 paginate = 10
 
-# Build settings
 [build]
   renderStatic = true
 
-# Markup
 [markup]
   [markup.goldmark]
     [markup.goldmark.renderer]
@@ -22,34 +17,22 @@ paginate = 10
     startLevel = 2
     endLevel = 4
 
-# Site params (theme-specific)
 [params]
-  description = "Personal portfolio of Jasper H. Deen — blogs, projects, and writing."
+  description = "Developer, writer, and student."
   author = "Jasper H. Deen"
   email = "jasperdeen@gmail.com"
   github = "JDeez0"
   intro = "Developer, writer, and student."
-  subtitle = "Blogs, Projects & Writing"
+  subtitle = "Developer, writer, and student."
 
-  # Quint theme features
   enableSearch = true
   enableImageBanner = true
   showReadingTime = true
   defaultTheme = "auto"
-
-  # Number of random banner images available
   numImages = 10
 
-  # Override quint's default css array - custom styles bundled in assets/css/custom.css
   css = ["css/custom.css"]
 
-  # Table of contents on posts
-  useToc = true
-
-  # Contact copy for footer
-  contact = "You can write me an [email](mailto:jasperdeen@gmail.com)."
-
-# Social links (used in footer)
 [[params.social]]
   name = "GitHub"
   url = "https://github.com/JDeez0"
@@ -70,22 +53,7 @@ paginate = 10
   url = "mailto:jasperdeen@gmail.com"
   icon = "/social/email.png"
 
-# Output formats
 [outputs]
   home = ["HTML", "RSS"]
   section = ["HTML", "RSS"]
   taxonomy = ["HTML", "RSS"]
-
-# Main menu (top header; kept minimal because sidebar handles navigation)
-[menu]
-  [[menu.main]]
-    identifier = "home"
-    name = "Home"
-    url = "/"
-    weight = 1
-
-  [[menu.main]]
-    identifier = "about"
-    name = "About"
-    url = "/about/"
-    weight = 2

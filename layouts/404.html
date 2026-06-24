@@ -1,15 +1,12 @@
 {{ define "main" }}
-<section class="hero section-hero">
+<section class="hero">
     <div>
-        <h1>404 — Page not found</h1>
-        <p class="subtitle">That page doesn’t exist.</p>
+        <h1>404</h1>
+        <p class="subtitle">Page not found.</p>
     </div>
 </section>
-<main class="container col not-found">
-    <p>Sorry, the page you’re looking for isn’t here.</p>
-    <div class="landing-actions">
-        <a href="/" class="btn">Go home</a>
-        <a href="/about/" class="btn btn-secondary">About</a>
-    </div>
+<main class="container col about-page" style="text-align: center;">
+    <p>Sorry, that page doesn’t exist.</p>
+    <a href="/" class="btn">Back home</a>
 </main>
 {{ end }}

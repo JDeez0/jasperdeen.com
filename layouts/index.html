@@ -1,15 +1,33 @@
 {{ define "main" }}
-    <section class="hero landing-hero">
-        <div class="landing-content">
-            <h1 class="p-name">{{ .Title }}</h1>
-            <p class="subtitle">{{ .Params.description }}</p>
-            <div class="landing-actions">
-                <a href="/long-form/" class="btn">Read long form</a>
-                <a href="/projects/" class="btn btn-secondary">View projects</a>
-            </div>
+<section class="hero landing-hero">
+    <div>
+        <h1 class="p-name">{{ .Site.Title }}</h1>
+        <p class="subtitle">{{ .Params.description }}</p>
+    </div>
+</section>
+
+<main class="container col">
+    <section class="featured-posts">
+        <h2 class="section-heading">Latest writing</h2>
+        <div class="post-grid">
+            {{ range first 4 (where .Site.RegularPages "Section" "blog") }}
+            <a href="{{ .RelPermalink }}" class="post-card h-entry">
+                {{ with .Params.image }}
+                    <img src="{{ . }}" alt="{{ $.Title }}" class="post-card-image u-photo">
+                {{ else }}
+                    {{ partial "randImage" . }}
+                    <style>.post-card img { width: 100%; height: 220px; object-fit: cover; }</style>
+                {{ end }}
+                <div class="post-card-body">
+                    <h3 class="post-card-title p-name">{{ .Title }}</h3>
+                    <p class="post-card-meta">
+                        <time datetime="{{ .Date }}">{{ .Date | time.Format ":date_medium" }}</time>
+                        {{ with .Params.tags }}<span> · {{ index . 0 }}</span>{{ end }}
+                    </p>
+                </div>
+            </a>
+            {{ end }}
         </div>
     </section>
-    <main class="h-entry e-content container col landing-main">
-        {{ .Content }}
-    </main>
+</main>
 {{ end }}

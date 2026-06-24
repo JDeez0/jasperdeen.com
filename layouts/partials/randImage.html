@@ -1,0 +1,1 @@
+{{ $min := 1 }}{{ $max := .Site.Params.numImages }}{{ $randomNumber := (add (mul (math.Rand) (add (sub $max $min) 1)) $min) | int }}<img src="/images/{{ $randomNumber }}.jpg" alt="{{ .Title }}" class="post-card-image">

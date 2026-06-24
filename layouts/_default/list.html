@@ -1,14 +1,49 @@
 {{ define "main" }}
-    <section class="hero section-hero">
-        <div>
-            <h1 class="p-name">{{ .Title }}</h1>
-            {{ with .Params.description }}<p class="subtitle">{{ . }}</p>{{ end }}
+<section class="hero">
+    <div>
+        <h1 class="p-name">{{ .Title }}</h1>
+        {{ with .Params.description }}<p class="subtitle">{{ . }}</p>{{ end }}
+    </div>
+</section>
+
+<main class="container col">
+    {{ if .Content }}
+    <article class="about-page">
+        {{ .Content }}
+    </article>
+    {{ end }}
+
+    {{ if .RegularPages }}
+    <section class="featured-posts">
+        <div class="post-grid">
+            {{ range .Paginator.Pages }}
+            <a href="{{ .RelPermalink }}" class="post-card h-entry">
+                {{ with .Params.image }}
+                    <img src="{{ . }}" alt="{{ $.Title }}" class="post-card-image u-photo">
+                {{ else }}
+                    {{ partial "randImage" . }}
+                {{ end }}
+                <div class="post-card-body">
+                    <h3 class="post-card-title p-name">{{ .Title }}</h3>
+                    <p class="post-card-meta">
+                        <time datetime="{{ .Date }}">{{ .Date | time.Format ":date_medium" }}</time>
+                        {{ with .Params.tags }}<span> · {{ index . 0 }}</span>{{ end }}
+                    </p>
+                </div>
+            </a>
+            {{ end }}
         </div>
     </section>
-    <main class="h-entry e-content container col">
-        <div class="section-intro">
-            {{ .Content }}
-        </div>
-        {{ partial "cards" . }}
-    </main>
+    {{ if gt .Paginator.TotalPages 1 }}
+    <nav class="pagination" aria-label="Pagination">
+        {{ if .Paginator.HasPrev }}
+            <a href="{{ .Paginator.Prev.URL }}" class="btn">← Previous</a>
+        {{ end }}
+        {{ if .Paginator.HasNext }}
+            <a href="{{ .Paginator.Next.URL }}" class="btn">Next →</a>
+        {{ end }}
+    </nav>
+    {{ end }}
+    {{ end }}
+</main>
 {{ end }}
