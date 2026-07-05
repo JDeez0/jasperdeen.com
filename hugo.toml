@@ -38,32 +38,8 @@ disablePathToLower = true
   name = "Jasper H. Deen"
   email = "jasperdeen@gmail.com"
 
-# Sidebar links shown ABOVE the filetree
-[[menu.before]]
-  name = "Home"
-  pageRef = "/"
-  weight = 1
-
-# Sidebar links shown BELOW the filetree (external contact links)
-[[menu.after]]
-  name = "Mail"
-  url = "mailto:jasperdeen@gmail.com"
-  weight = 10
-
-[[menu.after]]
-  name = "GitHub"
-  url = "https://github.com/JDeez0"
-  weight = 20
-
-[[menu.after]]
-  name = "LinkedIn"
-  url = "https://www.linkedin.com/"
-  weight = 30
-
-[[menu.after]]
-  name = "X"
-  url = "https://x.com/"
-  weight = 40
+# The sidebar shows only the BookSection filetree: About, Writing, Resume, Contact.
+# (Home stays reachable via the site title/brand link at the top of the sidebar.)
 
 [outputs]
   home = ["HTML", "RSS"]
