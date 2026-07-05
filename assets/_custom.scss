@@ -1,0 +1,125 @@
+/* ===== jasperdeen.com — Book theme customizations =====
+   The hugo-book theme auto-loads this file (assets/custom.scss).
+   Variables defined below are merged into _defaults.scss. */
+
+/* -------------------------------------------------------------------
+   Match ritarka.github.io exactly (older Book theme defaults).
+   v13 of hugo-book changed a handful of values; these overrides pull
+   them back to the reference site's appearance.
+   ------------------------------------------------------------------- */
+
+/* Visited-link color: reference uses #8440f1, v13 ships #5500bb.
+   Use html (higher specificity than :root) AND !important so it wins
+   over the theme's theme-light/theme-dark mixins, which are emitted
+   AFTER @import "custom". */
+html {
+  --color-visited-link: #8440f1 !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  html {
+    --color-visited-link: #b88dff !important;
+  }
+}
+
+/* Sidebar menu needs the body background so it stays opaque when the
+   page scrolls (reference sets this; v13 dropped it). */
+.book-menu-content {
+  background: var(--body-background);
+}
+
+/* Search input: reference is borderless; v13 added a gray border. */
+.book-search input {
+  border: 0;
+}
+
+/* Sidebar nav spacing: reference gives each <li> airy 1em vertical
+   margin; v13 made links tighter (padding .5em 0, no li margin).
+   Restore the reference's spacious, classic Book look. */
+aside nav ul li,
+nav ul li {
+  margin: 1em 0;
+}
+
+aside nav ul a,
+nav ul a {
+  padding: 0;
+  display: block;
+}
+
+/* Reference hover style: dim to 50% opacity rather than animating. */
+nav ul a:hover {
+  opacity: 0.5;
+}
+
+/* -------------------------------------------------------------------
+   Corporate-blog iframe showcase
+   ------------------------------------------------------------------- */
+
+/* ----- Corporate-blog iframe showcase ------------------------------ */
+
+.embed-showcase {
+  margin: 1.5rem 0;
+}
+
+.embed-wrap {
+  border: 1px solid var(--gray-200);
+  border-radius: .25rem;
+  overflow: hidden;
+  background: var(--gray-100);
+}
+
+/* The iframe fills a tall, readable viewport so the original article
+   shows in full. Height is responsive so it works on mobile too. */
+.embed-wrap iframe {
+  display: block;
+  width: 100%;
+  height: 80vh;
+  min-height: 600px;
+  border: 0;
+  background: var(--body-background);
+}
+
+.embed-hint {
+  margin: 0;
+  padding: .5rem 1rem;
+  background: var(--gray-100);
+  border-top: 1px solid var(--gray-200);
+  color: var(--body-font-color);
+  opacity: .85;
+}
+
+.embed-hint a {
+  font-weight: bold;
+}
+
+/* Fallback shown when a site is known to block iframe embedding */
+.embed-fallback {
+  padding: 1.5rem;
+  background: var(--gray-100);
+  border: 1px solid var(--gray-200);
+  border-radius: .25rem;
+  text-align: center;
+}
+
+.embed-fallback p {
+  margin: 0 0 1rem;
+}
+
+.original-credit {
+  margin-top: -.25rem;
+  margin-bottom: 1rem;
+  opacity: .85;
+}
+
+.original-credit a {
+  font-weight: bold;
+}
+
+/* Small helper: make the home profile picture rounded corners only,
+   keep it sharp and clean like the reference site. */
+.book-columns img {
+  max-width: 100%;
+  height: auto;
+  border-radius: .25rem;
+}
