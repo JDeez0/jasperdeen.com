@@ -1,0 +1,60 @@
+{{ define "main" }}
+<article class="markdown book-post">
+  <h1>
+    {{ partial "docs/title" . }}
+  </h1>
+  {{ partial "docs/post-meta" . }}
+
+  {{/* Credit line + open-original link, shown whenever we have an original URL */}}
+  {{ with .Params.originalUrl }}
+  <p class="original-credit text-small">
+    Originally published
+    {{ with $.Params.originalSite }} on <strong>{{ . }}</strong>{{ end }}
+    — <a href="{{ . }}" target="_blank" rel="noopener">Open original ↗</a>
+  </p>
+  {{ end }}
+
+  {{/* Body text (notes / excerpt / SEO intro) from the markdown page */}}
+  {{ with .Content }}
+  <div class="book-post-content markdown-inner">
+    {{- . -}}
+  </div>
+  {{ end }}
+
+  {{/* Embedded original page, with graceful fallback when embedding is blocked */}}
+  {{ with .Params.originalUrl }}
+  <div class="embed-showcase">
+    {{ if eq $.Params.embeddable false }}
+      {{/* Site known to block iframe embedding — show a clean call-to-action */}}
+      <div class="embed-fallback">
+        <p>This article can't be embedded here because its original site blocks iframe embedding (a common corporate-CMS security setting).</p>
+        <a class="book-btn" href="{{ . }}" target="_blank" rel="noopener">Open original ↗</a>
+      </div>
+    {{ else }}
+      {{/* Embed the live page. Banner below guarantees a way out even if it silently fails. */}}
+      <div class="embed-wrap">
+        <iframe
+          src="{{ . }}"
+          title="{{ $.Title | plainify }}"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-popups-to-escape-sandbox">
+        </iframe>
+        <p class="embed-hint text-small">
+          If the article doesn't load below,
+          <a href="{{ . }}" target="_blank" rel="noopener">open the original ↗</a>.
+        </p>
+      </div>
+    {{ end }}
+  </div>
+  {{ end }}
+</article>
+{{ end }}
+
+{{ define "toc" }}
+  {{ partial "docs/toc" . }}
+{{ end }}
+
+{{ define "footer" }}
+  {{ partial "docs/post-prev-next" . }}
+{{ end }}

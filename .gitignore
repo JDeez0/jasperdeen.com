@@ -32,3 +32,7 @@ build
 # Hugo build output (built by GitHub Actions locally; do not commit)
 /public/
 /resources/
+
+# Local-only backups of the previous quint-theme layouts/CSS
+/layouts._old-quint/
+/assets._old-quint/

@@ -1,13 +1,11 @@
 baseURL = "https://jasperdeen.com/"
 languageCode = "en-us"
 title = "Jasper H. Deen"
-theme = "quint"
+theme = "book"
 
 enableGitInfo = true
 paginate = 10
-
-[build]
-  renderStatic = true
+disablePathToLower = true
 
 [markup]
   [markup.goldmark]
@@ -18,40 +16,54 @@ paginate = 10
     endLevel = 4
 
 [params]
-  description = "Developer, writer, and student."
-  author = "Jasper H. Deen"
+  # Color theme: light, dark or auto (auto follows OS/browser preference)
+  BookTheme = "auto"
+
+  # Render every top-level section/page in the sidebar filetree
+  BookSection = "/"
+
+  # Date format used on posts
+  BookDateFormat = "January 2, 2006"
+
+  # Enable client-side search (fuse.js)
+  BookSearch = true
+
+  # Disable comments (no Disqus configured)
+  BookComments = false
+
+  # Repo used for "last modified" + edit links
+  BookRepo = "https://github.com/JDeez0/jasperdeen.com"
+
+[params.author]
+  name = "Jasper H. Deen"
   email = "jasperdeen@gmail.com"
-  github = "JDeez0"
-  intro = "Developer, writer, and student."
-  subtitle = "Developer, writer, and student."
 
-  enableSearch = true
-  enableImageBanner = true
-  showReadingTime = true
-  defaultTheme = "auto"
-  numImages = 10
+# Sidebar links shown ABOVE the filetree
+[[menu.before]]
+  name = "Home"
+  pageRef = "/"
+  weight = 1
 
-  css = ["css/custom.css"]
+# Sidebar links shown BELOW the filetree (external contact links)
+[[menu.after]]
+  name = "Mail"
+  url = "mailto:jasperdeen@gmail.com"
+  weight = 10
 
-[[params.social]]
+[[menu.after]]
   name = "GitHub"
   url = "https://github.com/JDeez0"
-  icon = "/social/github.svg"
+  weight = 20
 
-[[params.social]]
+[[menu.after]]
+  name = "LinkedIn"
+  url = "https://www.linkedin.com/"
+  weight = 30
+
+[[menu.after]]
   name = "X"
-  url = "https://x.com"
-  icon = "/social/x.svg"
-
-[[params.social]]
-  name = "Instagram"
-  url = "https://instagram.com"
-  icon = "/social/instagram.svg"
-
-[[params.social]]
-  name = "Email"
-  url = "mailto:jasperdeen@gmail.com"
-  icon = "/social/email.png"
+  url = "https://x.com/"
+  weight = 40
 
 [outputs]
   home = ["HTML", "RSS"]
