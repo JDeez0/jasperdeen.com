@@ -10,4 +10,4 @@ originalSite: "Leeds School of Business — CESR"
 embeddable: false
 ---
 
-Written for the **Center for Ethics & Social Responsibility (CESR)** at CU Leeds School of Business.
+Written for **CESR** at CU Leeds. About a student tour of Tersus Solutions, the country's biggest garment renewal factory.

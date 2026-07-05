@@ -10,4 +10,4 @@ originalSite: "IMM"
 embeddable: true
 ---
 
-Written for **IMM**. The full article is embedded below.
+Written for **IMM**. It's about what happens to digital marketing as the third-party cookie slowly dies. The full thing is embedded below.

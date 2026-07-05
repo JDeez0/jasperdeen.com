@@ -23,6 +23,16 @@ html {
   background: var(--body-background);
 }
 
+/* Force the page background. v13 dropped the explicit body{background}
+   rule that the older theme (ritarka.github.io) had. Without it, the
+   theme's <meta name="color-scheme" content="light dark"> lets the
+   browser paint a dark canvas in dark-OS mode — even though we have
+   no dark CSS. Pin it to the light body-background. */
+body {
+  background: var(--body-background);
+  color: var(--body-font-color);
+}
+
 /* Search input: reference is borderless; v13 added a gray border. */
 .book-search input {
   border: 0;

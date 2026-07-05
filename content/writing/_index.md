@@ -1,8 +1,8 @@
 ---
 title: "Writing"
-description: "Published articles and corporate writing."
+description: "Articles and corporate writing by Jasper H. Deen."
 weight: 20
 draft: false
 ---
 
-A collection of my published writing. Each piece links to where it was originally published.
+Here's the stuff I've written. Each one links to where it was originally published.

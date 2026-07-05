@@ -5,4 +5,6 @@ weight: 30
 draft: false
 ---
 
-{{< button href="/resume.pdf" >}}Download résumé (PDF){{< /button >}}
+Here's my résumé.
+
+{{< button href="/resume.pdf" >}}Download (PDF){{< /button >}}

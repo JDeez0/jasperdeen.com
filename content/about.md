@@ -5,8 +5,8 @@ weight: 10
 draft: false
 ---
 
-I'm Jasper H. Deen — a developer, writer, and student.
+I'm Jasper — a developer, writer, and student.
 
-I write about technology and build small projects. Most of my published work has been for the companies and platforms I've worked with, gathered here in [Writing](/writing/).
+I build things and I write about technology. A lot of my writing has been for the companies and platforms I've worked with, and I've put it together over in [Writing](/writing/).
 
-Want to talk? See [Contact](/contact/).
+Want to talk? Head to [Contact](/contact/).

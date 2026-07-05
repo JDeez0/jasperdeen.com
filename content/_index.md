@@ -9,7 +9,9 @@ draft: false
 - <img src="/prof_pic.jpeg" width="280" alt="Jasper H. Deen" />
 
 - ## Hey!
-  I'm **Jasper H. Deen** — a developer, writer, and student.
+  I'm Jasper.
 
-  This is a collection of my published writing. See [Writing](/writing/) or [get in touch](/contact/).
+  I'm a developer, writer, and student. I write for the companies and platforms I work with — Drupal and beyond. This is where I keep it all.
+
+  See [Writing](/writing/) or [get in touch](/contact/).
 {{% /columns %}}

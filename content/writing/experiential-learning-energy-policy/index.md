@@ -10,4 +10,4 @@ originalSite: "Leeds School of Business — CESR"
 embeddable: false
 ---
 
-Written for the **Center for Ethics & Social Responsibility (CESR)** at CU Leeds School of Business.
+Written for **CESR** at CU Leeds. A profile of how a class project turned into a career in energy policy.
