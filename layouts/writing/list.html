@@ -1,0 +1,25 @@
+{{ define "main" }}
+<article class="markdown book-article writing-list">
+  {{ with .Title }}<h1>{{ . }}</h1>{{ end }}
+
+  {{- .Content -}}
+
+  {{ range .Pages.ByWeight }}
+  <a class="post-card" href="{{ .RelPermalink }}">
+    <div class="post-card-body">
+      <h2 class="post-card-title">{{ .Title }}</h2>
+      <p class="post-card-meta">
+        <time datetime="{{ .Date }}">{{ .Date | time.Format ":date_medium" }}</time>
+        {{ with .Params.originalSite }}<span class="post-card-sep">·</span><span>{{ . }}</span>{{ end }}
+      </p>
+      {{ with .Params.description }}<p class="post-card-summary">{{ . }}</p>{{ end }}
+    </div>
+    <span class="post-card-arrow" aria-hidden="true">→</span>
+  </a>
+  {{ end }}
+</article>
+{{ end }}
+
+{{ define "toc" }}
+  {{ partial "docs/toc" . }}
+{{ end }}
