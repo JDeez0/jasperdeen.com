@@ -80,19 +80,6 @@ nav ul a:hover {
   background: var(--body-background);
 }
 
-.embed-hint {
-  margin: 0;
-  padding: .5rem 1rem;
-  background: var(--gray-100);
-  border-top: 1px solid var(--gray-200);
-  color: var(--body-font-color);
-  opacity: .85;
-}
-
-.embed-hint a {
-  font-weight: bold;
-}
-
 /* Fallback shown when a site is known to block iframe embedding */
 .embed-fallback {
   padding: 1.5rem;
@@ -100,10 +87,6 @@ nav ul a:hover {
   border: 1px solid var(--gray-200);
   border-radius: .25rem;
   text-align: center;
-}
-
-.embed-fallback p {
-  margin: 0 0 1rem;
 }
 
 .original-credit {

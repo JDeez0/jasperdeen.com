@@ -27,11 +27,10 @@
     {{ if eq $.Params.embeddable false }}
       {{/* Site known to block iframe embedding — show a clean call-to-action */}}
       <div class="embed-fallback">
-        <p>This article can't be embedded here because its original site blocks iframe embedding (a common corporate-CMS security setting).</p>
         <a class="book-btn" href="{{ . }}" target="_blank" rel="noopener">Open original ↗</a>
       </div>
     {{ else }}
-      {{/* Embed the live page. Banner below guarantees a way out even if it silently fails. */}}
+      {{/* Embed the live page. */}}
       <div class="embed-wrap">
         <iframe
           src="{{ . }}"
@@ -40,10 +39,6 @@
           referrerpolicy="no-referrer-when-downgrade"
           sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-popups-to-escape-sandbox">
         </iframe>
-        <p class="embed-hint text-small">
-          If the article doesn't load below,
-          <a href="{{ . }}" target="_blank" rel="noopener">open the original ↗</a>.
-        </p>
       </div>
     {{ end }}
   </div>
