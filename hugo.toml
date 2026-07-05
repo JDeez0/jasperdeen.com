@@ -16,8 +16,8 @@ disablePathToLower = true
     endLevel = 4
 
 [params]
-  # Color theme: light, dark or auto (auto follows OS/browser preference)
-  BookTheme = "auto"
+  # Color theme: matches ritarka.github.io, which is light-only
+  BookTheme = "light"
 
   # Render every top-level section/page in the sidebar filetree
   BookSection = "/"
