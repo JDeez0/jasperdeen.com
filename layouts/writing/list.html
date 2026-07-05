@@ -4,19 +4,28 @@
 
   {{- .Content -}}
 
-  {{ range .Pages.ByWeight }}
-  <a class="post-card" href="{{ .RelPermalink }}">
-    <div class="post-card-body">
-      <h2 class="post-card-title">{{ .Title }}</h2>
-      <p class="post-card-meta">
-        <time datetime="{{ .Date }}">{{ .Date | time.Format ":date_medium" }}</time>
-        {{ with .Params.originalSite }}<span class="post-card-sep">·</span><span>{{ . }}</span>{{ end }}
-      </p>
-      {{ with .Params.description }}<p class="post-card-summary">{{ . }}</p>{{ end }}
-    </div>
-    <span class="post-card-arrow" aria-hidden="true">→</span>
-  </a>
-  {{ end }}
+  <div class="writing-inner">
+    {{ range $i, $p := .Pages.ByWeight }}
+    {{ $layout := cond (eq (mod $i 2) 0) "left" "right" }}
+    <article class="post-block post-block--{{ $layout }}">
+      <a href="{{ $p.RelPermalink }}" class="block-link">
+        <figure class="block-media">
+          {{ with $p.Params.originalSite }}
+          <figcaption class="block-media-label">{{ . }}</figcaption>
+          {{ end }}
+        </figure>
+        <div class="block-body">
+          <h2 class="block-title">{{ $p.Title }}</h2>
+          <p class="block-meta">
+            <time datetime="{{ $p.Date }}">{{ $p.Date | time.Format ":date_medium" }}</time>
+            {{ with $p.Params.originalSite }}<span class="block-sep">·</span><span>{{ . }}</span>{{ end }}
+          </p>
+          {{ with $p.Params.description }}<p class="block-summary">{{ . }}</p>{{ end }}
+        </div>
+      </a>
+    </article>
+    {{ end }}
+  </div>
 </article>
 {{ end }}
 
