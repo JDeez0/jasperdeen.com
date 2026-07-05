@@ -7,11 +7,21 @@
   <div class="writing-inner">
     {{ range $i, $p := .Pages.ByWeight }}
     {{ $layout := cond (eq (mod $i 2) 0) "left" "right" }}
+
+    {{/* Find the cover image in the page bundle (cover.png or cover.jpg),
+        resize to 800px wide as JPEG for small, fast-loading previews. */}}
+    {{ $cover := false }}
+    {{ with $p.Resources.GetMatch "cover.*" }}
+      {{ $cover = .Resize "800x jpg q80" }}
+    {{ end }}
+
     <article class="post-block post-block--{{ $layout }}">
       <a href="{{ $p.RelPermalink }}" class="block-link">
         <figure class="block-media">
-          {{ with $p.Params.originalSite }}
-          <figcaption class="block-media-label">{{ . }}</figcaption>
+          {{ with $cover }}
+            <img src="{{ .RelPermalink }}" alt="{{ $p.Title }}" loading="lazy">
+          {{ else }}
+            {{ with $p.Params.originalSite }}<figcaption class="block-media-label">{{ . }}</figcaption>{{ end }}
           {{ end }}
         </figure>
         <div class="block-body">

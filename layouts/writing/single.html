@@ -5,6 +5,13 @@
   </h1>
   {{ partial "docs/post-meta" . }}
 
+  {{/* Cover image, resized via Hugo pipeline to 1000px JPEG */}}
+  {{ with .Resources.GetMatch "cover.*" }}
+  <figure class="post-cover">
+    <img src="{{ (.Resize "1000x jpg q82").RelPermalink }}" alt="{{ $.Title }}" loading="lazy">
+  </figure>
+  {{ end }}
+
   {{/* Credit line + open-original link, shown whenever we have an original URL */}}
   {{ with .Params.originalUrl }}
   <p class="original-credit text-small">

@@ -69,6 +69,17 @@ nav ul a:hover {
   background: var(--gray-100);
 }
 
+/* Cover image at the top of a writing post */
+.post-cover {
+  margin: 0 0 1.5rem;
+}
+.post-cover img {
+  width: 100%;
+  height: auto;
+  border-radius: var(--border-radius);
+  display: block;
+}
+
 /* The iframe fills a tall, readable viewport so the original article
    shows in full. Height is responsive so it works on mobile too. */
 .embed-wrap iframe {
@@ -147,20 +158,35 @@ nav ul a:hover {
   direction: ltr;
 }
 
-/* The media panel — a clean colored tile with the original-site name,
-   standing in for the image the quint version used */
+/* The media panel — holds the cover image (object-fit cover) or, when
+   no image is present, a clean label tile. */
 .block-media {
   margin: 0;
-  height: clamp(200px, 28vw, 300px);
+  height: clamp(220px, 32vw, 360px);
   background: var(--gray-100);
   border: 1px solid var(--gray-200);
   border-radius: var(--border-radius);
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 1.5rem;
   text-align: center;
-  transition: border-color 0.2s ease, background 0.2s ease;
+  transition: border-color 0.2s ease;
+}
+
+.block-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* When an image is present, drop the inner padding so the photo bleeds
+   to the panel edges */
+.block-media img + .block-media-label,
+.block-media:has(img) {
+  padding: 0;
 }
 
 .block-media-label {
