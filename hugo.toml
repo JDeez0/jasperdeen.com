@@ -36,7 +36,7 @@ disablePathToLower = true
 
 [params.author]
   name = "Jasper H. Deen"
-  email = "jasperdeen@gmail.com"
+  email = "jasperhdeen@gmail.com"
 
 # The sidebar shows only the BookSection filetree: About, Writing, Resume, Contact.
 # (Home stays reachable via the site title/brand link at the top of the sidebar.)

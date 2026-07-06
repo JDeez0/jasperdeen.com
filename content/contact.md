@@ -7,6 +7,5 @@ draft: false
 
 The easiest way to reach me is email.
 
-- **Email** — [jasperdeen@gmail.com](mailto:jasperdeen@gmail.com)
-- **GitHub** — [@JDeez0](https://github.com/JDeez0)
-- **LinkedIn** — [linkedin.com/in/jasper-deen](https://www.linkedin.com/)
+- **Email** — [jasperhdeen@gmail.com](mailto:jasperhdeen@gmail.com)
+- **LinkedIn** — [linkedin.com/in/jasperdeen](https://www.linkedin.com/in/jasperdeen)

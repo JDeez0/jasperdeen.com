@@ -1,0 +1,98 @@
+{{ define "main" }}
+<article class="markdown book-article">
+  <h1>{{ .Title }}</h1>
+
+  {{- .Content -}}
+
+  {{/* PDF.js inline viewer — renders resume.pdf onto a canvas, page by page,
+       with a paginator and a no-JS download fallback. Mirrors ritarka.github.io. */}}
+  <script src="/js/pdf-js/build/pdf.js"></script>
+  <style>
+    #embed-pdf-container{position:relative;width:100%;height:auto;min-height:20vh}
+    .pdf-canvas{border:1px solid var(--gray-200);direction:ltr;width:100%;height:auto;display:none}
+    .pdf-loadingWrapper{display:none;justify-content:center;align-items:center;width:100%;height:350px}
+    .pdf-loading{display:inline-block;width:50px;height:50px;border:3px solid var(--gray-200);border-radius:50%;border-top-color:var(--gray-500);animation:spin 1s ease-in-out infinite;-webkit-animation:spin 1s ease-in-out infinite}
+    #overlayText{word-wrap:break-word;display:grid;justify-content:end}
+    #overlayText a{position:relative;top:10px;right:4px;color:var(--body-font-color);margin:auto;background-color:var(--gray-100);padding:.3em 1em;border:solid 2px;border-radius:12px;border-color:var(--gray-200);text-decoration:none}
+    #overlayText svg{height:clamp(1em,2vw,1.4em);width:clamp(1em,2vw,1.4em)}
+    @keyframes spin{to{-webkit-transform:rotate(360deg)}}
+    @-webkit-keyframes spin{to{-webkit-transform:rotate(360deg)}}
+    .pdf-paginator{margin-top:1rem;display:none;justify-content:center;align-items:center;gap:1rem}
+    .pdf-paginator button{padding:.4rem 1rem;border:1px solid var(--gray-200);border-radius:var(--border-radius);background:var(--gray-100);color:var(--body-font-color);cursor:pointer}
+    .pdf-paginator button:hover{border-color:var(--color-link)}
+  </style>
+
+  <div class="embed-pdf-container" id="embed-pdf-container">
+    <div class="pdf-loadingWrapper" id="pdf-loadingWrapper">
+      <div class="pdf-loading" id="pdf-loading"></div>
+    </div>
+    <div id="overlayText">
+      <a href="/resume.pdf" aria-label="Download" download>
+        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18">
+          <path d="M9 13c.3.0.5-.1.7-.3L15.4 7 14 5.6l-4 4V1H8v8.6l-4-4L2.6 7l5.7 5.7c.2.2.4.3.7.3zm-7 2h14v2H2z"/>
+        </svg>
+      </a>
+    </div>
+    <canvas class="pdf-canvas" id="pdf-canvas"></canvas>
+  </div>
+  <div class="pdf-paginator" id="pdf-paginator">
+    <button id="pdf-prev" type="button">‹ Prev</button>
+    <span id="pdf-page-info"></span>
+    <button id="pdf-next" type="button">Next ›</button>
+  </div>
+  <noscript>View the PDF file <a href="/resume.pdf">here</a>.</noscript>
+
+  <script type="text/javascript">
+  (function(){
+    var c = "/resume.pdf",
+        s = window["pdfjs-dist/build/pdf"];
+    s.GlobalWorkerOptions.workerSrc = "/js/pdf-js/build/pdf.worker.js";
+
+    var n = null, e = 1, i = false, o = null, b = 1.5,
+        t = document.getElementById("pdf-canvas"),
+        m = t.getContext("2d"),
+        f = document.getElementById("pdf-paginator"),
+        r = document.getElementById("pdf-loadingWrapper");
+
+    function a(page){
+      i = true;
+      n.getPage(page).then(function(page){
+        var viewport = page.getViewport({scale: b});
+        t.height = viewport.height;
+        t.width = viewport.width;
+        page.render({canvasContext: m, viewport: viewport}).promise.then(function(){
+          i = false;
+          showCanvas();
+          updatePaginator();
+          if (o !== null) { a(o); o = null; }
+        });
+      });
+    }
+    function showCanvas(){ r.style.display="none"; t.style.display="block"; }
+    function showLoader(){ r.style.display="flex"; t.style.display="none"; }
+    function showPaginator(){ f.style.display="flex"; }
+    function updatePaginator(){
+      document.getElementById("pdf-page-info").textContent = e + " / " + n.numPages;
+      document.getElementById("pdf-prev").disabled = (e <= 1);
+      document.getElementById("pdf-next").disabled = (e >= n.numPages);
+    }
+    function go(page){ if(i){o=page;} else {e=page; showLoader(); a(e);} }
+
+    showLoader();
+    showPaginator();
+    document.getElementById("pdf-prev").addEventListener("click", function(){ if(e>1){ go(e-1); } });
+    document.getElementById("pdf-next").addEventListener("click", function(){ if(!n||e>=n.numPages) return; go(e+1); });
+
+    s.getDocument(c).promise.then(function(pdf){
+      n = pdf;
+      if (e > n.numPages) e = n.numPages;
+      a(e);
+    });
+  })();
+  </script>
+</article>
+{{ end }}
+
+{{ define "toc" }}
+  {{ partial "docs/toc" . }}
+{{ end }}
