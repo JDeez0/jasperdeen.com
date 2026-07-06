@@ -3,6 +3,46 @@
    Variables defined below are merged into _defaults.scss. */
 
 /* -------------------------------------------------------------------
+   Self-hosted Roboto fonts (matches ritarka.github.io exactly).
+   v13 dropped the @font-face + font files and fell back to system-ui;
+   the older theme self-hosts Roboto + Roboto Mono. These @font-face
+   rules load the same .woff2 files she uses.
+   ------------------------------------------------------------------- */
+
+@font-face {
+  font-family: roboto;
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local(""),
+       url(fonts/roboto-v27-latin-regular.woff2) format("woff2");
+}
+@font-face {
+  font-family: roboto;
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local(""),
+       url(fonts/roboto-v27-latin-700.woff2) format("woff2");
+}
+@font-face {
+  font-family: roboto mono;
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local(""),
+       url(fonts/roboto-mono-v13-latin-regular.woff2) format("woff2");
+}
+
+/* Apply Roboto everywhere, with a sensible fallback chain. */
+body {
+  font-family: roboto, sans-serif;
+}
+code {
+  font-family: roboto mono, monospace;
+}
+
+/* -------------------------------------------------------------------
    Match ritarka.github.io exactly (older Book theme defaults).
    v13 of hugo-book changed a handful of values; these overrides pull
    them back to the reference site's appearance.
