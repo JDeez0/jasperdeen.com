@@ -57,6 +57,19 @@ html {
   --color-visited-link: #8440f1 !important;
 }
 
+/* -------------------------------------------------------------------
+   Georgia for reading content. Applied only to article body text
+   (headings, paragraphs, lists, blockquotes) — NOT to UI chrome
+   (sidebar, nav, search, buttons, footer) or code, which stay Roboto.
+   Georgia is a system font on every OS, so nothing to download.
+   ------------------------------------------------------------------- */
+.markdown,
+.markdown h1, .markdown h2, .markdown h3, .markdown h4, .markdown h5, .markdown h6,
+.markdown p, .markdown li, .markdown blockquote, .markdown blockquote p,
+.markdown td, .markdown th, .markdown dd, .markdown dt {
+  font-family: Georgia, "Times New Roman", serif;
+}
+
 /* Sidebar menu needs the body background so it stays opaque when the
    page scrolls (reference sets this; v13 dropped it). */
 .book-menu-content {
