@@ -43,18 +43,23 @@
   <noscript>View the PDF file <a href="/resume.pdf">here</a>.</noscript>
 
   <script type="text/javascript">
-  (function(){
-    var c = "/resume.pdf",
-        s = window["pdfjs-dist/build/pdf"];
-    s.GlobalWorkerOptions.workerSrc = "/js/pdf-js/build/pdf.worker.js";
+  // Wait for pdf.js to finish loading before initializing. The external
+  // <script src=pdf.js> above is non-deferred, so this inline script can
+  // run before it has parsed — window["pdfjs-dist/build/pdf"] would be
+  // undefined and silently break everything. Defer init to window.load.
+  window.addEventListener('load', function () {
+    var pdfjsLib = window["pdfjs-dist/build/pdf"];
+    if (!pdfjsLib) return;
+    pdfjsLib.GlobalWorkerOptions.workerSrc = "/js/pdf-js/build/pdf.worker.js";
 
-    var n = null, e = 1, i = false, o = null, b = 1.5,
+    var c = "/resume.pdf",
+        n = null, e = 1, i = false, o = null, b = 1.5,
         t = document.getElementById("pdf-canvas"),
         m = t.getContext("2d"),
         f = document.getElementById("pdf-paginator"),
         r = document.getElementById("pdf-loadingWrapper");
 
-    function a(page){
+    function renderPage(page){
       i = true;
       n.getPage(page).then(function(page){
         var viewport = page.getViewport({scale: b});
@@ -64,7 +69,7 @@
           i = false;
           showCanvas();
           updatePaginator();
-          if (o !== null) { a(o); o = null; }
+          if (o !== null) { renderPage(o); o = null; }
         });
       });
     }
@@ -76,19 +81,19 @@
       document.getElementById("pdf-prev").disabled = (e <= 1);
       document.getElementById("pdf-next").disabled = (e >= n.numPages);
     }
-    function go(page){ if(i){o=page;} else {e=page; showLoader(); a(e);} }
+    function go(page){ if(i){o=page;} else {e=page; showLoader(); renderPage(e);} }
 
     showLoader();
     showPaginator();
     document.getElementById("pdf-prev").addEventListener("click", function(){ if(e>1){ go(e-1); } });
     document.getElementById("pdf-next").addEventListener("click", function(){ if(!n||e>=n.numPages) return; go(e+1); });
 
-    s.getDocument(c).promise.then(function(pdf){
+    pdfjsLib.getDocument(c).promise.then(function(pdf){
       n = pdf;
       if (e > n.numPages) e = n.numPages;
-      a(e);
+      renderPage(e);
     });
-  })();
+  });
   </script>
 </article>
 {{ end }}
