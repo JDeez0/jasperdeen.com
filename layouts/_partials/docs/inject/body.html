@@ -1,0 +1,87 @@
+{{/* Timeline page only: load GSAP + ScrollTrigger + Lenis, then init. */}}
+{{- if eq .Type "timeline" -}}
+<script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+<script>
+window.addEventListener('load', function () {
+  // Bail if libraries failed to load, or if user prefers reduced motion.
+  var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (typeof gsap === 'undefined' || typeof Lenis === 'undefined') return;
+
+  var timeline = document.getElementById('timeline');
+  if (!timeline) return;
+
+  gsap.registerPlugin(ScrollTrigger);
+
+  if (!prefersReduced) {
+    // ---- Lenis smooth scroll (document/window; leaves fixed sidebar/TOC alone) ----
+    var lenis = new Lenis({
+      duration: 1.1,
+      easing: function (t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); },
+      smoothWheel: true
+    });
+
+    // Drive Lenis + GSAP from one RAF loop.
+    lenis.on('scroll', ScrollTrigger.update);
+    gsap.ticker.add(function (time) { lenis.raf(time * 1000); });
+    gsap.ticker.lagSmoothing(0);
+
+    // Disable the theme's CSS smooth-scroll on this page so it doesn't fight Lenis.
+    document.documentElement.style.scrollBehavior = 'auto';
+
+    // ---- Parallax orbs (translate3d only — compositor-friendly) ----
+    document.querySelectorAll('[data-parallax]').forEach(function (orb) {
+      var speed = parseFloat(orb.getAttribute('data-parallax'));
+      gsap.to(orb, {
+        yPercent: -100 * speed,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: '.timeline-page',
+          start: 'top top',
+          end: 'bottom bottom',
+          scrub: true
+        }
+      });
+    });
+
+    // ---- Card reveal on scroll ----
+    gsap.utils.toArray('[data-event] .tl-card').forEach(function (card) {
+      gsap.to(card, {
+        opacity: 1,
+        y: 0,
+        duration: 0.7,
+        ease: 'power2.out',
+        scrollTrigger: {
+          trigger: card,
+          start: 'top 85%',
+          toggleActions: 'play none none none'
+        }
+      });
+    });
+
+    // ---- Spine progress fill (scaleY on Y axis — GPU-friendly) ----
+    var fill = document.getElementById('tl-spine-fill');
+    if (fill) {
+      gsap.to(fill, {
+        scaleY: 1,
+        ease: 'none',
+        transformOrigin: 'top',
+        scrollTrigger: {
+          trigger: '.timeline',
+          start: 'top center',
+          end: 'bottom center',
+          scrub: true
+        }
+      });
+    }
+  } else {
+    // Reduced motion: just reveal cards statically.
+    document.querySelectorAll('[data-event] .tl-card').forEach(function (card) {
+      card.style.opacity = '1';
+      card.style.transform = 'none';
+    });
+  }
+});
+</script>
+{{- end -}}

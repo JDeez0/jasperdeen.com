@@ -1,0 +1,6 @@
+{{/* Timeline page only: load its CSS + the GSAP/Lenis/ScrollTrigger libraries.
+     Every other page loads nothing extra. */}}
+{{- if eq .Type "timeline" -}}
+{{- $css := resources.Get "timeline.scss" | css.Sass | resources.Minify | resources.Fingerprint -}}
+<link rel="stylesheet" href="{{ $css.RelPermalink }}" {{ template "integrity" $css }}>
+{{- end -}}

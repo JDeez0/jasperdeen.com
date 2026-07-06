@@ -1,0 +1,61 @@
+{
+  "events": [
+    {
+      "year": "2018",
+      "date": "2018",
+      "title": "Started college",
+      "org": "University of Colorado Boulder",
+      "description": "Began studying at CU Boulder, Leeds School of Business.",
+      "icon": "🎓",
+      "side": "left"
+    },
+    {
+      "year": "2021",
+      "date": "2021",
+      "title": "First writing for CESR",
+      "org": "Leeds School of Business — CESR",
+      "description": "Started writing for the Center for Ethics & Social Responsibility, covering sustainability, experiential learning, and student-led initiatives.",
+      "icon": "✍️",
+      "side": "right"
+    },
+    {
+      "year": "2022",
+      "date": "Jan 2022",
+      "title": "Cookies' Endless Expiration",
+      "org": "IMM",
+      "description": "Wrote about the future of digital marketing as the third-party cookie disappears — published on the IMM agency blog.",
+      "icon": "🍪",
+      "side": "left",
+      "link": "/writing/cookies-endless-expiration/"
+    },
+    {
+      "year": "2025",
+      "date": "Feb 2025",
+      "title": "From Campus to Clean Energy",
+      "org": "Leeds School of Business — CESR",
+      "description": "A profile of how a CESR class project turned into a career in energy policy at Xcel Energy.",
+      "icon": "⚡",
+      "side": "right",
+      "link": "/writing/experiential-learning-energy-policy/"
+    },
+    {
+      "year": "2025",
+      "date": "Mar 2025",
+      "title": "Students Discover Waste-Reduction Innovations",
+      "org": "Leeds School of Business — CESR",
+      "description": "Covered a student tour of Tersus Solutions, the country's biggest garment renewal factory.",
+      "icon": "♻️",
+      "side": "left",
+      "link": "/writing/tour-of-tersus-solutions/"
+    },
+    {
+      "year": "2026",
+      "date": "2026",
+      "title": "What's next",
+      "org": "",
+      "description": "Building, writing, and looking for the next thing.",
+      "icon": "🚀",
+      "side": "right"
+    }
+  ]
+}
