@@ -8,4 +8,4 @@ draft: false
 The easiest way to reach me is email.
 
 - **Email** — [jasperhdeen@gmail.com](mailto:jasperhdeen@gmail.com)
-- **LinkedIn** — [linkedin.com/in/jasperdeen](https://www.linkedin.com/in/jasperdeen)
+- **LinkedIn** — [linkedin.com/in/jasperhdeen](https://www.linkedin.com/in/jasperhdeen)
