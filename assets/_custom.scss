@@ -74,9 +74,11 @@ nav ul a:hover {
   background: var(--gray-100);
 }
 
-/* Cover image at the top of a writing post */
+/* Cover image at the top of a writing post — kept compact so it
+   doesn't dominate the page. Capped width, centered. */
 .post-cover {
   margin: 0 0 1.5rem;
+  max-width: 360px;
 }
 .post-cover img {
   width: 100%;
