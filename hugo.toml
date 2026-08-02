@@ -15,7 +15,6 @@ disablePathToLower = true
     endLevel = 4
 
 [params]
-  description = "Jasper H. Deen — a personal record: writing, résumé, and what I'm doing now."
   dateFormat = "January 2, 2006"
 
 [params.author]
