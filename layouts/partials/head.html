@@ -10,7 +10,8 @@
 <meta property="og:locale" content="{{ .Site.LanguageCode }}">
 <meta property="og:type" content="website">
 
-<title>{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} | {{ .Site.Title }}{{ end }}</title>
+{{- $tabTitle := .Site.Params.tabTitle | default .Site.Title }}
+<title>{{ if .IsHome }}{{ $tabTitle }}{{ else }}{{ .Title }} | {{ $tabTitle }}{{ end }}</title>
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="alternate icon" href="/favicon.png">
 <link rel="canonical" href="{{ .Permalink }}">

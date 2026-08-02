@@ -16,6 +16,9 @@ disablePathToLower = true
 
 [params]
   dateFormat = "January 2, 2006"
+  # Used only for the browser tab title — everywhere else (nav brand, footer)
+  # keeps the full "Jasper H. Deen".
+  tabTitle = "Jasper Deen"
 
 [params.author]
   name = "Jasper H. Deen"
