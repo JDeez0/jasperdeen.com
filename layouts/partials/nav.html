@@ -1,0 +1,10 @@
+<nav class="site-nav">
+  <div class="shell">
+    <a class="brand" href="{{ "/" | relLangURL }}">{{ .Site.Title }}</a>
+    <ul class="links">
+      {{ range .Site.Params.nav }}
+      <li><a href="{{ .url | relLangURL }}" {{ if eq $.RelPermalink .url }}aria-current="page"{{ end }}>{{ .name }}</a></li>
+      {{ end }}
+    </ul>
+  </div>
+</nav>

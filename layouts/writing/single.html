@@ -1,62 +1,45 @@
 {{ define "main" }}
-<article class="markdown book-post">
-  <h1>
-    {{ partial "docs/title" . }}
-  </h1>
-  {{ partial "docs/post-meta" . }}
+<article class="page">
+  <h1>{{ .Title }}</h1>
+  <p class="post-meta-row">
+    <time datetime="{{ .Date }}">{{ .Date | time.Format (or .Site.Params.dateFormat "January 2, 2006") }}</time>
+    {{ with .Params.growth }}<span class="grow {{ . }}">{{ . }}</span>{{ end }}
+  </p>
 
-  {{/* Cover image, resized via Hugo pipeline to 1000px JPEG */}}
   {{ with .Resources.GetMatch "cover.*" }}
   <figure class="post-cover">
     <img src="{{ (.Resize "1000x jpg q82").RelPermalink }}" alt="{{ $.Title }}" loading="lazy">
   </figure>
   {{ end }}
 
-  {{/* Credit line + open-original link, shown whenever we have an original URL */}}
   {{ with .Params.originalUrl }}
-  <p class="original-credit text-small">
+  <p class="original-credit">
     Originally published
     {{ with $.Params.originalSite }} on <strong>{{ . }}</strong>{{ end }}
     — <a href="{{ . }}" target="_blank" rel="noopener">Open original ↗</a>
   </p>
   {{ end }}
 
-  {{/* Body text (notes / excerpt / SEO intro) from the markdown page */}}
-  {{ with .Content }}
-  <div class="book-post-content markdown-inner">
-    {{- . -}}
-  </div>
-  {{ end }}
+  {{ .Content }}
 
-  {{/* Embedded original page, with graceful fallback when embedding is blocked */}}
   {{ with .Params.originalUrl }}
   <div class="embed-showcase">
     {{ if eq $.Params.embeddable false }}
-      {{/* Site known to block iframe embedding — show a clean call-to-action */}}
-      <div class="embed-fallback">
-        <a class="book-btn" href="{{ . }}" target="_blank" rel="noopener">Open original ↗</a>
-      </div>
+    <div class="embed-fallback">
+      <a class="btn" href="{{ . }}" target="_blank" rel="noopener">Open original ↗</a>
+    </div>
     {{ else }}
-      {{/* Embed the live page. */}}
-      <div class="embed-wrap">
-        <iframe
-          src="{{ . }}"
-          title="{{ $.Title | plainify }}"
-          loading="lazy"
-          referrerpolicy="no-referrer-when-downgrade"
-          sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-popups-to-escape-sandbox">
-        </iframe>
-      </div>
+    <div class="embed-wrap">
+      <iframe
+        src="{{ . }}"
+        title="{{ $.Title | plainify }}"
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-popups-to-escape-sandbox">
+      </iframe>
+    </div>
     {{ end }}
   </div>
   {{ end }}
 </article>
-{{ end }}
-
-{{ define "toc" }}
-  {{ partial "docs/toc" . }}
-{{ end }}
-
-{{ define "footer" }}
-  {{ partial "docs/post-prev-next" . }}
 {{ end }}

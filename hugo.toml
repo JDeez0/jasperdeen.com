@@ -1,7 +1,6 @@
 baseURL = "https://jasperdeen.com/"
 languageCode = "en-us"
 title = "Jasper H. Deen"
-theme = "book"
 
 enableGitInfo = true
 paginate = 10
@@ -16,30 +15,31 @@ disablePathToLower = true
     endLevel = 4
 
 [params]
-  # Color theme: matches ritarka.github.io, which is light-only
-  BookTheme = "light"
-
-  # Render every top-level section/page in the sidebar filetree
-  BookSection = "/"
-
-  # Date format used on posts
-  BookDateFormat = "January 2, 2006"
-
-  # Enable client-side search (fuse.js)
-  BookSearch = true
-
-  # Disable comments (no Disqus configured)
-  BookComments = false
-
-  # Repo used for "last modified" + edit links
-  BookRepo = "https://github.com/JDeez0/jasperdeen.com"
+  description = "Jasper H. Deen — a personal record: writing, résumé, and what I'm doing now."
+  dateFormat = "January 2, 2006"
 
 [params.author]
   name = "Jasper H. Deen"
   email = "jasperhdeen@gmail.com"
 
-# The sidebar shows only the BookSection filetree: About, Writing, Resume, Contact.
-# (Home stays reachable via the site title/brand link at the top of the sidebar.)
+[[params.nav]]
+  name = "About"
+  url = "/about/"
+[[params.nav]]
+  name = "Writing"
+  url = "/writing/"
+[[params.nav]]
+  name = "Now"
+  url = "/now/"
+[[params.nav]]
+  name = "Timeline"
+  url = "/timeline/"
+[[params.nav]]
+  name = "Resume"
+  url = "/resume/"
+[[params.nav]]
+  name = "Contact"
+  url = "/contact/"
 
 [outputs]
   home = ["HTML", "RSS"]

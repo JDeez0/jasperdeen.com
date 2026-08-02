@@ -1,44 +1,27 @@
 {{ define "main" }}
-<article class="markdown book-article writing-list">
-  {{ with .Title }}<h1>{{ . }}</h1>{{ end }}
+<article class="page">
+  <h1>{{ .Title }}</h1>
+  {{ .Content }}
 
-  {{- .Content -}}
-
-  <div class="writing-inner">
-    {{ range $i, $p := .Pages.ByWeight }}
-    {{ $layout := cond (eq (mod $i 2) 0) "left" "right" }}
-
-    {{/* Find the cover image in the page bundle (cover.png or cover.jpg),
-        resize to 800px wide as JPEG for small, fast-loading previews. */}}
+  <ul class="entry-list">
+    {{ range .Pages.ByWeight }}
     {{ $cover := false }}
-    {{ with $p.Resources.GetMatch "cover.*" }}
-      {{ $cover = .Resize "800x jpg q80" }}
-    {{ end }}
-
-    <article class="post-block post-block--{{ $layout }}">
-      <a href="{{ $p.RelPermalink }}" class="block-link">
-        <figure class="block-media">
-          {{ with $cover }}
-            <img src="{{ .RelPermalink }}" alt="{{ $p.Title }}" loading="lazy">
-          {{ else }}
-            {{ with $p.Params.originalSite }}<figcaption class="block-media-label">{{ . }}</figcaption>{{ end }}
-          {{ end }}
-        </figure>
-        <div class="block-body">
-          <h2 class="block-title">{{ $p.Title }}</h2>
-          <p class="block-meta">
-            <time datetime="{{ $p.Date }}">{{ $p.Date | time.Format ":date_medium" }}</time>
-            {{ with $p.Params.originalSite }}<span class="block-sep">·</span><span>{{ . }}</span>{{ end }}
+    {{ with .Resources.GetMatch "cover.*" }}{{ $cover = (.Resize "200x200 jpg q80") }}{{ end }}
+    <li>
+      <a class="entry-row" href="{{ .RelPermalink }}">
+        {{ with $cover }}<img class="entry-cover" src="{{ .RelPermalink }}" alt="" loading="lazy">{{ end }}
+        <div class="entry-body">
+          <p class="entry-title">{{ .Title }}</p>
+          <p class="entry-meta">
+            <time datetime="{{ .Date }}">{{ .Date | time.Format (or $.Site.Params.dateFormat "January 2, 2006") }}</time>
+            {{ with .Params.growth }}<span class="grow {{ . }}">{{ . }}</span>{{ end }}
+            {{ with .Params.originalSite }}<span>{{ . }}</span>{{ end }}
           </p>
-          {{ with $p.Params.description }}<p class="block-summary">{{ . }}</p>{{ end }}
+          {{ with .Params.description }}<p class="entry-summary">{{ . }}</p>{{ end }}
         </div>
       </a>
-    </article>
+    </li>
     {{ end }}
-  </div>
+  </ul>
 </article>
-{{ end }}
-
-{{ define "toc" }}
-  {{ partial "docs/toc" . }}
 {{ end }}

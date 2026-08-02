@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="{{ .Site.LanguageCode }}" dir="ltr">
+<head>
+  {{ partial "head.html" . }}
+</head>
+<body>
+  {{ partial "nav.html" . }}
+  <main class="shell">
+    <div class="not-found">
+      <h1>Page not found</h1>
+      <p><a class="btn" href="{{ "/" | relLangURL }}">Back to {{ .Site.Title }}</a></p>
+    </div>
+  </main>
+</body>
+</html>

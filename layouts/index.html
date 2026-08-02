@@ -1,0 +1,15 @@
+{{ define "main" }}
+<div class="home-hero">
+  {{ with .Params.image }}
+  {{ if os.FileExists (printf "static%s" .) }}
+  <img src="{{ . }}" alt="{{ $.Site.Params.author.name }}">
+  {{ end }}
+  {{ end }}
+  <div class="intro">
+    <h1>{{ .Title }}</h1>
+    <div class="lede">
+      {{ .Content }}
+    </div>
+  </div>
+</div>
+{{ end }}

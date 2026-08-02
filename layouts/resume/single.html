@@ -1,26 +1,10 @@
 {{ define "main" }}
-<article class="markdown book-article">
+<article class="page">
   <h1>{{ .Title }}</h1>
 
-  {{- .Content -}}
-
   {{/* PDF.js inline viewer — renders resume.pdf onto a canvas, page by page,
-       with a paginator and a no-JS download fallback. Mirrors ritarka.github.io. */}}
+       with a paginator and a no-JS download fallback. */}}
   <script src="/js/pdf-js/build/pdf.js"></script>
-  <style>
-    #embed-pdf-container{position:relative;width:100%;height:auto;min-height:20vh}
-    .pdf-canvas{border:1px solid var(--gray-200);direction:ltr;width:100%;height:auto;display:none}
-    .pdf-loadingWrapper{display:none;justify-content:center;align-items:center;width:100%;height:350px}
-    .pdf-loading{display:inline-block;width:50px;height:50px;border:3px solid var(--gray-200);border-radius:50%;border-top-color:var(--gray-500);animation:spin 1s ease-in-out infinite;-webkit-animation:spin 1s ease-in-out infinite}
-    #overlayText{word-wrap:break-word;display:grid;justify-content:end}
-    #overlayText a{position:relative;top:10px;right:4px;color:var(--body-font-color);margin:auto;background-color:var(--gray-100);padding:.3em 1em;border:solid 2px;border-radius:12px;border-color:var(--gray-200);text-decoration:none}
-    #overlayText svg{height:clamp(1em,2vw,1.4em);width:clamp(1em,2vw,1.4em)}
-    @keyframes spin{to{-webkit-transform:rotate(360deg)}}
-    @-webkit-keyframes spin{to{-webkit-transform:rotate(360deg)}}
-    .pdf-paginator{margin-top:1rem;display:none;justify-content:center;align-items:center;gap:1rem}
-    .pdf-paginator button{padding:.4rem 1rem;border:1px solid var(--gray-200);border-radius:var(--border-radius);background:var(--gray-100);color:var(--body-font-color);cursor:pointer}
-    .pdf-paginator button:hover{border-color:var(--color-link)}
-  </style>
 
   <div class="embed-pdf-container" id="embed-pdf-container">
     <div class="pdf-loadingWrapper" id="pdf-loadingWrapper">
@@ -96,8 +80,4 @@
   });
   </script>
 </article>
-{{ end }}
-
-{{ define "toc" }}
-  {{ partial "docs/toc" . }}
 {{ end }}

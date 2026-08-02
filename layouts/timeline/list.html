@@ -1,51 +1,20 @@
 {{ define "main" }}
 {{ $events := .Site.Data.timeline.events }}
+<article class="page">
+  <h1>{{ .Title }}</h1>
+  {{ .Content }}
 
-<div class="timeline-page">
-  {{/* Parallax background layers (GPU-only transforms) */}}
-  <div class="tl-bg" aria-hidden="true">
-    <div class="tl-orb tl-orb-1" data-parallax="0.3"></div>
-    <div class="tl-orb tl-orb-2" data-parallax="0.6"></div>
-    <div class="tl-orb tl-orb-3" data-parallax="0.45"></div>
-  </div>
-
-  <article class="timeline-content">
-    {{ with .Title }}<h1 class="tl-title">{{ . }}</h1>{{ end }}
-    {{ with .Content }}<div class="tl-intro">{{ . }}</div>{{ end }}
-
-    <div class="timeline" id="timeline">
-      {{/* The central spine + progress fill */}}
-      <div class="tl-spine" aria-hidden="true">
-        <div class="tl-spine-fill" id="tl-spine-fill"></div>
-      </div>
-
-      {{ range $i, $e := $events }}
-      <section class="tl-event tl-event--{{ default "left" $e.side }}" data-event>
-        <div class="tl-node" aria-hidden="true">
-          <span class="tl-node-dot">{{ with $e.icon }}{{ . }}{{ end }}</span>
-        </div>
-        <div class="tl-year">{{ $e.year }}</div>
-        <div class="tl-card-wrap">
-          {{ if $e.link }}
-            <a href="{{ $e.link | relURL }}" class="tl-card" tabindex="0">
-          {{ else }}
-            <div class="tl-card" tabindex="0">
-          {{ end }}
-            <h2 class="tl-card-title">{{ $e.title }}</h2>
-            {{ with $e.org }}<p class="tl-card-org">{{ . }}</p>{{ end }}
-            {{ with $e.description }}<p class="tl-card-desc">{{ . }}</p>{{ end }}
-            {{ with $e.date }}<p class="tl-card-date">{{ . }}</p>{{ end }}
-          {{ if $e.link }}
-            </a>
-          {{ else }}
-            </div>
-          {{ end }}
-        </div>
-      </section>
-      {{ end }}
-    </div>
-  </article>
-</div>
+  <ol class="timeline-list">
+    {{ range $events }}
+    <li>
+      {{ if .link }}<a class="tl-link" href="{{ .link | relURL }}">{{ end }}
+        <div class="tl-year">{{ .date }}</div>
+        <p class="tl-title">{{ with .icon }}{{ . }} {{ end }}{{ .title }}</p>
+        {{ with .org }}<p class="tl-org">{{ . }}</p>{{ end }}
+        {{ with .description }}<p class="tl-desc">{{ . }}</p>{{ end }}
+      {{ if .link }}</a>{{ end }}
+    </li>
+    {{ end }}
+  </ol>
+</article>
 {{ end }}
-
-{{ define "toc" }}{{ end }}

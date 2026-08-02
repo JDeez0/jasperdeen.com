@@ -3,7 +3,7 @@ title: "Cookies' Endless Expiration is the New Horizon for Digital Marketing"
 date: 2022-01-01
 description: "How the slow death of the third-party cookie is reshaping digital marketing."
 weight: 10
-bookHidden: true
+growth: "evergreen"
 draft: false
 originalUrl: "https://imm.com/blog/cookies-endless-expiration-is-the-new-horizon-for-digital-marketing"
 originalSite: "IMM"
