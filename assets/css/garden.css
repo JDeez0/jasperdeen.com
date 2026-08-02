@@ -227,8 +227,14 @@ article.page > *:first-child { margin-top: 0; }
 }
 .btn:hover { border-color: var(--accent); color: var(--accent); }
 
-/* ---- timeline (static, no motion libs) ---- */
-.timeline-list { list-style: none; margin: 1.5rem 0; padding: 0; border-left: 2px solid var(--line); }
+/* ---- timeline ----
+   Plain, self-hosted, dependency-free "parallax": a scroll-linked spine
+   fill and a per-entry fade-in, both pure CSS (animation-timeline), no
+   JS and no third-party scripts. Browsers without support (Firefox,
+   unflagged, as of 2026) just get the plain static list — @supports
+   guards the enhancement so there's no broken/half-applied state. */
+.tl-track { position: relative; margin: 1.5rem 0; }
+.timeline-list { list-style: none; margin: 0; padding: 0; border-left: 2px solid var(--line); }
 .timeline-list li { position: relative; padding: 0 0 1.6rem 1.4rem; }
 .timeline-list li::before {
   content: "";
@@ -241,12 +247,39 @@ article.page > *:first-child { margin-top: 0; }
   background: var(--accent);
   border: 2px solid var(--bg);
 }
+.tl-track-fill {
+  position: absolute;
+  left: -2px;
+  top: 0;
+  width: 2px;
+  height: 100%;
+  background: var(--accent);
+  transform-origin: top;
+  transform: scaleY(0);
+}
 .tl-year { font-family: var(--mono); font-size: 0.72rem; color: var(--muted); letter-spacing: 0.04em; }
 .tl-title { font-weight: 600; margin: 0.1rem 0 0.2rem; }
 .tl-org { font-size: 0.85rem; color: var(--muted); margin: 0 0 0.2rem; }
 .tl-desc { font-size: 0.9rem; margin: 0; }
 a.tl-link { text-decoration: none; color: inherit; display: block; }
 a.tl-link:hover .tl-title { color: var(--accent); }
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .tl-track-fill {
+      animation: tl-fill linear both;
+      animation-timeline: view();
+      animation-range: cover 0% cover 100%;
+    }
+    .timeline-list li {
+      animation: tl-reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 35%;
+    }
+  }
+}
+@keyframes tl-fill { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+@keyframes tl-reveal { from { opacity: 0.35; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
 /* ---- resume / pdf viewer ---- */
 .embed-pdf-container { position: relative; width: 100%; height: auto; min-height: 20vh; }

@@ -23,9 +23,9 @@ disablePathToLower = true
 
 [[params.nav]]
   name = "About"
-  url = "/about/"
+  url = "/"
 [[params.nav]]
-  name = "Writing"
+  name = "Portfolio"
   url = "/writing/"
 [[params.nav]]
   name = "Now"

@@ -4,17 +4,20 @@
   <h1>{{ .Title }}</h1>
   {{ .Content }}
 
-  <ol class="timeline-list">
-    {{ range $events }}
-    <li>
-      {{ if .link }}<a class="tl-link" href="{{ .link | relURL }}">{{ end }}
-        <div class="tl-year">{{ .date }}</div>
-        <p class="tl-title">{{ with .icon }}{{ . }} {{ end }}{{ .title }}</p>
-        {{ with .org }}<p class="tl-org">{{ . }}</p>{{ end }}
-        {{ with .description }}<p class="tl-desc">{{ . }}</p>{{ end }}
-      {{ if .link }}</a>{{ end }}
-    </li>
-    {{ end }}
-  </ol>
+  <div class="tl-track">
+    <div class="tl-track-fill" aria-hidden="true"></div>
+    <ol class="timeline-list">
+      {{ range $events }}
+      <li>
+        {{ if .link }}<a class="tl-link" href="{{ .link | relURL }}">{{ end }}
+          <div class="tl-year">{{ .date }}</div>
+          <p class="tl-title">{{ with .icon }}{{ . }} {{ end }}{{ .title }}</p>
+          {{ with .org }}<p class="tl-org">{{ . }}</p>{{ end }}
+          {{ with .description }}<p class="tl-desc">{{ . }}</p>{{ end }}
+        {{ if .link }}</a>{{ end }}
+      </li>
+      {{ end }}
+    </ol>
+  </div>
 </article>
 {{ end }}
