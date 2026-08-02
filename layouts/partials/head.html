@@ -11,9 +11,8 @@
 <meta property="og:type" content="website">
 
 <title>{{ if .IsHome }}{{ .Site.Title }}{{ else }}{{ .Title }} | {{ .Site.Title }}{{ end }}</title>
-<link rel="icon" href="/images/fav/favicon.ico">
-<link rel="apple-touch-icon" href="/images/fav/apple-touch-icon.png">
-<link rel="manifest" href="/images/fav/site.webmanifest">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="alternate icon" href="/favicon.png">
 <link rel="canonical" href="{{ .Permalink }}">
 
 {{- $css := resources.Get "css/garden.css" | resources.Minify | resources.Fingerprint }}
