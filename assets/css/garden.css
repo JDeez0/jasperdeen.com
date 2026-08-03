@@ -228,11 +228,12 @@ article.page > *:first-child { margin-top: 0; }
 .btn:hover { border-color: var(--accent); color: var(--accent); }
 
 /* ---- timeline ----
-   Plain, self-hosted, dependency-free "parallax": a scroll-linked spine
-   fill and a per-entry fade-in, both pure CSS (animation-timeline), no
-   JS and no third-party scripts. Browsers without support (Firefox,
-   unflagged, as of 2026) just get the plain static list — @supports
-   guards the enhancement so there's no broken/half-applied state. */
+   Scroll-linked spine fill + per-entry reveal. Pure CSS
+   (animation-timeline: view()) turned out unsupported in Firefox as of
+   Aug 2026, so this is instead a ~30-line self-hosted vanilla JS file
+   (static/js/timeline.js — no CDN, no framework) that works identically
+   in every browser. Default CSS state (no .tl-js class) is the plain,
+   fully-visible static list, so nothing depends on JS to be readable. */
 .tl-track { position: relative; margin: 1.5rem 0; }
 .timeline-list { list-style: none; margin: 0; padding: 0; border-left: 2px solid var(--line); }
 .timeline-list li { position: relative; padding: 0 0 1.6rem 1.4rem; }
@@ -264,22 +265,16 @@ article.page > *:first-child { margin-top: 0; }
 a.tl-link { text-decoration: none; color: inherit; display: block; }
 a.tl-link:hover .tl-title { color: var(--accent); }
 
-@media (prefers-reduced-motion: no-preference) {
-  @supports (animation-timeline: view()) {
-    .tl-track-fill {
-      animation: tl-fill linear both;
-      animation-timeline: view();
-      animation-range: cover 0% cover 100%;
-    }
-    .timeline-list li {
-      animation: tl-reveal linear both;
-      animation-timeline: view();
-      animation-range: entry 0% cover 35%;
-    }
-  }
+.tl-track.tl-js .timeline-list li {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
 }
-@keyframes tl-fill { from { transform: scaleY(0); } to { transform: scaleY(1); } }
-@keyframes tl-reveal { from { opacity: 0.35; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.tl-track.tl-js .timeline-list li.tl-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.tl-track.tl-js .tl-track-fill { transition: transform 0.1s linear; }
 
 /* ---- resume / pdf viewer ---- */
 .embed-pdf-container { position: relative; width: 100%; height: auto; min-height: 20vh; }
