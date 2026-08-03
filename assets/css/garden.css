@@ -1,26 +1,28 @@
-/* ===== jasperdeen.com — Garden =====
-   Original design system: structured, taxonomic, quiet. Growth-stage tags
-   (seedling / budding / evergreen) are load-bearing UI, not decoration —
-   they're how the Writing section signals how "done" a piece is. */
+/* ===== jasperdeen.com — Quiet =====
+   Near-blank canvas; hierarchy comes from type weight/size/spacing, not
+   color. One accent only — a subtle dark green — used sparingly: links,
+   the evergreen growth tag, the timeline spine, focus rings. Seedling
+   and budding tags stay grayscale on purpose so the green keeps meaning
+   (this piece is "done") instead of becoming wallpaper. */
 
 :root {
-  --bg: #f3f6f1;
+  --bg: #fcfcfb;
   --bg-raised: #ffffff;
-  --fg: #1f2b22;
-  --muted: #55604f;
-  --line: #dde4d8;
-  --accent: #4c7a52;
+  --fg: #1c1c1c;
+  --muted: #5f5f5f;
+  --line: #e7e7e5;
+  --accent: #3d5a45;
   --accent-fg: #ffffff;
-  --link: #3c6b43;
+  --link: #3d5a45;
 
-  --tag-seed-bg: #e2ecdc;
-  --tag-seed-fg: #5c7a52;
-  --tag-bud-bg: #f4e8ce;
-  --tag-bud-fg: #93712a;
-  --tag-ever-bg: #d9e8dc;
-  --tag-ever-fg: #2f6f4f;
+  --tag-seed-bg: #f0f0ee;
+  --tag-seed-fg: #6b6b6b;
+  --tag-bud-bg: #f0f0ee;
+  --tag-bud-fg: #6b6b6b;
+  --tag-ever-bg: #e6ece7;
+  --tag-ever-fg: #3d5a45;
 
-  --focus: #4c7a52;
+  --focus: #3d5a45;
 
   --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   --mono: ui-monospace, "SF Mono", "Cascadia Mono", Consolas, monospace;
@@ -28,40 +30,40 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #12160f;
-    --bg-raised: #1a2017;
-    --fg: #e7ece5;
-    --muted: #8fa08f;
-    --line: #2a332a;
-    --accent: #7fb489;
-    --accent-fg: #0d150f;
-    --link: #8fc797;
+    --bg: #17181a;
+    --bg-raised: #1e2023;
+    --fg: #ececea;
+    --muted: #9a9a9a;
+    --line: #2c2d30;
+    --accent: #8fbf97;
+    --accent-fg: #0d130f;
+    --link: #8fbf97;
 
-    --tag-seed-bg: #1e2a1e;
-    --tag-seed-fg: #8fbf8f;
-    --tag-bud-bg: #2b2412;
-    --tag-bud-fg: #d9ad5c;
-    --tag-ever-bg: #16261c;
-    --tag-ever-fg: #6fcf9a;
+    --tag-seed-bg: #232427;
+    --tag-seed-fg: #9a9a9a;
+    --tag-bud-bg: #232427;
+    --tag-bud-fg: #9a9a9a;
+    --tag-ever-bg: #182019;
+    --tag-ever-fg: #8fbf97;
 
-    --focus: #7fb489;
+    --focus: #8fbf97;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #12160f; --bg-raised: #1a2017; --fg: #e7ece5; --muted: #8fa08f;
-  --line: #2a332a; --accent: #7fb489; --accent-fg: #0d150f; --link: #8fc797;
-  --tag-seed-bg: #1e2a1e; --tag-seed-fg: #8fbf8f;
-  --tag-bud-bg: #2b2412; --tag-bud-fg: #d9ad5c;
-  --tag-ever-bg: #16261c; --tag-ever-fg: #6fcf9a;
-  --focus: #7fb489;
+  --bg: #17181a; --bg-raised: #1e2023; --fg: #ececea; --muted: #9a9a9a;
+  --line: #2c2d30; --accent: #8fbf97; --accent-fg: #0d130f; --link: #8fbf97;
+  --tag-seed-bg: #232427; --tag-seed-fg: #9a9a9a;
+  --tag-bud-bg: #232427; --tag-bud-fg: #9a9a9a;
+  --tag-ever-bg: #182019; --tag-ever-fg: #8fbf97;
+  --focus: #8fbf97;
 }
 :root[data-theme="light"] {
-  --bg: #f3f6f1; --bg-raised: #ffffff; --fg: #1f2b22; --muted: #55604f;
-  --line: #dde4d8; --accent: #4c7a52; --accent-fg: #ffffff; --link: #3c6b43;
-  --tag-seed-bg: #e2ecdc; --tag-seed-fg: #5c7a52;
-  --tag-bud-bg: #f4e8ce; --tag-bud-fg: #93712a;
-  --tag-ever-bg: #d9e8dc; --tag-ever-fg: #2f6f4f;
-  --focus: #4c7a52;
+  --bg: #fcfcfb; --bg-raised: #ffffff; --fg: #1c1c1c; --muted: #5f5f5f;
+  --line: #e7e7e5; --accent: #3d5a45; --accent-fg: #ffffff; --link: #3d5a45;
+  --tag-seed-bg: #f0f0ee; --tag-seed-fg: #6b6b6b;
+  --tag-bud-bg: #f0f0ee; --tag-bud-fg: #6b6b6b;
+  --tag-ever-bg: #e6ece7; --tag-ever-fg: #3d5a45;
+  --focus: #3d5a45;
 }
 
 * { box-sizing: border-box; }
