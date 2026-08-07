@@ -39,9 +39,6 @@ disablePathToLower = true
 [[params.nav]]
   name = "Resume"
   url = "/resume/"
-[[params.nav]]
-  name = "Contact"
-  url = "/contact/"
 
 [outputs]
   home = ["HTML", "RSS"]
