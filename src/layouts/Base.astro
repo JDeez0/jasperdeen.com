@@ -62,13 +62,21 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
         const observer = new IntersectionObserver(
           (entries) => {
             for (const entry of entries) {
+              const el = entry.target;
               if (entry.isIntersecting) {
-                entry.target.classList.add("revealed");
-                observer.unobserve(entry.target);
+                // In view: fly in (this also re-fires when scrolling back
+                // down after the message had faded out).
+                el.classList.remove("out");
+                el.classList.add("revealed");
+              } else if (el.classList.contains("revealed")) {
+                // Left the viewport (scroll up or down): reverse-fly out.
+                // Never-revealed messages stay untouched (no flash).
+                el.classList.remove("revealed");
+                el.classList.add("out");
               }
             }
           },
-          { threshold: 0.2, rootMargin: "0px 0px -10% 0px" },
+          { threshold: 0.1, rootMargin: "0px 0px -8% 0px" },
         );
         messages.forEach((message) => observer.observe(message));
       } else {

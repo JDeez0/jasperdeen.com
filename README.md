@@ -18,8 +18,11 @@ Personal site for Jasper Deen — a static, two-page site built with
 - Copy lives in `src/data/chat.ts` — add/remove messages there without
   touching markup or animation code.
 - Messages fly up as they enter the viewport using **pure CSS scroll-driven
-  animations** (`animation-timeline: view()`): zero JS, runs on the
-  compositor thread.
+  animations** (`animation-timeline: view()`, range `entry exit`): zero JS,
+  runs on the compositor thread. The animation is **bidirectional** —
+  scrolling up reverses it, so messages fly back out and re-animate in when
+  you scroll down again. An IntersectionObserver fallback replicates the same
+  in/out behavior in browsers without scroll-timeline support.
 - Progressive enhancement: with JS/scroll-timeline unsupported, or under
   `prefers-reduced-motion`, all messages are simply visible. No scroll
   hijacking anywhere — content is a normal readable document.
