@@ -26,6 +26,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
     <meta name="generator" content={Astro.generator} />
   </head>
   <body>
+    <div class="sheet">
     <header class="site-header">
       <a class="brand" href="/" aria-label="Jasper Deen - home" title="Home">JD</a>
       <nav class="site-nav" aria-label="Site">
@@ -37,6 +38,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
     <footer class="site-footer">
       <p>&copy; {new Date().getFullYear()} Jasper H. Deen</p>
     </footer>
+    </div>
 
     <script>
   // Fallback for browsers without CSS scroll-driven animations

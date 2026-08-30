@@ -5,10 +5,12 @@ Personal site for Jasper Deen — a static, two-page site built with
 
 ## Pages
 
-- `/` — the landing page: a minimal hero ("Jasper Deen", caption, intro,
-  question, and answer) followed by a scroll-revealed dialogue styled as an
-  SMS/iMessage conversation. Reader's hypothetical thoughts sit on the right,
-  Jasper's replies on the left.
+- `/` — the landing page: a minimal hero ("Jasper Deen" centered, caption,
+  intro, question, and answer) followed by a scroll-revealed dialogue styled
+  as an SMS/iMessage conversation. Reader's hypothetical thoughts sit on the
+  right, Jasper's replies on the left. The whole page sits inside a hairline
+  "sheet" frame (thin vertical rails + horizontal keylines) that anchors the
+  composition.
 - `/blog/` — empty stub for future writing.
 
 ## The landing conversation

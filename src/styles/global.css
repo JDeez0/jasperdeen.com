@@ -6,23 +6,28 @@
   --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
-/* Neutral surface/ink tokens that flip with the OS color scheme.
-   No brand colors anywhere: minimalism by default. */
+/* Neutral surface/ink tokens, warmed toward paper (saddine.com's palette
+   direction: off-white paper + warm ink, not pure gray). No brand colors:
+   minimalism by default. */
 :root {
-  --surface: #ffffff;
-  --ink: #1c1c1e;
-  --muted: #6b6b70;
-  --line: #e4e4e7;
-  --line-strong: #a1a1aa;
+  --surface: #fbfaf7;
+  --ink: #1b1a17;
+  --muted: #6f6a61;
+  --line: #e8e4db;
+  --line-strong: #a8a198;
+  /* Hairline rules: ink mixed ~12% into the surface — the thin-linework
+     token (saddine's --edge equivalent: reduced-contrast 1px lines). */
+  --hairline: color-mix(in oklab, var(--ink) 12%, var(--surface));
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --surface: #0c0c0e;
-    --ink: #f5f5f4;
-    --muted: #a1a1aa;
-    --line: #27272a;
-    --line-strong: #52525b;
+    --surface: #100f0d;
+    --ink: #f4f1ea;
+    --muted: #9d978c;
+    --line: #292620;
+    --line-strong: #57514a;
+    --hairline: color-mix(in oklab, var(--ink) 16%, var(--surface));
   }
 }
 
@@ -34,16 +39,23 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* ---------- Layout ----------
-   One column for everything, but wide enough (64rem) for the display
-   name to sit on a single line at its largest size. Body copy keeps its
-   reading measure (≤66ch) so lines stay comfortable. */
+/* ---------- Layout: the hairline sheet ----------
+   Everything lives inside a document "sheet": vertical hairline rails at
+   both column edges, running the full page height (min-height: 100dvh),
+   plus horizontal hairlines under the header, under the hero, and above
+   the footer. These thin, reduced-contrast rules anchor the composition so
+   left-aligned text and a centered display name both read as deliberate. */
+.sheet {
+  max-width: 64rem;
+  margin-inline: auto;
+  border-inline: 1px solid var(--hairline);
+  min-height: 100dvh;
+}
+
 .page,
 .site-header,
 .site-footer {
-  max-width: 64rem;
-  margin-inline: auto;
-  padding-inline: 1.25rem;
+  padding-inline: clamp(1.25rem, 4vw, 3rem);
 }
 
 .site-header {
@@ -51,7 +63,9 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding-top: 1.5rem;
+  padding-top: 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--hairline);
 }
 
 /* Graphical brand mark: a "JD" monogram inside an outlined rounded
@@ -77,7 +91,6 @@ body {
 
 .brand:hover {
   border-color: var(--ink);
-  color: var(--ink);
 }
 
 .site-nav {
@@ -98,16 +111,21 @@ body {
 }
 
 .site-footer {
-  padding-top: 4rem;
-  padding-bottom: 2.5rem;
+  padding-top: 1.25rem;
+  padding-bottom: 1.5rem;
+  border-top: 1px solid var(--hairline);
   font-size: 0.85rem;
   color: var(--muted);
 }
 
-/* ---------- Hero ---------- */
-
+/* ---------- Hero ----------
+   The display name is centered (measured optically balanced in Fraunces,
+   so plain text-align: center is correct); everything below it reads as a
+   classic centered-display / left-aligned-body editorial stack. The hero
+   closes with a hairline keyline before the dialogue begins. */
 .hero {
-  padding-block: clamp(3rem, 10vh, 6rem) 1.5rem;
+  padding-block: clamp(3rem, 10vh, 6rem) 2.5rem;
+  border-bottom: 1px solid var(--hairline);
 }
 
 .display {
@@ -117,20 +135,25 @@ body {
   font-weight: 650;
   line-height: 0.98;
   letter-spacing: -0.03em;
+  text-align: center;
+  text-wrap: balance;
 }
 
 .display--small {
+  text-align: left;
   font-size: clamp(2.5rem, 6vw, 4rem);
 }
 
 .caption {
-  margin: 1.25rem 0 0;
+  margin: 1.5rem auto 0;
+  max-width: 34rem;
+  text-align: center;
   font-size: clamp(1.15rem, 2.6vw, 1.45rem);
   color: var(--muted);
 }
 
 .intro {
-  margin: 1.5rem 0 0;
+  margin: 1.75rem 0 0;
   max-width: 34rem;
   font-size: 1.0625rem;
   line-height: 1.65;
@@ -149,6 +172,7 @@ body {
 
 .chat {
   padding-bottom: 4rem;
+  padding-top: 2.5rem;
 }
 
 .chat-row {
