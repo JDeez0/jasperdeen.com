@@ -1,0 +1,38 @@
+---
+import Base from "../layouts/Base.astro";
+import { dialogue, heroAnswer } from "../data/chat";
+---
+
+<Base
+  title="Jasper Deen — Word wonk and inexorable optimist"
+  description="Jasper Deen is a writer — a word wonk and inexorable optimist. This is his space for expressing himself."
+>
+  <main class="page">
+    <!-- Above the fold: static name, caption, intro, question, and answer.
+         No motion here — the flying-up starts with the dialogue below. -->
+    <section class="hero">
+      <h1 class="display">Jasper Deen</h1>
+      <p class="caption">Word wonk and inexorable optimist</p>
+      <p class="intro">
+        I get excited about great communications to move motivations. This is a
+        space to do just that &mdash; for myself.
+      </p>
+      <p class="question">What&rsquo;s going on here?</p>
+      <div class="chat-row" data-side="jasper">
+        <p class="bubble">{heroAnswer}</p>
+      </div>
+    </section>
+
+    <!-- The scroll-revealed dialogue: reader's thoughts on the right,
+         Jasper's replies on the left, each popping in as it enters view. -->
+    <section class="chat">
+      {
+        dialogue.map((message) => (
+          <div class="chat-row" data-side={message.side}>
+            <p class="bubble message">{message.text}</p>
+          </div>
+        ))
+      }
+    </section>
+  </main>
+</Base>

@@ -1,0 +1,195 @@
+@import "tailwindcss";
+@import "@fontsource-variable/fraunces/wght.css";
+
+@theme {
+  --font-display: "Fraunces Variable", ui-serif, Georgia, "Times New Roman", serif;
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Neutral surface/ink tokens that flip with the OS color scheme.
+   No brand colors anywhere: minimalism by default. */
+:root {
+  --surface: #ffffff;
+  --ink: #1c1c1e;
+  --muted: #6b6b70;
+  --line: #e4e4e7;
+  --line-strong: #a1a1aa;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --surface: #0c0c0e;
+    --ink: #f5f5f4;
+    --muted: #a1a1aa;
+    --line: #27272a;
+    --line-strong: #52525b;
+  }
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--surface);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* ---------- Layout ---------- */
+
+.page,
+.site-header,
+.site-footer {
+  max-width: 46rem;
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+}
+
+.site-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: 1.5rem;
+}
+
+.brand {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.site-nav {
+  display: flex;
+  gap: 1.25rem;
+}
+
+.site-nav a {
+  font-size: 0.95rem;
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.site-nav a:hover {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.site-footer {
+  padding-top: 4rem;
+  padding-bottom: 2.5rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+/* ---------- Hero ---------- */
+
+.hero {
+  padding-block: clamp(3rem, 10vh, 6rem) 1.5rem;
+}
+
+.display {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(3.5rem, 13vw, 8.5rem);
+  font-weight: 650;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+}
+
+.display--small {
+  font-size: clamp(2.5rem, 6vw, 4rem);
+}
+
+.caption {
+  margin: 1.25rem 0 0;
+  font-size: clamp(1.15rem, 2.6vw, 1.45rem);
+  color: var(--muted);
+}
+
+.intro {
+  margin: 1.5rem 0 0;
+  max-width: 34rem;
+  font-size: 1.0625rem;
+  line-height: 1.65;
+}
+
+.question {
+  margin: 2.25rem 0 1.5rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 4vw, 2.1rem);
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+/* ---------- Chat ---------- */
+
+.chat {
+  padding-bottom: 4rem;
+}
+
+.chat-row {
+  display: flex;
+  margin-block: 0.875rem;
+}
+
+/* Reader's hypothetical thoughts sit on the right, like the user's own
+   messages in an SMS thread; Jasper's replies sit on the left. */
+.chat-row[data-side="reader"] {
+  justify-content: flex-end;
+}
+
+.bubble {
+  max-width: min(80%, 36rem);
+  margin: 0;
+  border: 1px solid var(--line-strong);
+  border-radius: 1.125rem;
+  padding: 0.6rem 1rem;
+  font-size: 1.0625rem;
+  line-height: 1.55;
+}
+
+/* ---------- Fly-up reveal ----------
+   Static by default: every message is readable with JS off, in browsers
+   without scroll-driven animation support, and under prefers-reduced-motion.
+   Where supported, each message pops in (fade + fly + slight zoom, with a
+   spring overshoot) within the first ~1/3 of its entry into the viewport —
+   "scroll slowly, text flies up quickly." Runs entirely on the compositor
+   thread: no JS, no scroll listeners, no layout work. */
+.message {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .message {
+      opacity: 0;
+      animation: bubble-in 1ms linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 32%;
+      animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .message[data-side="reader"] {
+      transform-origin: right bottom;
+    }
+
+    .message[data-side="jasper"] {
+      transform-origin: left bottom;
+    }
+  }
+}
+
+@keyframes bubble-in {
+  from {
+    opacity: 0;
+    transform: translateY(26px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
