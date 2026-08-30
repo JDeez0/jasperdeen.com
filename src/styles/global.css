@@ -196,20 +196,22 @@ body {
   line-height: 1.55;
 }
 
-/* ---------- Fly-up reveal (bidirectional) ----------
-   Static by default: every message is readable with JS off, in browsers
-   without scroll-driven animation support, and under prefers-reduced-motion.
+/* ---------- Fly-up reveal (bidirectional, scrubbed) ----------
+   Static by default: readable with JS off, in browsers without scroll-driven
+   animation support, and under prefers-reduced-motion (all text visible).
 
-   Path 1 (preferred, zero JS): CSS scroll-driven animations. Progress follows
-   the message's position in the viewport, so scrolling UP reverses the
-   animation just as naturally as scrolling down: a bubble pops in fast once it
-   enters, holds fully visible through the middle, and fades back out as it
-   leaves — in either direction ("fly out on scroll up, fly back in on scroll
-   down"). Runs entirely on the compositor thread.
+   Path 1 (preferred, zero JS): CSS scroll-driven animations (view() timeline).
+   Progress tracks the message's position in the viewport, so scrolling UP
+   reverses the animation exactly like scrolling down — a bubble pops in fast,
+   holds fully visible, and fades back out as it leaves. Repeatable, identical
+   every pass, runs on the compositor thread.
 
-   Path 2 (fallback): a tiny IntersectionObserver script (see Base.astro)
-   toggles .revealed (fly in) / .out (reverse fly out) as messages enter and
-   leave the viewport. Only activated when the browser lacks animation-timeline. */
+   Path 2 (fallback): Base.astro adds the .js-scrub class when the browser
+   lacks animation-timeline, and a tiny rAF scroll-scrub script drives the same
+   0/10/90/100 curve from getBoundingClientRect — same seamless, repeatable
+   behavior via JS instead of CSS. Respects prefers-reduced-motion.
+
+   Path 3 (oldest browsers, no IO/rAF): .io-anim reveals each message once. */
 .message {
   opacity: 1;
 }
@@ -220,8 +222,8 @@ body {
       opacity: 0;
       animation: bubble-scrub 1ms linear both;
       animation-timeline: view();
-      /* Whole entry → exit span: the animation tracks the message's entire
-         passage through the viewport and reverses when scrolling back. */
+      /* Whole entry → exit span: tracks the message's entire passage through
+         the viewport and reverses fully when scrolling back. */
       animation-range: entry 0% exit 100%;
     }
 
@@ -234,6 +236,13 @@ body {
     }
   }
 
+  /* JS scroll-scrub fallback: driven per-frame from scroll position (below). */
+  html.js-scrub .message {
+    opacity: 0;
+    will-change: transform, opacity;
+  }
+
+  /* Oldest-browser fallback: single reveal per message. */
   html.io-anim .message {
     opacity: 0;
   }
@@ -247,7 +256,7 @@ body {
   }
 }
 
-/* One-shot pop-in (IO fallback; reversed for fly-out) */
+/* One-shot pop-in (io-anim oldest-browser fallback; reversed for fly-out) */
 @keyframes bubble-in {
   from {
     opacity: 0;
