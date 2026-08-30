@@ -208,10 +208,10 @@ body {
 
    Path 2 (fallback): Base.astro adds the .js-scrub class when the browser
    lacks animation-timeline, and a tiny rAF scroll-scrub script drives the same
-   0/10/90/100 curve from getBoundingClientRect — same seamless, repeatable
-   behavior via JS instead of CSS. Respects prefers-reduced-motion.
+   0/10/90/100 curve from live getBoundingClientRect positions — same seamless,
+   repeatable behavior via JS instead of CSS. Respects prefers-reduced-motion.
 
-   Path 3 (oldest browsers, no IO/rAF): .io-anim reveals each message once. */
+   Path 3 (oldest browsers, no rAF): messages simply stay visible. */
 .message {
   opacity: 1;
 }
@@ -222,9 +222,11 @@ body {
       opacity: 0;
       animation: bubble-scrub 1ms linear both;
       animation-timeline: view();
-      /* Whole entry → exit span: tracks the message's entire passage through
-         the viewport and reverses fully when scrolling back. */
-      animation-range: entry 0% exit 100%;
+      /* cover 0% → cover 100%: a clean, linear mapping — 0% while fully
+         below the viewport, 100% once fully exited past the top. The JS
+         fallback uses the identical formula, so both paths animate
+         identically. Fly-in completes as the message fully enters view. */
+      animation-range: cover 0% cover 100%;
     }
 
     .message[data-side="reader"] {
@@ -236,27 +238,14 @@ body {
     }
   }
 
-  /* JS scroll-scrub fallback: driven per-frame from scroll position (below). */
+  /* JS scroll-scrub fallback: driven per-frame from live scroll position. */
   html.js-scrub .message {
     opacity: 0;
     will-change: transform, opacity;
   }
-
-  /* Oldest-browser fallback: single reveal per message. */
-  html.io-anim .message {
-    opacity: 0;
-  }
-
-  html.io-anim .message.revealed {
-    animation: bubble-in 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-  }
-
-  html.io-anim .message.out {
-    animation: bubble-in 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) reverse both;
-  }
 }
 
-/* One-shot pop-in (io-anim oldest-browser fallback; reversed for fly-out) */
+/* One-shot pop-in (used by the JS fallback's transition) */
 @keyframes bubble-in {
   from {
     opacity: 0;
