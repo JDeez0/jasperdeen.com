@@ -119,13 +119,22 @@ body {
 }
 
 /* ---------- Hero ----------
-   The display name is centered (measured optically balanced in Fraunces,
-   so plain text-align: center is correct); everything below it reads as a
-   classic centered-display / left-aligned-body editorial stack. The hero
-   closes with a hairline keyline before the dialogue begins. */
+   The hero fills the first viewport (100svh) so the conversation always
+   begins just below the fold — the first scroll is what reveals the
+   fly-ins, on every screen size. The static answer sits anchored at the
+   bottom of that first screen. */
 .hero {
-  padding-block: clamp(3rem, 10vh, 6rem) 2.5rem;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  padding-top: clamp(3rem, 10vh, 6rem);
+  padding-bottom: 2.5rem;
   border-bottom: 1px solid var(--hairline);
+}
+
+.hero .hero-answer {
+  margin-top: auto;
 }
 
 .display {
@@ -175,30 +184,6 @@ body {
   padding-top: 2.5rem;
 }
 
-/* Invite to scroll: a subtle chevron that gently nudges the reader into
-   the conversation below. Purely decorative (aria-hidden). */
-.scroll-cue {
-  display: flex;
-  justify-content: center;
-  margin: 2rem auto 0;
-  color: var(--muted);
-}
-
-.scroll-cue svg {
-  width: 1.5rem;
-  height: 1.5rem;
-  animation: cue-bob 2s ease-in-out infinite;
-}
-
-@keyframes cue-bob {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(6px);
-  }
-}
-
 .chat-row {
   display: flex;
   margin-block: 0.875rem;
@@ -220,24 +205,33 @@ body {
   line-height: 1.55;
 }
 
-/* ---------- Fly-up reveal (bidirectional, scrubbed) ----------
-   ONE mechanism: a tiny JS scroll-scrub (Base.astro) drives every message's
-   opacity/transform per-frame from its live viewport position, using the
-   exact same 0/10/90/100 curve everywhere. We deliberately do NOT use the
-   native CSS animation-timeline path: Firefox 154 reports support for it but
-   mis-renders the range keyframes (messages sit static), so relying on it
-   breaks the animation for Firefox users. The JS scrub is plain, verified
-   code that behaves identically in every engine.
+/* ---------- Fly-up reveal ----------
+   Timed spring pop, TRIGGERED by scroll position (not scrubbed to the
+   wheel): when a message enters the reading band near the bottom of the
+   viewport it gets .revealed, and a CSS transition flies it up + fades it
+   in over ~0.45s with an iMessage-style overshoot — so it "flies up
+   quickly" even when you scroll slowly. Scrolling back out of the band
+   removes .revealed, reversing the transition (fly-out). The state is a
+   pure function of position, so every pass is identical.
 
-   Fallbacks: with JS disabled or prefers-reduced-motion active, all text is
-   simply visible (static). Messages scroll in/out seamless and repeatable. */
+   With JS off or prefers-reduced-motion, no class is added and all text
+   is simply visible. */
 .message {
   opacity: 1;
 }
 
 @media (prefers-reduced-motion: no-preference) {
   html.js-scrub .message {
+    opacity: 0;
+    transform: translateY(26px) scale(0.95);
+    transition:
+      opacity 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
+      transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
     will-change: transform, opacity;
   }
+
+  html.js-scrub .message.revealed {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
-/* (The scrub sets opacity inline per frame; no keyframes needed.) */
