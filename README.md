@@ -3,6 +3,10 @@
 Personal site for Jasper Deen — a static, two-page site built with
 [Astro](https://astro.build) 7 + Tailwind CSS v4.
 
+> History: the previous Hugo site lives on the `hugo-site` branch
+> (committed `c636981`) and is preserved there; `main` is the active
+> Astro site that deploys to GitHub Pages via `.github/workflows/deploy.yml`.
+
 ## Pages
 
 - `/` — the landing page: a minimal hero ("Jasper Deen" centered, caption,
