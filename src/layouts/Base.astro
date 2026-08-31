@@ -41,48 +41,20 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
     </div>
 
     <script>
-      // One mechanism for the fly-up reveal: a tiny per-frame scroll-scrub
-      // that drives each message's opacity/transform from its LIVE viewport
-      // position (cover-range math: 0% fully below the fold → 100% fully
-      // exited past the top, with a fast springy pop-in on the first 10% and
-      // a mirrored fly-out on the last 10%). Scrolling up reverses it, every
-      // pass is identical, and it works in every engine. We deliberately do
-      // NOT rely on CSS animation-timeline: Firefox 154 advertises support
-      // but mis-renders the range keyframes (messages stay static).
+      // Timed spring pop, triggered by scroll position. Each frame we read
+      // each message's live viewport position and toggle a .revealed class
+      // (see global.css), whose CSS transition flies the bubble up + fades
+      // it in over ~0.45s with an iMessage-style overshoot — "scroll slowly,
+      // text flies up quickly." Scrolling back out reverses it (fly-out).
+      // State is a pure function of position, so every pass is identical.
       //
-      // When JS is off or prefers-reduced-motion is set, nothing runs and
-      // all text is simply visible.
+      // With JS off or prefers-reduced-motion set, nothing runs and all
+      // text is simply visible.
       const prefersReducedMotion = window.matchMedia(
         "(prefers-reduced-motion: reduce)",
       ).matches;
 
       const messages = Array.from(document.querySelectorAll(".message"));
-
-      // ---- DEV-ONLY diagnostic badge (never ships in production) ----
-      if (import.meta.env.DEV) {
-        const badge = document.createElement("div");
-        badge.id = "jd-diag";
-        badge.style.cssText =
-          "position:fixed;left:8px;bottom:8px;z-index:9999;font:11px/1.5 monospace;" +
-          "background:rgba(0,0,0,.8);color:#0f0;padding:4px 8px;border-radius:4px;" +
-          "pointer-events:none;white-space:pre";
-        const mk = () =>
-          (badge.textContent =
-            [
-              "RM(no-pref/off): " + (prefersReducedMotion ? "REDUCE-ON" : "off"),
-              "scrub: " + (document.documentElement.classList.contains("js-scrub") ? "on" : "OFF"),
-              "frames: " + (window.__jdFrames || 0),
-              "msgs: " + messages.length,
-              "op0: " + (messages[0] ? parseFloat(getComputedStyle(messages[0]).opacity).toFixed(2) : "?"),
-              "support: " + (typeof CSS !== "undefined" && CSS.supports("animation-timeline: view()") ? "view()" : "none"),
-            ].join("\n"));
-        window.addEventListener("error", (e) => {
-          badge.textContent += "\nERR: " + (e.message || "?").slice(0, 80);
-        });
-        mk();
-        setInterval(mk, 400);
-        document.body.appendChild(badge);
-      }
 
       if (!prefersReducedMotion && messages.length > 0) {
         document.documentElement.classList.add("js-scrub");
@@ -113,7 +85,6 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
               el.classList.remove("revealed");
             }
           }
-          window.__jdFrames = (window.__jdFrames || 0) + 1;
         };
 
         const onRaf = () => {
