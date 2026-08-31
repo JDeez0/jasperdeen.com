@@ -41,42 +41,32 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
     </div>
 
     <script>
-      // Seamless scroll-scrub fallback for browsers WITHOUT CSS scroll-driven
-      // animations (animation-timeline: view()). Mimics the CSS path exactly:
-      // each message's progress is driven 1:1 by its own position in the
-      // viewport, so scrolling up reverses it and every pass looks identical —
-      // no timed "fly-in" that can lag, skip, or fire twice.
+      // One mechanism for the fly-up reveal: a tiny per-frame scroll-scrub
+      // that drives each message's opacity/transform from its LIVE viewport
+      // position (cover-range math: 0% fully below the fold → 100% fully
+      // exited past the top, with a fast springy pop-in on the first 10% and
+      // a mirrored fly-out on the last 10%). Scrolling up reverses it, every
+      // pass is identical, and it works in every engine. We deliberately do
+      // NOT rely on CSS animation-timeline: Firefox 154 advertises support
+      // but mis-renders the range keyframes (messages stay static).
       //
-      // Progress mapping (matches the CSS 0/10/90/100 keyframes):
-      //   - while the message travels its [entry → exit] band, read
-      //     `entryDistance / screen` as raw progress
-      //   - convert: [0  → 0.10]   => fly in  (opacity 0→1, translateY 26px→0,
-      //                                        scale .95→1, spring overshoot)
-      //   -          [0.10→0.90]   => fully visible
-      //   -          [0.90→1.00]   => fly out (mirror of fly-in)
-      //
-      // Reads only transform + opacity (GPU-composited), on rAF; respects
-      // prefers-reduced-motion (no class → static text). If IntersectionObserver
-      // is missing, messages simply stay visible.
+      // When JS is off or prefers-reduced-motion is set, nothing runs and
+      // all text is simply visible.
       const prefersReducedMotion = window.matchMedia(
         "(prefers-reduced-motion: reduce)",
       ).matches;
-      const supportsViewTimeline =
-        typeof CSS !== "undefined" &&
-        typeof CSS.supports === "function" &&
-        CSS.supports("animation-timeline: view()");
 
       const messages = Array.from(document.querySelectorAll(".message"));
-      if (
-        !prefersReducedMotion &&
-        !supportsViewTimeline &&
-        messages.length > 0 &&
-        typeof requestAnimationFrame === "function"
-      ) {
+      if (!prefersReducedMotion && messages.length > 0) {
         document.documentElement.classList.add("js-scrub");
 
-        // Read LIVE geometry every frame (getBoundingClientRect is
-        // viewport-relative — caching it would freeze progress at load).
+        // Set initial hidden state synchronously (before first paint) so
+        // below-fold messages start at opacity 0 and reveal as you scroll.
+        for (const el of messages) {
+          el.style.opacity = "0";
+          el.style.transform = "translateY(26px) scale(0.95)";
+        }
+
         const apply = () => {
           const vh = window.innerHeight || document.documentElement.clientHeight;
           for (const el of messages) {
@@ -85,16 +75,13 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
             const row = el.parentElement
               ? el.parentElement.getBoundingClientRect()
               : el.getBoundingClientRect();
-            // Optimization: skip only when the message is FAR off-screen
-            // (beyond its own height past either edge) — it can't be visible
-            // and its computed state is capped anyway. Messages in or near
-            // the viewport always compute, so scrolling up always lets a
-            // message finish its fly-OUT (opacity → 0), matching the CSS path.
+            // Optimization: skip only messages FAR off-screen (beyond their
+            // own height past either edge) — they can't be visible. Messages
+            // near the viewport always compute, so scrolling up always lets
+            // a message finish its fly-OUT (opacity → 0).
             if (row.bottom < -row.height || row.top > vh + row.height) continue;
-            // Same math as the CSS animation-timeline: view() with
-            // range cover 0% cover 100%:
-            //   raw = 0 while fully below the viewport,
-            //   raw = 1 once fully exited past the top.
+            // Progress: 0 while fully below the viewport, 1 once fully
+            // exited past the top (cover-range math).
             const raw = Math.max(0, Math.min(1, (vh - row.top) / (vh + row.height)));
             let p;
             if (raw <= 0.1) {
@@ -104,14 +91,12 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
             } else {
               p = 1; // fully visible plateau (keyframes 10-90%)
             }
-            // Spring overshoot easing — same cubic-bezier(0.34,1.56,0.64,1)
-            // (easeOutBack) the CSS keyframes use, applied to opacity and
-            // transform so both paths render identically.
+            // Spring overshoot — cubic-bezier(0.34,1.56,0.64,1) easeOutBack,
+            // applied to opacity and transform so the fade + fly match.
             const c1 = 1.70158;
             const c3 = c1 + 1;
             const t = 1 + c3 * Math.pow(p - 1, 3) + c1 * Math.pow(p - 1, 2);
-            const opacity = Math.min(1, t);
-            el.style.opacity = String(opacity);
+            el.style.opacity = String(Math.min(1, t));
             el.style.transform = `translateY(${(1 - t) * 26}px) scale(${1 - (1 - t) * 0.05})`;
           }
         };
@@ -120,10 +105,8 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
           apply();
           requestAnimationFrame(onRaf);
         };
-        apply();
         requestAnimationFrame(onRaf);
       }
-      // No rAF: leave messages static (all visible).
     </script>
   </body>
 </html>

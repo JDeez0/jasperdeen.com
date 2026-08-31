@@ -197,86 +197,23 @@ body {
 }
 
 /* ---------- Fly-up reveal (bidirectional, scrubbed) ----------
-   Static by default: readable with JS off, in browsers without scroll-driven
-   animation support, and under prefers-reduced-motion (all text visible).
+   ONE mechanism: a tiny JS scroll-scrub (Base.astro) drives every message's
+   opacity/transform per-frame from its live viewport position, using the
+   exact same 0/10/90/100 curve everywhere. We deliberately do NOT use the
+   native CSS animation-timeline path: Firefox 154 reports support for it but
+   mis-renders the range keyframes (messages sit static), so relying on it
+   breaks the animation for Firefox users. The JS scrub is plain, verified
+   code that behaves identically in every engine.
 
-   Path 1 (preferred, zero JS): CSS scroll-driven animations (view() timeline).
-   Progress tracks the message's position in the viewport, so scrolling UP
-   reverses the animation exactly like scrolling down — a bubble pops in fast,
-   holds fully visible, and fades back out as it leaves. Repeatable, identical
-   every pass, runs on the compositor thread.
-
-   Path 2 (fallback): Base.astro adds the .js-scrub class when the browser
-   lacks animation-timeline, and a tiny rAF scroll-scrub script drives the same
-   0/10/90/100 curve from live getBoundingClientRect positions — same seamless,
-   repeatable behavior via JS instead of CSS. Respects prefers-reduced-motion.
-
-   Path 3 (oldest browsers, no rAF): messages simply stay visible. */
+   Fallbacks: with JS disabled or prefers-reduced-motion active, all text is
+   simply visible (static). Messages scroll in/out seamless and repeatable. */
 .message {
   opacity: 1;
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  @supports (animation-timeline: view()) {
-    .message {
-      opacity: 0;
-      animation: bubble-scrub 1ms linear both;
-      animation-timeline: view();
-      /* cover 0% → cover 100%: a clean, linear mapping — 0% while fully
-         below the viewport, 100% once fully exited past the top. The JS
-         fallback uses the identical formula, so both paths animate
-         identically. Fly-in completes as the message fully enters view. */
-      animation-range: cover 0% cover 100%;
-    }
-
-    .message[data-side="reader"] {
-      transform-origin: right bottom;
-    }
-
-    .message[data-side="jasper"] {
-      transform-origin: left bottom;
-    }
-  }
-
-  /* JS scroll-scrub fallback: driven per-frame from live scroll position. */
   html.js-scrub .message {
-    opacity: 0;
     will-change: transform, opacity;
   }
 }
-
-/* One-shot pop-in (used by the JS fallback's transition) */
-@keyframes bubble-in {
-  from {
-    opacity: 0;
-    transform: translateY(26px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-/* Scroll-scrubbed reveal: fast pop-in (0–10%), hold fully visible, then fade
-   back out (90–100%) as the message exits — reversible in both directions. */
-@keyframes bubble-scrub {
-  0% {
-    opacity: 0;
-    transform: translateY(26px) scale(0.95);
-    animation-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-  10% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    animation-timing-function: linear;
-  }
-  90% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    animation-timing-function: linear;
-  }
-  100% {
-    opacity: 0;
-    transform: translateY(26px) scale(0.95);
-  }
-}
+/* (The scrub sets opacity inline per frame; no keyframes needed.) */
