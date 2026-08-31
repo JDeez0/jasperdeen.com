@@ -85,8 +85,12 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
             const row = el.parentElement
               ? el.parentElement.getBoundingClientRect()
               : el.getBoundingClientRect();
-            // Nothing near the viewport: leave it wherever it is (optimization).
-            if (row.bottom < 0 || row.top > vh) continue;
+            // Optimization: skip only when the message is FAR off-screen
+            // (beyond its own height past either edge) — it can't be visible
+            // and its computed state is capped anyway. Messages in or near
+            // the viewport always compute, so scrolling up always lets a
+            // message finish its fly-OUT (opacity → 0), matching the CSS path.
+            if (row.bottom < -row.height || row.top > vh + row.height) continue;
             // Same math as the CSS animation-timeline: view() with
             // range cover 0% cover 100%:
             //   raw = 0 while fully below the viewport,
