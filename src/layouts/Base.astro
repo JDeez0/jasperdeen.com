@@ -57,6 +57,33 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
       ).matches;
 
       const messages = Array.from(document.querySelectorAll(".message"));
+
+      // ---- DEV-ONLY diagnostic badge (never ships in production) ----
+      if (import.meta.env.DEV) {
+        const badge = document.createElement("div");
+        badge.id = "jd-diag";
+        badge.style.cssText =
+          "position:fixed;left:8px;bottom:8px;z-index:9999;font:11px/1.5 monospace;" +
+          "background:rgba(0,0,0,.8);color:#0f0;padding:4px 8px;border-radius:4px;" +
+          "pointer-events:none;white-space:pre";
+        const mk = () =>
+          (badge.textContent =
+            [
+              "RM(no-pref/off): " + (prefersReducedMotion ? "REDUCE-ON" : "off"),
+              "scrub: " + (document.documentElement.classList.contains("js-scrub") ? "on" : "OFF"),
+              "frames: " + (window.__jdFrames || 0),
+              "msgs: " + messages.length,
+              "op0: " + (messages[0] ? parseFloat(getComputedStyle(messages[0]).opacity).toFixed(2) : "?"),
+              "support: " + (typeof CSS !== "undefined" && CSS.supports("animation-timeline: view()") ? "view()" : "none"),
+            ].join("\n"));
+        window.addEventListener("error", (e) => {
+          badge.textContent += "\nERR: " + (e.message || "?").slice(0, 80);
+        });
+        mk();
+        setInterval(mk, 400);
+        document.body.appendChild(badge);
+      }
+
       if (!prefersReducedMotion && messages.length > 0) {
         document.documentElement.classList.add("js-scrub");
 
@@ -99,6 +126,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
             el.style.opacity = String(Math.min(1, t));
             el.style.transform = `translateY(${(1 - t) * 26}px) scale(${1 - (1 - t) * 0.05})`;
           }
+          window.__jdFrames = (window.__jdFrames || 0) + 1;
         };
 
         const onRaf = () => {

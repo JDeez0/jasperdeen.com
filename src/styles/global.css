@@ -175,6 +175,30 @@ body {
   padding-top: 2.5rem;
 }
 
+/* Invite to scroll: a subtle chevron that gently nudges the reader into
+   the conversation below. Purely decorative (aria-hidden). */
+.scroll-cue {
+  display: flex;
+  justify-content: center;
+  margin: 2rem auto 0;
+  color: var(--muted);
+}
+
+.scroll-cue svg {
+  width: 1.5rem;
+  height: 1.5rem;
+  animation: cue-bob 2s ease-in-out infinite;
+}
+
+@keyframes cue-bob {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(6px);
+  }
+}
+
 .chat-row {
   display: flex;
   margin-block: 0.875rem;
