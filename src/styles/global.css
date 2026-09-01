@@ -1,8 +1,11 @@
 @import "tailwindcss";
-@import "@fontsource-variable/fraunces/wght.css";
+@import "@fontsource/instrument-serif";
 
 @theme {
-  --font-display: "Fraunces Variable", ui-serif, Georgia, "Times New Roman", serif;
+  /* Instrument Serif: an engraved, high-contrast display serif whose thin
+     strokes read as hairlines — the typographic echo of the sheet's 1px
+     linework. Single 400 weight by design; no faux-bold anywhere. */
+  --font-display: "Instrument Serif", ui-serif, Georgia, "Times New Roman", serif;
   --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
@@ -88,8 +91,8 @@ body {
   border-radius: 0.875rem;
   color: var(--ink);
   font-family: var(--font-display);
-  font-size: 1.15rem;
-  font-weight: 650;
+  font-size: 1.35rem;
+  font-weight: 400;
   line-height: 1;
   text-decoration: none;
   transition: border-color 0.2s ease, color 0.2s ease;
@@ -167,9 +170,9 @@ body {
   margin: 0;
   font-family: var(--font-display);
   font-size: clamp(3.5rem, 10vw, 9.5rem);
-  font-weight: 650;
-  line-height: 0.98;
-  letter-spacing: -0.03em;
+  font-weight: 400;
+  line-height: 1.04;
+  letter-spacing: -0.02em;
   text-align: center;
   text-wrap: balance;
 }
@@ -198,8 +201,8 @@ body {
   margin: 2.25rem 0 1.5rem;
   font-family: var(--font-display);
   font-size: clamp(1.5rem, 4vw, 2.1rem);
-  font-weight: 650;
-  letter-spacing: -0.01em;
+  font-weight: 400;
+  letter-spacing: -0.005em;
   text-wrap: balance;
 }
 
