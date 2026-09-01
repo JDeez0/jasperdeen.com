@@ -1,0 +1,86 @@
+---
+// Procedural sand-dune line art for the top of the home page.
+// A smooth crest of rolling dunes with single-direction diagonal hatching
+// clipped inside the dune bodies. Generated once at build time into a tiny
+// static SVG: zero runtime JS, crisp at any size (non-scaling stroke).
+const W = 1200;
+const H = 160;
+
+// Crest anchors: peaks/valleys across the width (smaller y = higher).
+const crestPts: [number, number][] = [
+  [0, 98],
+  [60, 94],
+  [140, 62],
+  [210, 92],
+  [270, 84],
+  [340, 58],
+  [420, 96],
+  [510, 74],
+  [580, 50],
+  [660, 90],
+  [750, 68],
+  [820, 96],
+  [900, 56],
+  [980, 94],
+  [1080, 72],
+  [1160, 92],
+  [1200, 88],
+];
+
+// Catmull-Rom -> cubic bezier path (smooth through the anchors).
+function splinePath(pts: [number, number][]) {
+  const n = pts.length;
+  let d = `M ${pts[0][0]} ${pts[0][1]}`;
+  for (let i = 0; i < n - 1; i++) {
+    const p0 = pts[Math.max(0, i - 1)];
+    const p1 = pts[i];
+    const p2 = pts[i + 1];
+    const p3 = pts[Math.min(n - 1, i + 2)];
+    const c1x = p1[0] + (p2[0] - p0[0]) / 6;
+    const c1y = p1[1] + (p2[1] - p0[1]) / 6;
+    const c2x = p2[0] - (p3[0] - p1[0]) / 6;
+    const c2y = p2[1] - (p3[1] - p1[1]) / 6;
+    d += ` C ${c1x} ${c1y}, ${c2x} ${c2y}, ${p2[0]} ${p2[1]}`;
+  }
+  return d;
+}
+
+const crestD = splinePath(crestPts);
+
+// Region below the crest (the dune bodies) — used to clip the hatching.
+const clipD = `M 0 ${H} ` + crestD.replace("M ", "L ") + ` L ${W} ${H} Z`;
+
+// Single-direction hatching: 45° strokes sweeping top-left -> bottom-right.
+const step = 12;
+let hatchD = "";
+for (let x0 = -H; x0 <= W + H; x0 += step) {
+  hatchD += `M ${x0} 0 L ${x0 + H} ${H} `;
+}
+---
+
+<div class="dunes">
+  <svg
+    class="dunes-svg"
+    viewBox={`0 0 ${W} ${H}`}
+    preserveAspectRatio="none"
+    aria-hidden="true"
+  >
+    <defs>
+      <clipPath id="dunes-clip">
+        <path d={clipD} />
+      </clipPath>
+    </defs>
+    <g clip-path="url(#dunes-clip)" fill="none" stroke="currentColor" stroke-width="1">
+      <path d={hatchD} vector-effect="non-scaling-stroke" />
+    </g>
+    <path
+      d={crestD}
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.4"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      vector-effect="non-scaling-stroke"
+    />
+  </svg>
+</div>

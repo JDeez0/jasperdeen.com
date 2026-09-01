@@ -15,6 +15,12 @@
   --muted: #6f6a61;
   --line: #e8e4db;
   --line-strong: #a8a198;
+  /* Height of the dune line-art band across the top of the home page. */
+  --dunes-h: clamp(64px, 12vw, 148px);
+  /* Height of the sticky-free top header (brand 2.75rem + vertical padding
+     + 1px rule). The hero is offset by this so header + hero = one viewport
+     and the static answer stays fully on the first screen. */
+  --header-h: calc(2.75rem + 1.25rem + 1rem + 1px);
   /* Hairline rules: ink mixed ~12% into the surface — the thin-linework
      token (saddine's --edge equivalent: reduced-contrast 1px lines). */
   --hairline: color-mix(in oklab, var(--ink) 12%, var(--surface));
@@ -122,15 +128,35 @@ body {
    The hero fills the first viewport (100svh) so the conversation always
    begins just below the fold — the first scroll is what reveals the
    fly-ins, on every screen size. The static answer sits anchored at the
-   bottom of that first screen. */
+   bottom of that first screen. The dune line-art band lives at the very
+   top of the hero, right below the header. */
 .hero {
-  min-height: 100vh;
-  min-height: 100svh;
+  min-height: calc(100vh - var(--header-h));
+  min-height: calc(100svh - var(--header-h));
   display: flex;
   flex-direction: column;
-  padding-top: clamp(3rem, 10vh, 6rem);
+  padding-top: 0;
   padding-bottom: 2.5rem;
   border-bottom: 1px solid var(--hairline);
+}
+
+/* Dune band: full-bleed to the sheet rails (cancels the page padding),
+   fixed height via the --dunes-h token so hero + dunes still equal one
+   viewport and the static answer stays on the first screen. */
+.dunes {
+  height: var(--dunes-h);
+  margin-inline: calc(clamp(1.25rem, 4vw, 3rem) * -1);
+  color: var(--ink);
+}
+
+.dunes svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.hero .display {
+  margin-top: clamp(1.5rem, 4vh, 3rem);
 }
 
 .hero .hero-answer {
