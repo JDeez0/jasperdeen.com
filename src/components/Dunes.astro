@@ -1,25 +1,26 @@
 ---
-// Wind-blown crescent (sickle) dune field for the top of the home page.
+// Connected crescent-dune field for the top of the home page.
 //
-// Physics: each dune has a CREST — a gentle windward rise up to a peak and a
-// SHORT STEEP SLIP FACE down the lee side. The slip face is shaded DENSE
-// (dark) with short near-vertical strokes + cross strokes; the windward side
-// is shaded SPARSE (light) with long horizontal ripple contours that trail off
-// toward the next dune. Orientation (which side is the slip face) follows a
-// smooth function of position, so it varies in coherent groups.
+// Corrected dune anatomy (cross-section): a LONG gentle CONVEX windward ramp
+// rising to the brink/crest, then a STEEP slip face descending the FULL dune
+// height (~30-34deg, angle of repose) to the toe, then a flat trough before
+// the next dune. The crest is where the gentle windward curves and the steep
+// slip curves meet at an obtuse angle.
 //
-// Layered depth: 1-3 layers, back (smaller, higher, lighter) to front (larger,
-// lower, darker). Layers are staggered so back dunes peek between the gaps of
-// front dunes.
+// Line families (per layer), drawn back -> front:
+//   1. WINDWARD RIPPLE CONTOURS — curvy lines flowing down each windward ramp
+//      and flattening into the troughs (per-dune families that merge). Light.
+//   2. SLIP-FACE SHADING — dense curved concave strokes down the full slip
+//      face + cross strokes (front layers). Dark.
+//   3. CREST STROKE — a separate upright curved line over the peak and down
+//      the slip edge (moderate variety: arc / lean / verticalish). Heavier.
 //
-// Architecture: buildDune() is the reusable unit; the field is assembled by
-// instantiating it across the width from a deterministic seeded RNG — style
-// stays perfectly consistent at any width. Static SVG, zero runtime JS,
-// non-scaling stroke (crisp), currentColor (dark-mode aware).
+// Wind direction is the SAME everywhere (left -> right), so every slip face
+// faces right; dunes still vary in height, width, steepness, crest shape and
+// shading. Static SVG, zero runtime JS, non-scaling stroke, currentColor.
 const W = 1600;
 const H = 150;
 
-// --- deterministic seeded RNG ---
 function mulberry32(seed: number) {
   let a = seed;
   return function () {
@@ -31,25 +32,22 @@ function mulberry32(seed: number) {
   };
 }
 const rnd = mulberry32(20260831);
+const range = (a: number, b: number) => a + rnd() * (b - a);
 
 type Dune = {
-  cx: number;
-  footY: number;
-  h: number;
-  ww: number;
-  ws: number;
-  o: 1 | -1;
-  slipN: number;
-  ripN: number;
+  cx: number;   // crest peak x
+  by: number;   // trough/base level y
+  h: number;    // dune height
+  ww: number;   // windward run
+  ws: number;   // slip run (full-height drop at angle of repose)
+  style: number;// crest stroke variety 0..3
+  slipN: number;// slip shading density
   layer: number;
 };
 
 function cubicPoint(
-  x0: number, y0: number,
-  x1: number, y1: number,
-  x2: number, y2: number,
-  x3: number, y3: number,
-  t: number,
+  x0: number, y0: number, x1: number, y1: number,
+  x2: number, y2: number, x3: number, y3: number, t: number,
 ): { x: number; y: number } {
   const u = 1 - t;
   return {
@@ -57,112 +55,112 @@ function cubicPoint(
     y: u * u * u * y0 + 3 * u * u * t * y1 + 3 * u * t * t * y2 + t * t * t * y3,
   };
 }
+const p = (x: number, y: number) => `${x.toFixed(1)} ${y.toFixed(1)}`;
+const cubic = (a: number[], b: number[], c: number[], d: number[]) =>
+  `M ${p(a[0], a[1])} C ${p(b[0], b[1])}, ${p(c[0], c[1])}, ${p(d[0], d[1])}`;
 
 function buildDune(d: Dune) {
-  const peakX = d.cx;
-  const peakY = d.footY - d.h;
-  const windX = d.cx - d.o * d.ww;
-  const windY = d.footY;
-  const slipX = d.cx + d.o * d.ws;
-  const slipY = d.footY + d.h * 0.12;
+  const cx = d.cx, by = d.by, h = d.h, ww = d.ww, ws = d.ws;
+  const peakX = cx, peakY = by - h;
+  const windX = cx - ww, windY = by;          // windward toe
+  const slipX = cx + ws, slipY = by - h * 0.06; // slip toe (just above base)
 
-  const wc1x = windX + 0.62 * (peakX - windX);
-  const wc1y = windY;
-  const wc2x = peakX - 0.1 * (peakX - windX);
-  const wc2y = peakY;
-  const sc1x = peakX + 0.12 * (slipX - peakX);
-  const sc1y = peakY;
-  const sc2x = slipX - 0.18 * (slipX - peakX);
-  const sc2y = slipY;
+  // --- windward ramp (convex: flat at toe, steepening toward crest) ---
+  const wc1 = [windX + 0.58 * (peakX - windX), windY];
+  const wc2 = [peakX - 0.22 * (peakX - windX), peakY - h * 0.28];
+  const rampAt = (t: number) =>
+    cubicPoint(windX, windY, wc1[0], wc1[1], wc2[0], wc2[1], peakX, peakY, t);
 
-  const crest = `M ${windX.toFixed(1)} ${windY.toFixed(1)} C ${wc1x.toFixed(1)} ${wc1y.toFixed(1)}, ${wc2x.toFixed(1)} ${wc2y.toFixed(1)}, ${peakX.toFixed(1)} ${peakY.toFixed(1)} C ${sc1x.toFixed(1)} ${sc1y.toFixed(1)}, ${sc2x.toFixed(1)} ${sc2y.toFixed(1)}, ${slipX.toFixed(1)} ${slipY.toFixed(1)}`;
+  // --- slip edge (steep, slightly concave, full height) ---
+  const sc1 = [peakX + 0.18 * ws, peakY + 0.06 * h];
+  const sc2 = [slipX - 0.12 * ws, slipY - 0.02 * h];
+  const slipAt = (t: number) =>
+    cubicPoint(peakX, peakY, sc1[0], sc1[1], sc2[0], sc2[1], slipX, slipY, t);
 
-  // Slip face: dense short near-vertical strokes down the lee side.
-  let slip = "";
-  for (let k = 0; k < d.slipN; k++) {
-    const t = 0.03 + (0.94 * k) / Math.max(1, d.slipN - 1);
-    const p = cubicPoint(peakX, peakY, sc1x, sc1y, sc2x, sc2y, slipX, slipY, t);
-    const len = d.h * 0.65 + rnd() * 3;
-    slip += `M ${p.x.toFixed(1)} ${p.y.toFixed(1)} L ${(p.x + d.o * len * 0.32).toFixed(1)} ${(p.y + len).toFixed(1)} `;
+  // --- crest stroke: upright curved line over peak + down the slip edge ---
+  const startA: [number, number] = [cx - ww * 0.1, by - h * 0.85];
+  const styles: [number, number][][] = [
+    // arc: bows above the peak
+    [[cx - ww * 0.02, by - h * 1.12], [cx + ws * 0.18, by - h * 0.95]],
+    // lean: drifts downwind
+    [[cx - ww * 0.01, by - h * 0.98], [cx + ws * 0.55, by - h * 0.45]],
+    // verticalish: steeper, tighter
+    [[cx - ww * 0.03, by - h * 1.05], [cx + ws * 0.1, by - h * 0.24]],
+    // sweep: wide, gentle over the top
+    [[cx - ww * 0.06, by - h * 1.0], [cx + ws * 0.36, by - h * 0.6]],
+  ];
+  const st = styles[d.style % styles.length];
+  const crest = cubic(startA, st[0], st[1], [slipX, slipY]);
+
+  // --- windward ripple contours (per-dune family; merge in troughs) ---
+  let ripples = "";
+  const fracs = [0.4, 0.55, 0.68, 0.8, 0.9].slice(0, Math.min(5, d.layer + 3));
+  for (const f of fracs) {
+    const s = rampAt(f);
+    const troughLen = 34 + rnd() * 55;
+    const ex = windX - troughLen;
+    const ey = by;
+    const c1 = [s.x - 0.45 * (s.x - windX), s.y + 0.18 * (by - s.y)];
+    const c2 = [ex + 0.6 * (windX - ex), by];
+    ripples += cubic([s.x, s.y], c1, c2, [ex, ey]) + " ";
   }
-  // Cross strokes in the slip face (front layers only) -> deeper shadow.
+
+  // --- slip-face shading: curved concave strokes, dense, cross on front ---
+  let slip = "";
   let cross = "";
-  if (d.layer >= 1) {
-    const n2 = Math.round(d.slipN * 0.7);
-    for (let k = 0; k < n2; k++) {
-      const t = 0.05 + (0.9 * k) / Math.max(1, n2 - 1);
-      const p = cubicPoint(peakX, peakY, sc1x, sc1y, sc2x, sc2y, slipX, slipY, t);
-      const len = d.h * 0.4;
-      cross += `M ${p.x.toFixed(1)} ${p.y.toFixed(1)} L ${(p.x - d.o * len * 0.5).toFixed(1)} ${(p.y + len).toFixed(1)} `;
+  const toe: [number, number] = [cx + ws * 0.9, by - h * 0.04];
+  for (let k = 0; k < d.slipN; k++) {
+    const t = k / Math.max(1, d.slipN - 1);
+    const s = slipAt(t);
+    const c1 = [s.x + 0.4 * (toe[0] - s.x), s.y + 0.22 * (toe[1] - s.y)];
+    const c2 = [toe[0] - 0.28 * (toe[0] - s.x), toe[1] + 0.1 * h];
+    slip += cubic([s.x, s.y], c1, c2, toe) + " ";
+    if (d.layer >= 1 || k % 2 === 0) {
+      const cc1 = [s.x + 0.6 * (toe[0] - s.x), s.y + 0.4 * (toe[1] - s.y)];
+      const cc2 = [toe[0] - 0.12 * (toe[0] - s.x), toe[1] - 0.06 * h];
+      cross += cubic([s.x, s.y], cc1, cc2, toe) + " ";
     }
   }
 
-  // Windward ripples: long horizontal contours trailing off the crest.
-  let ripples = "";
-  const fracs = [0.12, 0.24, 0.36, 0.48, 0.6, 0.72, 0.83, 0.92].slice(0, d.ripN);
-  for (const f of fracs) {
-    const s = cubicPoint(windX, windY, wc1x, wc1y, wc2x, wc2y, peakX, peakY, f);
-    const rl = d.ww + 80 + rnd() * 70;
-    const ex = s.x - d.o * rl;
-    const ey = d.footY + (rnd() * 2 - 1) * 5;
-    const c1x = s.x - d.o * 0.2 * rl;
-    const c1y = s.y;
-    const c2x = ex + d.o * 0.16 * rl;
-    const c2y = ey;
-    ripples += `M ${s.x.toFixed(1)} ${s.y.toFixed(1)} C ${c1x.toFixed(1)} ${c1y.toFixed(1)}, ${c2x.toFixed(1)} ${c2y.toFixed(1)}, ${ex.toFixed(1)} ${ey.toFixed(1)} `;
-  }
-
-  return { crest, slip, cross, ripples };
+  return { crest, ripples, slip, cross };
 }
 
-// --- assemble the field ---
-const layerPlan = [
-  { n: 6, footY: 46, h: [22, 30], ww: [120, 160], ws: [12, 18], slipN: [16, 20], ripN: 7, phase: 0, phaseOff: 0 },
-  { n: 5, footY: 82, h: [30, 42], ww: [150, 200], ws: [16, 22], slipN: [20, 24], ripN: 8, phase: 0.5, phaseOff: 1.2 },
-  { n: 4, footY: 122, h: [40, 54], ww: [190, 250], ws: [20, 28], slipN: [26, 32], ripN: 9, phase: 0.25, phaseOff: 2.4 },
+// --- assemble the field: 3 staggered layers, front can overlap ---
+const layers = [
+  { n: 5, by: 50, h: [20, 30], phase: 0, slipN: 18, layer: 0 },
+  { n: 5, by: 82, h: [28, 40], phase: 0.5, slipN: 24, layer: 1 },
+  { n: 5, by: 116, h: [34, 50], phase: 0.25, slipN: 30, layer: 2 },
 ];
 
-const range = (a: number, b: number) => a + rnd() * (b - a);
-const pick = (a: number, b: number) => Math.round(range(a, b));
-
 const dunes: Dune[] = [];
-for (let li = 0; li < layerPlan.length; li++) {
-  const L = layerPlan[li];
+for (const L of layers) {
   const spacing = W / L.n;
   for (let i = 0; i < L.n; i++) {
-    const baseX = (i + L.phase) * spacing;
-    const cx = Math.max(20, Math.min(W - 20, baseX + (rnd() * 2 - 1) * spacing * 0.12));
-    const o: 1 | -1 = Math.sin((cx / W) * Math.PI * 2 * 1.5 + L.phaseOff + 0.6) >= 0 ? 1 : -1;
-    const ridge = rnd() < 0.25;
-    const ww = range(L.ww[0], L.ww[1]) * (ridge ? 1.5 : 1);
-    const h = range(L.h[0], L.h[1]) * (ridge ? 0.7 : 1);
-    const ws = range(L.ws[0], L.ws[1]) * (ridge ? 0.8 : 1);
+    const cx = (i + L.phase) * spacing + (rnd() * 2 - 1) * spacing * 0.14;
+    const h = range(L.h[0], L.h[1]);
     dunes.push({
-      cx,
-      footY: L.footY,
+      cx: Math.max(60, Math.min(W - 60, cx)),
+      by: L.by,
       h,
-      ww,
-      ws,
-      o,
-      slipN: pick(L.slipN[0], L.slipN[1]),
-      ripN: L.ripN,
-      layer: li,
+      ww: h * 4.2 * range(0.9, 1.15),
+      ws: h * 1.55 * range(0.9, 1.1),
+      style: Math.floor(rnd() * 4),
+      slipN: L.slipN + Math.floor(rnd() * 3),
+      layer: L.layer,
     });
   }
 }
 dunes.sort((a, b) => a.layer - b.layer || a.cx - b.cx);
-
 const built = dunes.map((d) => ({ ...buildDune(d), layer: d.layer }));
 
-// Ground ripples below the front dune line (wind-blown sand surface).
+// Ground ripples below the front line.
 let ground = "";
 for (let g = 0; g < 3; g++) {
-  const gy = layerPlan[2].footY + 4 + g * 8;
+  const gy = layers[2].by + 5 + g * 8;
   let d = `M 0 ${gy.toFixed(1)} `;
   for (let s = 1; s <= 32; s++) {
     const x = (s / 32) * W;
-    const y = gy + Math.sin((x / W) * Math.PI * 2 * 2.6 + g * 1.1) * 3;
-    d += `L ${x.toFixed(1)} ${y.toFixed(1)} `;
+    d += `L ${x.toFixed(1)} ${(gy + Math.sin((x / W) * Math.PI * 2 * 2.6 + g * 1.1) * 2.5).toFixed(1)} `;
   }
   ground += d;
 }
@@ -175,20 +173,20 @@ for (let g = 0; g < 3; g++) {
     preserveAspectRatio="none"
     aria-hidden="true"
   >
-    <path d={ground} stroke-width="0.7" fill="none" stroke="currentColor" vector-effect="non-scaling-stroke" stroke-linecap="round" />
     {built.map((b) => (
       <g fill="none" stroke="currentColor">
-        <path d={b.ripples} stroke-width="0.85" vector-effect="non-scaling-stroke" stroke-linecap="round" />
-        <path d={b.cross} stroke-width="0.7" vector-effect="non-scaling-stroke" stroke-linecap="round" />
+        <path d={b.ripples} stroke-width="0.8" vector-effect="non-scaling-stroke" stroke-linecap="round" />
+        <path d={b.cross} stroke-width="0.75" vector-effect="non-scaling-stroke" stroke-linecap="round" />
         <path d={b.slip} stroke-width="1" vector-effect="non-scaling-stroke" stroke-linecap="round" />
         <path
           d={b.crest}
-          stroke-width={(1.2 + 0.18 * b.layer).toFixed(2)}
+          stroke-width={(1.5 + 0.2 * b.layer).toFixed(2)}
           vector-effect="non-scaling-stroke"
           stroke-linecap="round"
           stroke-linejoin="round"
         />
       </g>
     ))}
+    <path d={ground} fill="none" stroke="currentColor" stroke-width="0.7" vector-effect="non-scaling-stroke" stroke-linecap="round" />
   </svg>
 </div>

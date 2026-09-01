@@ -29,22 +29,27 @@ These came up during home-screen polish and still need decisions. Plain-language
   Single uniform stroke weight (~1–2px), no fills, no grays — pure line shading (pen-and-ink style).
 
 ### Recreation approach (BUILT — `src/components/Dunes.astro`)
-- **Crescent/sickle dune field**, procedurally generated, deterministic seeded RNG.
-- **One reusable `buildDune()` unit**: crest (gentle windward rise → peak → short steep slip
-  face), dense slip-face shadow (short near-vertical strokes + cross strokes, front layers),
-  long windward ripple contours trailing toward the next dune.
-- **12–16 dunes** across the width in **2–3 staggered layers** (back small/high/light → front
-  large/low/dark); layers peek through gaps; a few low wide ridge dunes mixed in (~25%).
-- **Orientation varies coherently**: slip-side direction follows a smooth function of
-  position (groups, not random flapping).
-- **Light/shadow contrast**: dark dense slip faces vs light sparse windward sides;
+- **Connected crescent-dune field** on the corrected anatomy: a long gentle CONVEX
+  windward ramp rising to the brink/crest, then a STEEP slip face descending the FULL
+  dune height (~30-34°, angle of repose) to the toe, then flat trough before the next
+  dune. Crest = where the two incline families meet at an obtuse angle.
+- **Three line families per layer** (drawn back→front):
+  1. Windward ripple contours — curvy lines flowing down each ramp, flattening into
+     troughs (per-dune families that merge). Light.
+  2. Slip-face shading — dense curved concave strokes down the full face + cross
+     strokes (front layers darker). Dark.
+  3. Crest stroke — a separate upright curved line over the peak and down the slip
+     edge, moderate variety (arc / lean / verticalish / sweep). Heavier.
+- **Wind direction same everywhere** (left→right; slip faces all right).
+- **2–3 staggered layers**, front overlaps/occludes, back peeks through troughs;
   ground ripple lines fill the bottom of the band.
-- Static SVG, zero runtime JS, `currentColor` + `non-scaling-stroke` (crisp, dark-mode safe).
-- **Consistent at any width** — just re-run the seeded generator with more/less width.
+- Static SVG, zero runtime JS, `currentColor` + `non-scaling-stroke`, deterministic
+  seeded RNG — consistent at any width.
 
 ### Tunables (all in `Dunes.astro`)
-- `layerPlan[]` — per layer: dune count (`n`), `footY`, height/width ranges, slip-face
-  density (`slipN`), ripple count, phase stagger, orientation phase.
-- `buildDune()` — crest curve shape, slip stroke length/fan, ripple length/curve.
+- `layers[]` — dune count (`n`), base level (`by`), height range, phase stagger, slip
+  density (`slipN`).
+- `buildDune()` — crest stroke styles array, ripple count/fractions, slip stroke
+  geometry, windward ramp shape.
 - Seed (`mulberry32(seed)`) changes the whole field deterministically.
 - Band height: `--dunes-h` in `global.css`.
