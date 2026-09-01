@@ -1,0 +1,156 @@
+---
+// SCRATCH PAGE — font comparison for the display type of jasperdeen.com.
+// Renders the hero name in every shortlisted display serif on the real
+// paper surface. Delete this page (and its file) once a winner is chosen.
+const fonts = [
+  { name: "Fraunces", family: "Fraunces", weight: 650, note: "previous pick · soft Victorian, opsz 144" },
+  { name: "Instrument Serif", family: "Instrument Serif", weight: 400, note: "CURRENT · engraved hairlines" },
+  { name: "Newsreader", family: "Newsreader", weight: 600, note: "literary newspaper, opsz 72" },
+  { name: "Bodoni Moda", family: "Bodoni Moda", weight: 600, note: "didone fashion, opsz 96" },
+  { name: "Playfair Display", family: "Playfair Display", weight: 600, note: "high-contrast editorial" },
+  { name: "Cormorant Garamond", family: "Cormorant Garamond", weight: 600, note: "elegant garamond" },
+  { name: "EB Garamond", family: "EB Garamond", weight: 500, note: "classic book face" },
+  { name: "Spectral", family: "Spectral", weight: 500, note: "literary, wide" },
+  { name: "Literata", family: "Literata", weight: 500, note: "screen-optimized, opsz 72" },
+  { name: "Source Serif 4", family: "Source Serif 4", weight: 600, note: "modern text serif, opsz 60" },
+  { name: "Lora", family: "Lora", weight: 500, note: "warm, friendly" },
+  { name: "Vollkorn", family: "Vollkorn", weight: 500, note: "organic terminals" },
+  { name: "Crimson Pro", family: "Crimson Pro", weight: 500, note: "renaissance revival" },
+  { name: "Libre Baskerville", family: "Libre Baskerville", weight: 400, note: "bookish" },
+  { name: "Cardo", family: "Cardo", weight: 400, note: "classical, scholarly" },
+  { name: "Old Standard TT", family: "Old Standard TT", weight: 400, note: "19th-century" },
+  { name: "Goudy Bookletter 1911", family: "Goudy Bookletter 1911", weight: 400, note: "hand-cut warmth" },
+  { name: "Sorts Mill Goudy", family: "Sorts Mill Goudy", weight: 400, note: "goudy revival" },
+  { name: "Mate", family: "Mate", weight: 400, note: "compact, sturdy" },
+  { name: "Marcellus", family: "Marcellus", weight: 400, note: "austere roman caps" },
+  { name: "Prata", family: "Prata", weight: 400, note: "grand didone" },
+  { name: "Cinzel", family: "Cinzel", weight: 500, note: "inscriptional caps" },
+  { name: "Forum", family: "Forum", weight: 400, note: "trajan-ish" },
+  { name: "Abril Fatface", family: "Abril Fatface", weight: 400, note: "heavy display" },
+  { name: "DM Serif Display", family: "DM Serif Display", weight: 400, note: "rounded, friendly" },
+  { name: "Libre Caslon Display", family: "Libre Caslon Display", weight: 400, note: "caslon warmth" },
+  { name: "Zodiak", family: "Zodiak", weight: 400, note: "itf didone · fontshare" },
+];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Display font options — jasperdeen.com</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Bodoni+Moda:opsz,wght@96,600&family=Cardo&family=Cinzel:wght@500&family=Cormorant+Garamond:wght@600&family=Crimson+Pro:wght@500&family=DM+Serif+Display&family=EB+Garamond:wght@500&family=Forum&family=Fraunces:opsz,wght@144,650&family=Goudy+Bookletter+1911&family=Instrument+Serif&family=Libre+Baskerville&family=Libre+Caslon+Display&family=Literata:opsz,wght@72,500&family=Lora:wght@500&family=Marcellus&family=Mate&family=Newsreader:opsz,wght@72,600&family=Old+Standard+TT&family=Playfair+Display:wght@600&family=Prata&family=Source+Serif+4:opsz,wght@60,600&family=Sorts+Mill+Goudy&family=Spectral:wght@500&family=Vollkorn:wght@500&family=Zodiak&display=swap"
+    />
+    <style>
+      :root {
+        --surface: #fbfaf7;
+        --ink: #1b1a17;
+        --muted: #6f6a61;
+        --line: #e8e4db;
+        --line-strong: #a8a198;
+        --hairline: color-mix(in oklab, var(--ink) 12%, var(--surface));
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --surface: #100f0d;
+          --ink: #f4f1ea;
+          --muted: #9d978c;
+          --line: #292620;
+          --line-strong: #57514a;
+          --hairline: color-mix(in oklab, var(--ink) 16%, var(--surface));
+        }
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--surface);
+        color: var(--ink);
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        text-rendering: optimizeLegibility;
+      }
+      header {
+        max-width: 72rem;
+        margin-inline: auto;
+        padding: 2.5rem clamp(1.25rem, 4vw, 3rem) 1.5rem;
+        border-bottom: 1px solid var(--hairline);
+      }
+      h1 { margin: 0 0 0.35rem; font-size: 1.6rem; font-weight: 650; letter-spacing: -0.01em; }
+      .sub { margin: 0; color: var(--muted); font-size: 0.95rem; line-height: 1.5; max-width: 46rem; }
+      .grid {
+        max-width: 72rem;
+        margin-inline: auto;
+        padding: 2rem clamp(1.25rem, 4vw, 3rem) 4rem;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(21rem, 1fr));
+        gap: 1.25rem;
+      }
+      .card {
+        border: 1px solid var(--hairline);
+        border-radius: 0.75rem;
+        padding: 1.5rem 1.5rem 1.25rem;
+        background: var(--surface);
+      }
+      .card .name {
+        font-size: clamp(2.1rem, 3.2vw, 3.2rem);
+        line-height: 1.05;
+        letter-spacing: -0.02em;
+        text-align: center;
+        white-space: nowrap;
+        margin: 0 0 1.25rem;
+        font-optical-sizing: auto;
+      }
+      .card .q {
+        font-size: 1.15rem;
+        letter-spacing: -0.005em;
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        color: var(--muted);
+        margin: 0 0 1rem;
+        font-optical-sizing: auto;
+      }
+      .card figcaption {
+        border-top: 1px solid var(--hairline);
+        padding-top: 0.75rem;
+        font-size: 0.82rem;
+        color: var(--muted);
+        text-align: center;
+      }
+      .card figcaption strong { color: var(--ink); font-weight: 600; }
+      .current { border-color: var(--line-strong); box-shadow: 0 0 0 1px var(--line-strong); }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Display font options — “Jasper Deen”</h1>
+      <p class="sub">
+        Every candidate rendered on the real paper surface at hero-adjacent size,
+        plus the question line underneath. Weights match what the site would load
+        (single-weight faces at 400, variable faces at their display cut).
+      </p>
+    </header>
+    <main class="grid">
+      {
+        fonts.map((f, i) => (
+          <figure class:list={["card", { current: f.note.startsWith("CURRENT") }]}>
+            <div class="name" style={`font-family:'${f.family}', serif; font-weight:${f.weight}`}>
+              Jasper Deen
+            </div>
+            <div class="q" style={`font-family:'${f.family}', serif; font-weight:${f.weight}`}>
+              What&rsquo;s going on here?
+            </div>
+            <figcaption>
+              <strong>{f.name}</strong> &middot; w{f.weight} &middot; {f.note}
+            </figcaption>
+          </figure>
+        ))
+      }
+    </main>
+  </body>
+</html>
