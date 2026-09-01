@@ -433,17 +433,31 @@ html.js-scrub .scroll-indicator.is-hidden {
    The fly-up is a BIG sweep: each bubble starts far below its resting
    spot (nearly half a viewport) and swoops up into place quickly while
    fading in, so it reads as flying in from the bottom of the screen
-   rather than a small nudge. With JS off or prefers-reduced-motion, no
-   class is added and all text is simply visible. */
+   rather than a small nudge. With JS off, no class is added and all text
+   is simply visible.
+
+   Reveal is progressive regardless of motion preference (so the first
+   bubble still waits for scroll rather than showing immediately), but
+   the MOTION is toned down for reduced-motion users (see below). */
 .message {
   opacity: 1;
 }
 
+/* Hide by default under js-scrub. This sits outside the reduced-motion
+   media query so reduced-motion users still get the progressive,
+   scroll-triggered reveal (content isn't all dumped at once). */
+html.js-scrub .message {
+  opacity: 0;
+}
+
+html.js-scrub .message.revealed {
+  opacity: 1;
+}
+
 @media (prefers-reduced-motion: no-preference) {
+  /* Full-motion entrance: start roughly half a viewport below, barely
+     scaled down — a big dynamic swoop from the bottom of the screen. */
   html.js-scrub .message {
-    opacity: 0;
-    /* Start roughly half a viewport below, barely scaled down — a big
-       dynamic entrance from the bottom of the screen. */
     transform: translateY(44vh) scale(0.96);
     transition:
       opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
@@ -452,7 +466,6 @@ html.js-scrub .scroll-indicator.is-hidden {
   }
 
   html.js-scrub .message.revealed {
-    opacity: 1;
     transform: translateY(0) scale(1);
   }
 
@@ -463,5 +476,19 @@ html.js-scrub .scroll-indicator.is-hidden {
     transition:
       opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
       transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+
+/* Reduced motion: keep the progressive reveal but drop the big swoop —
+   a gentle fade (small, subtle translate) so reduced-motion (often on
+   mobile by default) still gets the intended reading flow without the
+   large motion. */
+@media (prefers-reduced-motion: reduce) {
+  html.js-scrub .message {
+    transition: opacity 0.5s ease;
+  }
+
+  html.js-scrub .message.revealed {
+    opacity: 1;
   }
 }

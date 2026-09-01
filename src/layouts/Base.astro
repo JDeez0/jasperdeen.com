@@ -49,16 +49,13 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
       // runway has been consumed, stacking below the pinned first bubble.
       // Each message demands REVEAL_STEP px of extra scroll (super-staggered),
       // and reversing scroll unwinds them last-in-first-out. When you stop
-      // scrolling, nothing changes. With JS off or prefers-reduced-motion,
-      // this is a normal page with all text visible.
-      const prefersReducedMotion = window.matchMedia(
-        "(prefers-reduced-motion: reduce)",
-      ).matches;
-
+      // scrolling, nothing changes. With JS off this is a normal page with
+      // all text visible; reduced-motion still runs the progressive reveal
+      // but with a gentle fade (see global.css).
       const messages = Array.from(document.querySelectorAll(".message"));
       const chat = document.querySelector(".chat");
 
-      if (!prefersReducedMotion && messages.length > 0 && chat) {
+      if (messages.length > 0 && chat) {
         document.documentElement.classList.add("js-scrub");
 
         // Distance model (all in px of absolute page scroll):
