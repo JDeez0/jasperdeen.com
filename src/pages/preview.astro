@@ -82,12 +82,12 @@ const fonts = [
       h1 { margin: 0 0 0.35rem; font-size: 1.6rem; font-weight: 650; letter-spacing: -0.01em; }
       .sub { margin: 0; color: var(--muted); font-size: 0.95rem; line-height: 1.5; max-width: 46rem; }
       .grid {
-        max-width: 72rem;
+        max-width: 84rem;
         margin-inline: auto;
         padding: 2rem clamp(1.25rem, 4vw, 3rem) 4rem;
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(21rem, 1fr));
-        gap: 1.25rem;
+        grid-template-columns: repeat(auto-fill, minmax(26rem, 1fr));
+        gap: 1.5rem;
       }
       .card {
         border: 1px solid var(--hairline);
@@ -96,13 +96,16 @@ const fonts = [
         background: var(--surface);
       }
       .card .name {
-        font-size: clamp(2.1rem, 3.2vw, 3.2rem);
-        line-height: 1.05;
+        font-size: clamp(3.2rem, 6.5vw, 6.5rem);
+        line-height: 1.1;
         letter-spacing: -0.02em;
         text-align: center;
         white-space: nowrap;
-        margin: 0 0 1.25rem;
+        margin: 0 0 1.5rem;
         font-optical-sizing: auto;
+        /* Outline rendering, matching the real hero treatment */
+        color: transparent;
+        -webkit-text-stroke: 1.25px var(--ink);
       }
       .card .q {
         font-size: 1.15rem;
@@ -128,11 +131,12 @@ const fonts = [
   </head>
   <body>
     <header>
-      <h1>Display font options — “Jasper Deen”</h1>
+      <h1>Display font options — “Jasper Deen” <span style="font-size:0.8em;color:var(--muted);font-weight:500">(outline)</span></h1>
       <p class="sub">
-        Every candidate rendered on the real paper surface at hero-adjacent size,
-        plus the question line underneath. Weights match what the site would load
-        (single-weight faces at 400, variable faces at their display cut).
+        The hero name is now rendered <strong>outlined</strong> — transparent fill,
+        uniform 1.25px ink stroke via <code>-webkit-text-stroke</code> — the way the real
+        hero will display. The question line below stays filled, as on the site.
+        Cards are ~2× larger than before for real close-up judgment.
       </p>
     </header>
     <main class="grid">

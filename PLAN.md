@@ -30,13 +30,23 @@ These came up during home-screen polish and still need decisions. Plain-language
 
 ### Recreation approach (BUILT — `src/components/Dunes.astro`)
 - Procedurally generated **inline SVG** (rendered once at build time → static, zero runtime JS).
-- Smooth crest from Catmull-Rom → cubic bezier anchors (~6 rolling peaks).
-- **Single-direction** diagonal (45°) hatching, clipped inside the dune bodies via `<clipPath>`.
+- **Physics-first dune model**: layered receding ridges, each with a firm **crest** line,
+  a dark **slip face** right below the crest, and a lighter **windward** face toward the
+  next ridge.
+- **Curved, surface-following shading**: every hatch line is an offset + laterally-sheared
+  copy of the crest curve, so lines follow the dune's curvature and stay parallel/connected
+  to the crest (no disconnected strokes).
+- **Multiple directions**: horizontal contours + down-right windward diag + steep down-left
+  slip diag + sparse opposite lean in the front shadows.
+- **Graded density**: darkest under each crest, fading to light toward the next ridge;
+  front dunes darker than back (atmospheric depth).
 - `currentColor` ink, `vector-effect: non-scaling-stroke` → crisp, adapts to dark mode.
-- Tunables in the component: crest anchor points, hatch spacing (`step`), stroke widths.
-- Placed full-bleed at the top of `.hero` (right below the header); height via `--dunes-h`.
+- Calibrated against the reference: ~24% ink, 0→42%→12% vertical gradient, multi-direction
+  angle histogram.
 
-### Decisions made (dune art)
-- Simplified per user: single hatching direction, not a 1:1 recreation of the reference.
-- Color = current ink (`--ink`); static (no entrance animation for now).
-- ~6 crests across the full width, airy line weight, sky ≈ top third of the band.
+### Tunables (all in `Dunes.astro` + `global.css`)
+- Crest geometry: `layerDefs[].base/amp/f1/f2/ph1/ph2` (height, amplitude, waviness).
+- Shading density: `sC` (contours), `sH` (windward diag), `sCore` (slip), `sCross` (cross).
+- Slip-face extent: `core` = [from,to] fractions of the strip height.
+- Lean/direction: `lxH`, `lxCore` (down-right / down-left shear).
+- Band height: `--dunes-h` in `global.css`.

@@ -19,7 +19,7 @@
   --line: #e8e4db;
   --line-strong: #a8a198;
   /* Height of the dune line-art band across the top of the home page. */
-  --dunes-h: clamp(64px, 12vw, 148px);
+  --dunes-h: clamp(88px, 14vw, 176px);
   /* Height of the sticky-free top header (brand 2.75rem + vertical padding
      + 1px rule). The hero is offset by this so header + hero = one viewport
      and the static answer stays fully on the first screen. */
