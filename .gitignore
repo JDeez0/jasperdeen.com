@@ -16,4 +16,4 @@ pnpm-debug.log*
 .env.*
 
 # macOS
-.DS_Store
+.DS_Storepublic/dune-lab.html
