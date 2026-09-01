@@ -29,27 +29,23 @@ These came up during home-screen polish and still need decisions. Plain-language
   Single uniform stroke weight (~1–2px), no fills, no grays — pure line shading (pen-and-ink style).
 
 ### Recreation approach (BUILT — `src/components/Dunes.astro`)
-- **Connected crescent-dune field** on the corrected anatomy: a long gentle CONVEX
-  windward ramp rising to the brink/crest, then a STEEP slip face descending the FULL
-  dune height (~30-34°, angle of repose) to the toe, then flat trough before the next
-  dune. Crest = where the two incline families meet at an obtuse angle.
-- **Three line families per layer** (drawn back→front):
-  1. Windward ripple contours — curvy lines flowing down each ramp, flattening into
-     troughs (per-dune families that merge). Light.
-  2. Slip-face shading — dense curved concave strokes down the full face + cross
-     strokes (front layers darker). Dark.
-  3. Crest stroke — a separate upright curved line over the peak and down the slip
-     edge, moderate variety (arc / lean / verticalish / sweep). Heavier.
-- **Wind direction same everywhere** (left→right; slip faces all right).
-- **2–3 staggered layers**, front overlaps/occludes, back peeks through troughs;
-  ground ripple lines fill the bottom of the band.
-- Static SVG, zero runtime JS, `currentColor` + `non-scaling-stroke`, deterministic
-  seeded RNG — consistent at any width.
+- **Technique (from visual analysis of all 3 reference examples)**: every surface is
+  drawn with long flowing parallel contour lines; **value = line spacing**. Lit windward
+  faces stay nearly white (few lines, wide spacing); shadowed slip faces carry a
+  **tapered dark ribbon** of lines offset from the brink that tighten mid-face until they
+  merge (front layers read near-solid) and thin to single lines at the ribbon tips.
+- **Anatomy**: long gentle convex windward ramp (left, lit) → crest brink → steep slip
+  face (right, shadowed) descending the full height to the toe. Wind/light one direction.
+- **Brink line**: crisp fine boundary between white and shadow (slightly heavier) —
+  no decorative crest strokes (dropped per example-one grammar).
+- **Depth**: 3 staggered layers — back fine skyline (light), mid, front boldest with
+  most masses (7) and merging ribbons. Front masses overlap/occlude.
+- No engraving/scale texture (user declined). Static SVG, zero JS, currentColor,
+  non-scaling stroke, deterministic seeded RNG — consistent at any width.
 
 ### Tunables (all in `Dunes.astro`)
-- `layers[]` — dune count (`n`), base level (`by`), height range, phase stagger, slip
-  density (`slipN`).
-- `buildDune()` — crest stroke styles array, ripple count/fractions, slip stroke
-  geometry, windward ramp shape.
-- Seed (`mulberry32(seed)`) changes the whole field deterministically.
+- `layers[]` — mass count, base level `by`, height range, phase stagger,
+  `ribbonW` (shadow ribbon width), `sMin/sMax` (ribbon line spacing → darkness),
+  `windN` (lit-face line count), `lw` (line weight).
+- Seed changes the whole field deterministically.
 - Band height: `--dunes-h` in `global.css`.
