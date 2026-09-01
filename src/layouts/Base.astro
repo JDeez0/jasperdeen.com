@@ -41,46 +41,95 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
     </div>
 
     <script>
-      // Timed spring pop, triggered by scroll position. Each frame we read
-      // each message's live viewport position and toggle a .revealed class
-      // (see global.css), whose CSS transition flies the bubble up + fades
-      // it in over ~0.45s with an iMessage-style overshoot — "scroll slowly,
-      // text flies up quickly." Scrolling back out reverses it (fly-out).
-      // State is a pure function of position, so every pass is identical.
-      //
-      // With JS off or prefers-reduced-motion set, nothing runs and all
-      // text is simply visible.
+      // Pinned conversation, revealed purely by scroll progress — no timers.
+      // The chat section (.chat) is a tall RUNWAY. Its contents (.pin) are
+      // sticky to the viewport top, so once "Building a space…" arrives at
+      // the top it STAYS there and the page keeps accepting scroll while the
+      // conversation doesn't move. New messages reveal from how far the
+      // runway has been consumed, stacking below the pinned first bubble.
+      // Each message demands REVEAL_STEP px of extra scroll (super-staggered),
+      // and reversing scroll unwinds them last-in-first-out. When you stop
+      // scrolling, nothing changes. With JS off or prefers-reduced-motion,
+      // this is a normal page with all text visible.
       const prefersReducedMotion = window.matchMedia(
         "(prefers-reduced-motion: reduce)",
       ).matches;
 
       const messages = Array.from(document.querySelectorAll(".message"));
+      const chat = document.querySelector(".chat");
 
-      if (!prefersReducedMotion && messages.length > 0) {
+      if (!prefersReducedMotion && messages.length > 0 && chat) {
         document.documentElement.classList.add("js-scrub");
 
-        // Position-driven state machine. Each frame we compute, from the
-        // message's LIVE position, whether it should be revealed:
-        //   fly IN  once its top rises past a line ~160px above the viewport
-        //           bottom (with a little hysteresis so it can't thrash),
-        //   fly OUT once it falls back below ~100px above the bottom, or
-        //           fully leaves the top.
-        // The actual motion is a CSS transition (see global.css) that pops
-        // the bubble up in ~0.45s regardless of scroll speed — "scroll slowly,
-        // text flies up quickly." State is a pure function of position, so
-        // every pass is identical and scrolling up cleanly reverses it.
+        // Distance model (all in px of absolute page scroll):
+        //   The reveals start when the QUESTION reaches the TOP THIRD of the
+        //   viewport (questionDoc − vh/3), not when it pins at the very top.
+        //   The FIRST bubble flies in LEAD px after that; every message after
+        //   waits STEP more than the one before it. No timers: distance IS
+        //   scroll amount.
+        //   Threshold for message i:  anchor + LEAD + i × STEP
+        const LEAD = 60;   // a little extra before the first bubble
+        const STEP = 200;  // scroll distance between messages after the first
+        const HYST = 60;   // unwind happens HYST px before the entry point
+        const TRAIL = 260; // runway left after the last reveal
+        const n = messages.length;
+        const vh = window.innerHeight || document.documentElement.clientHeight;
+        const arrow = document.querySelector(".scroll-indicator");
+
+        // Absolute scroll position where the question sits at the TOP TWO-
+        // FIFTHS (vh × 0.4) of the viewport — slightly earlier than the
+        // previous top-third. That's when the conversation begins revealing.
+        //
+        // Must be measured AFTER layout is settled. On a COLD first load the
+        // script can run before web fonts / async CSS are applied, so a
+        // one-time read of question.getBoundingClientRect() yields a wrong
+        // (too-large) anchor and reveals fire late (only when the question
+        // reaches the very top). Refresh fixes it because fonts/CSS are
+        // cached. We therefore re-measure once fonts are ready and again on
+        // window load, guarded so we only trust measurements taken near the
+        // top of the page (after the sticky pin engages, the question's
+        // document offset stops being scroll-invariant).
+        const question = document.querySelector(".question");
+        const measureAnchor = () => {
+          if (!question) return vh * 0.6;
+          return question.getBoundingClientRect().top + (window.scrollY || 0) - vh * 0.4;
+        };
+        const refreshAnchor = () => {
+          const early = (window.scrollY || 0) < 300; // don't re-measure mid-scroll
+          requestAnimationFrame(() => {
+            if (!early) return;
+            const a = measureAnchor();
+            if (Math.abs(a - anchor) > 2) {
+              anchor = a;
+              chat.style.height = anchor + LEAD + n * STEP + TRAIL + "px";
+            }
+          });
+        };
+        let anchor = measureAnchor();
+        if (document.fonts && document.fonts.ready) {
+          document.fonts.ready.then(refreshAnchor).catch(() => {});
+        }
+        window.addEventListener("load", refreshAnchor);
+
+        // Build the runway so the last message's threshold is reachable.
+        chat.style.height = anchor + LEAD + n * STEP + TRAIL + "px";
+
         const apply = () => {
-          const vh = window.innerHeight || document.documentElement.clientHeight;
-          for (const el of messages) {
-            const row = el.parentElement
-              ? el.parentElement.getBoundingClientRect()
-              : el.getBoundingClientRect();
-            const inBand = row.top < vh - 160 && row.bottom > 40;
-            const outBand = row.top > vh - 100 || row.bottom < 0;
-            if (!el.__shown && inBand) {
+          const scrollY = window.pageYOffset || window.scrollY || 0;
+          // The fixed arrow fades out as the user nears the end of the page.
+          if (arrow) {
+            const nearBottom =
+              scrollY >= ((document.documentElement || document.body).scrollHeight - vh - 120);
+            arrow.classList.toggle("is-hidden", nearBottom);
+          }
+          for (let i = 0; i < n; i++) {
+            const el = messages[i];
+            const inAt = anchor + LEAD + i * STEP;
+            const outAt = inAt - HYST;
+            if (!el.__shown && scrollY >= inAt) {
               el.__shown = true;
               el.classList.add("revealed");
-            } else if (el.__shown && outBand) {
+            } else if (el.__shown && scrollY < outAt) {
               el.__shown = false;
               el.classList.remove("revealed");
             }

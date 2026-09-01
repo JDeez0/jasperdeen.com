@@ -16,4 +16,10 @@ pnpm-debug.log*
 .env.*
 
 # macOS
-.DS_Storepublic/dune-lab.html
+.DS_Store
+
+# scratch / experiment files (not for the live site)
+dune-generator.html
+dune-*.html
+public/dune-*.html
+public/*.png

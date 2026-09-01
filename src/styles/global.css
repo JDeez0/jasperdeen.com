@@ -1,11 +1,58 @@
-@import "tailwindcss";
-@import "@fontsource/instrument-serif";
+@import "@fontsource/libre-caslon-display";
 
-@theme {
-  /* Instrument Serif: an engraved, high-contrast display serif whose thin
-     strokes read as hairlines — the typographic echo of the sheet's 1px
-     linework. Single 400 weight by design; no faux-bold anywhere. */
-  --font-display: "Instrument Serif", ui-serif, Georgia, "Times New Roman", serif;
+/* Tailwind was removed from this project (its Vite/PostCSS toolchain had
+   fragile HMR and build resolution issues; the site uses only custom CSS
+   and no Tailwind utility classes). This hand-written preflight reset
+   preserves the appearance the Tailwind v4 "preflight" used to provide:
+   border-box sizing, no default margin/padding, no list styles, and
+   consistent, inheriting typography. */
+*, ::before, ::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html, body {
+  height: 100%;
+}
+
+img, svg, video, canvas, audio, iframe, embed, object {
+  display: block;
+  vertical-align: middle;
+  max-width: 100%;
+}
+
+ul, ol {
+  list-style: none;
+  padding: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: inherit;
+}
+
+button, input, select, textarea {
+  font: inherit;
+  color: inherit;
+  background: inherit;
+}
+
+/* Type tokens (formerly in Tailwind's @theme — kept here as plain custom
+   properties since nothing references Tailwind-generated utilities). */
+:root {
+  /* Libre Caslon Display: a Caslon cut at display optical size — rounder and
+     warmer than Instrument Serif, and it renders clean as a hollow outline
+     (Instrument's hairlines bleed). Single 400 weight by design; no faux-bold
+     anywhere. The hero name is outlined + per-letter stretched ×1.08 (see
+     .display below); other display uses stay filled at natural width. */
+  --font-display: "Libre Caslon Display", ui-serif, Georgia, "Times New Roman", serif;
+  /* Display name scale: 12vw so it owns more of the viewport at normal
+     widths (10vw left it looking timid) and a 4.25rem floor so it doesn't
+     collapse on thin screens; cap keeps it inside the sheet's rails. */
+  --display-scale: clamp(3.75rem, 10.5vw, 8.5rem);
   --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
@@ -19,7 +66,7 @@
   --line: #e8e4db;
   --line-strong: #a8a198;
   /* Height of the dune line-art band across the top of the home page. */
-  --dunes-h: clamp(88px, 14vw, 176px);
+  --dunes-h: clamp(72px, 11.5vw, 144px);
   /* Height of the sticky-free top header (brand 2.75rem + vertical padding
      + 1px rule). The hero is offset by this so header + hero = one viewport
      and the static answer stays fully on the first screen. */
@@ -55,7 +102,7 @@ body {
    the footer. These thin, reduced-contrast rules anchor the composition so
    left-aligned text and a centered display name both read as deliberate. */
 .sheet {
-  max-width: 64rem;
+  max-width: 56rem;
   margin-inline: auto;
   border-inline: 1px solid var(--hairline);
   min-height: 100dvh;
@@ -134,13 +181,21 @@ body {
    bottom of that first screen. The dune line-art band lives at the very
    top of the hero, right below the header. */
 .hero {
-  min-height: calc(100vh - var(--header-h));
-  min-height: calc(100svh - var(--header-h));
+  /* "What's going on here?" rests so its text BASELINE lines up with the
+     bottom of the scroll indicator. Measured headlessly to be exact (font
+     ascent/descent + half-leading accounted for): baseline = arrow bottom.
+     The 4.1rem offset is the vertical-tuning dial. */
+  min-height: calc(100svh - var(--header-h) - 4.5rem);
   display: flex;
   flex-direction: column;
   padding-top: 0;
-  padding-bottom: 2.5rem;
-  border-bottom: 1px solid var(--hairline);
+  /* Lifts the question + indicator off the very edge of the fold — the
+     line reads as intentional with breathing room below it. Also lifts
+     the intro by the same amount (the auto space above it shrinks). */
+  padding-bottom: 1.5rem;
+  position: relative;
+  /* No rule under the hero: the answer bubble is part of the dialogue
+     flow now, so the hero hands off seamlessly into the chat section. */
 }
 
 /* Dune band: full-bleed to the sheet rails (cancels the page padding),
@@ -149,7 +204,14 @@ body {
 .dunes {
   height: var(--dunes-h);
   margin-inline: calc(clamp(1.25rem, 4vw, 3rem) * -1);
-  color: var(--ink);
+  /* Pull the band up toward the header rule; the svg compresses with the
+     shorter band (preserveAspectRatio: none), non-scaling strokes keep
+     the linework at 1px. */
+  margin-top: -1.25rem;
+  /* Soft grey instead of full-ink: the band recedes behind the name
+     instead of competing with it. 55% ink into the surface — theme-aware,
+     so it greys correctly in dark mode too. */
+  color: color-mix(in oklab, var(--ink) 42%, var(--surface));
 }
 
 .dunes svg {
@@ -159,46 +221,157 @@ body {
 }
 
 .hero .display {
-  margin-top: clamp(1.5rem, 4vh, 3rem);
+  /* Horizontal centering only — the vertical position is owned by
+     .name-block's viewport-centering margin. */
+  margin-top: 0;
 }
 
 .hero .hero-answer {
-  margin-top: auto;
+  margin-top: 0;
 }
 
+/* ---------- Pinned conversation ----------
+   The chat section is a TALL RUNWAY (its height is set in JS to
+   viewport + enough scroll depth for every message). Its contents live in
+   .pin, which is position: sticky; top: 0 — so once "Building a space…"
+   arrives at the top it STAYS there, and the page keeps accepting scroll
+   while the conversation doesn't move. New messages reveal from scroll
+   progress (JS), stacking below the pinned first bubble.
+   Without JS / prefers-reduced-motion this is just a normal scrolling
+   block with all text visible. */
+.chat {
+  padding-bottom: 4rem;
+  position: relative;
+}
+
+.pin {
+  /* Sticky only when the reveal script is active. */
+}
+
+html.js-scrub .pin {
+  position: sticky;
+  /* "A little bit of space" above the pinned question: the question sits at
+     the top of .pin, so this keeps it a short distance below the viewport
+     top, and the page effectively stops scrolling there. */
+  top: 1.5rem;
+  min-height: 100vh;
+}
+/* ---------- Display type ----------
+   The hero name is the outlined treatment (transparent fill + 1px ink
+   stroke) with a ×1.08 per-letter horizontal stretch for presence — except
+   the "D", which stays unstretched: a deliberate quirk, one glyph at its
+   natural Caslon width. Letters are split into spans at build time
+   (index.astro), grouped into word wrappers so the name can still wrap
+   between words on narrow screens. +1% tracking keeps the outlines apart. */
 .display {
   margin: 0;
   font-family: var(--font-display);
-  font-size: clamp(3.5rem, 10vw, 9.5rem);
+  font-size: var(--display-scale);
   font-weight: 400;
   line-height: 1.04;
-  letter-spacing: -0.02em;
+  letter-spacing: 0.01em;
   text-align: center;
-  text-wrap: balance;
+  color: transparent;
+  -webkit-text-stroke: 1px var(--ink);
+}
+
+.display .word {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.display .ch {
+  display: inline-block;
+  transform: scaleX(1.08);
+  transform-origin: center;
+}
+
+/* The unstretched D */
+.display .word:first-of-type + .word .ch:first-child,
+.display .ch.d {
+  transform: none;
 }
 
 .display--small {
   text-align: left;
   font-size: clamp(2.5rem, 6vw, 4rem);
+  /* Smaller display lines (page titles, e.g. "Blog") stay filled — the
+     outline treatment belongs to the hero alone. */
+  color: var(--ink);
+  -webkit-text-stroke: 0;
+  letter-spacing: -0.02em;
+}
+
+.display--small .ch {
+  transform: none;
+}
+
+/* The name block shrink-wraps to the display name's width, so the caption
+   can sit directly under it, left-aligned to the name's left edge, while
+   the block itself stays centered in the hero. */
+/* The name lockup is centered vertically in the VIEWPORT, in flow:
+   its top margin = distance from dune-band bottom to (viewport midpoint
+   minus half the lockup height). The lockup is ~1.13 × --display-scale
+   tall (display line 1.04× + caption 0.21× − 0.12× caption pull), so
+   half is 0.565 ×. This keeps the name + caption at the true vertical
+   center of the first screen at every size, and because it stays in
+   flow, the intro stack below can never collide with it — it just
+   follows naturally. */
+.name-block {
+  width: fit-content;
+  margin-inline: auto;
+  /* Center between the header's bottom rule and the screen bottom, not
+     the viewport extremes: the midpoint of that band is at
+     --header-h + (100svh − --header-h)/2 = 50svh + --header-h/2 from the
+     viewport top, i.e. 50svh − --header-h/2 from the hero's top edge. */
+  margin-top: calc(
+    50svh - var(--header-h) / 2 - var(--dunes-h) - 0.565 * var(--display-scale)
+  );
 }
 
 .caption {
-  margin: 1.5rem auto 0;
-  max-width: 34rem;
-  text-align: center;
-  font-size: clamp(1.15rem, 2.6vw, 1.45rem);
+  /* TUCKED STATE (wide viewports): the caption scales WITH the name — 15%
+     of the display size — so its width and the descender space under
+     "Deen" stay proportional. Right-justified, with its BASELINE sitting
+     at the bottom of the p descender of "Jasper" (i.e. lower than the
+     descender tips of its own letters). The -0.12 multiplier is the
+     vertical-tuning knob. Font-size and margin transition so the handoff
+     to the separate-line state eases instead of snapping. */
+  font-size: clamp(0.9375rem, calc(var(--display-scale) * 0.15), 1.6rem);
+  line-height: 1.4;
+  margin: calc(-0.09 * var(--display-scale)) 0 0;
+  text-align: right;
   color: var(--muted);
+  transition: font-size 0.6s ease, margin 0.6s ease;
+}
+
+/* SEPARATE-LINE STATE (thin viewports / phones): kicks in before the
+   name's proportional descender space gets too shallow for the caption —
+   the 640px threshold is above the width where the tucked caption starts
+   grazing the p while narrowing. Below it the caption stops shrinking
+   with the name and drops below it as its own centered line, at full
+   body size, pulled in close to the name. */
+@media (max-width: 639px) {
+  .caption {
+    font-size: 1.0625rem;
+    line-height: 1.65;
+    margin: 0.35rem 0 0;
+    text-align: center;
+  }
 }
 
 .intro {
-  margin: 1.75rem 0 0;
+  /* Sits below the name lockup with generous air above it, pushing the
+     intro down toward the question line — not jammed under the caption.
+     The clamp scales with viewport height. */
+  margin: clamp(4rem, 12vh, 7rem) 0 0;
   max-width: 34rem;
   font-size: 1.0625rem;
   line-height: 1.65;
 }
 
 .question {
-  margin: 2.25rem 0 1.5rem;
+  margin: 0;
   font-family: var(--font-display);
   font-size: clamp(1.5rem, 4vw, 2.1rem);
   font-weight: 400;
@@ -206,12 +379,26 @@ body {
   text-wrap: balance;
 }
 
-/* ---------- Chat ---------- */
-
-.chat {
-  padding-bottom: 4rem;
-  padding-top: 2.5rem;
+.scroll-indicator {
+  /* Fixed to the bottom center of the screen. At scroll 0 that's exactly the
+     fold (its original home); it stays there as the conversation reveals,
+     then fades out near the end of the page (JS toggles .is-hidden). */
+  position: fixed;
+  left: 50%;
+  bottom: 1.75rem;
+  transform: translateX(-50%);
+  color: var(--muted);
+  line-height: 0;
+  z-index: 20;
+  transition: opacity 0.35s ease;
 }
+
+html.js-scrub .scroll-indicator.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ---------- Chat ---------- */
 
 .chat-row {
   display: flex;
@@ -243,8 +430,11 @@ body {
    removes .revealed, reversing the transition (fly-out). The state is a
    pure function of position, so every pass is identical.
 
-   With JS off or prefers-reduced-motion, no class is added and all text
-   is simply visible. */
+   The fly-up is a BIG sweep: each bubble starts far below its resting
+   spot (nearly half a viewport) and swoops up into place quickly while
+   fading in, so it reads as flying in from the bottom of the screen
+   rather than a small nudge. With JS off or prefers-reduced-motion, no
+   class is added and all text is simply visible. */
 .message {
   opacity: 1;
 }
@@ -252,15 +442,26 @@ body {
 @media (prefers-reduced-motion: no-preference) {
   html.js-scrub .message {
     opacity: 0;
-    transform: translateY(26px) scale(0.95);
+    /* Start roughly half a viewport below, barely scaled down — a big
+       dynamic entrance from the bottom of the screen. */
+    transform: translateY(44vh) scale(0.96);
     transition:
-      opacity 0.45s cubic-bezier(0.34, 1.56, 0.64, 1),
-      transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+      opacity 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
     will-change: transform, opacity;
   }
 
   html.js-scrub .message.revealed {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+
+  /* The FIRST bubble ("Building a space…") rises a touch MORE SLOWLY than
+     the rest — a more deliberate, notable entrance for the thread's opener
+     while the follow-ups snap in faster. */
+  html.js-scrub .hero-answer .message {
+    transition:
+      opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
   }
 }

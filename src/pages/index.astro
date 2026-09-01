@@ -13,28 +13,56 @@ import { dialogue, heroAnswer } from "../data/chat";
          No motion here — the flying-up starts with the dialogue below. -->
     <section class="hero">
       <Dunes />
-      <h1 class="display">Jasper Deen</h1>
-      <p class="caption">Word wonk and inexorable optimist</p>
+      <div class="name-block">
+        <h1 class="display" aria-label="Jasper Deen">
+        {
+          ["Jasper", "Deen"].map((word, wi) => (
+            <>
+              {wi > 0 && " "}
+              <span class="word" aria-hidden="true">
+                {[...word].map((ch) => (
+                  <span class={ch === "D" ? "ch d" : "ch"}>{ch}</span>
+                ))}
+              </span>
+            </>
+          ))
+        }
+        </h1>
+        <p class="caption">Word wonk and inexorable optimist</p>
+      </div>
       <p class="intro">
         I get excited about great communications to move motivations. This is a
         space to do just that &mdash; for myself.
       </p>
-      <p class="question">What&rsquo;s going on here?</p>
-      <div class="chat-row hero-answer" data-side="jasper">
-        <p class="bubble">{heroAnswer}</p>
-      </div>
     </section>
 
     <!-- The scroll-revealed dialogue: reader's thoughts on the right,
-         Jasper's replies on the left, each popping in as it enters view. -->
+         Jasper's replies on the left, each popping in as it enters view.
+         The hero answer is the thread's first bubble, below the fold. -->
     <section class="chat">
-      {
-        dialogue.map((message) => (
-          <div class="chat-row" data-side={message.side}>
-            <p class="bubble message">{message.text}</p>
-          </div>
-        ))
-      }
+      <div class="pin">
+        <p class="question">What&rsquo;s going on here?</p>
+        <div class="chat-row hero-answer" data-side="jasper">
+          <p class="bubble message">{heroAnswer}</p>
+        </div>
+        {
+          dialogue.map((message) => (
+            <div class="chat-row" data-side={message.side}>
+              <p class="bubble message">{message.text}</p>
+            </div>
+          ))
+        }
+      </div>
     </section>
+
+    <!-- The scroll indicator is fixed to the bottom of the screen: it starts
+         at the fold (its original spot) and stays pinned to the bottom while
+         the conversation reveals, disappearing as the user reaches the end
+         of the page. -->
+    <span class="scroll-indicator" aria-hidden="true">
+      <svg viewBox="0 0 16 16" width="16" height="16">
+        <path d="M3 6l5 5 5-5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </span>
   </main>
 </Base>
