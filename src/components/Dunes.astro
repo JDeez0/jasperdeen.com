@@ -1,153 +1,170 @@
 ---
-// Layered sand-dune line art for the top of the home page.
+// Wind-blown crescent (sickle) dune field for the top of the home page.
 //
-// Physics-first: each dune has a sharp CREST, a steep dark SLIP FACE right
-// below the crest, and a gentle light WINDWARD face toward the next ridge.
-// Every shading line is an offset/sheared copy of the crest curve, so lines
-// follow the crest's curvature and stay parallel + connected to the dune top.
+// Physics: each dune has a CREST — a gentle windward rise up to a peak and a
+// SHORT STEEP SLIP FACE down the lee side. The slip face is shaded DENSE
+// (dark) with short near-vertical strokes + cross strokes; the windward side
+// is shaded SPARSE (light) with long horizontal ripple contours that trail off
+// toward the next dune. Orientation (which side is the slip face) follows a
+// smooth function of position, so it varies in coherent groups.
 //
-// Density model (graded, not binary):
-//   - whole face: horizontal contours + moderate down-right diagonal
-//   - slip face (upper band): ADD dense steep down-left + sparse opposite lean
-//   → darkest right under the crest, fading to light toward the next ridge.
+// Layered depth: 1-3 layers, back (smaller, higher, lighter) to front (larger,
+// lower, darker). Layers are staggered so back dunes peek between the gaps of
+// front dunes.
 //
-// Generated once at build time into a static SVG (zero runtime JS, crisp at
-// any size via non-scaling stroke, currentColor for dark mode).
-const W = 1200;
-const H = 208;
+// Architecture: buildDune() is the reusable unit; the field is assembled by
+// instantiating it across the width from a deterministic seeded RNG — style
+// stays perfectly consistent at any width. Static SVG, zero runtime JS,
+// non-scaling stroke (crisp), currentColor (dark-mode aware).
+const W = 1600;
+const H = 150;
 
-// core = [from,to] fractions of the strip height occupied by the slip face.
-// sC = contour spacing, sH = base diag spacing, sCore = slip spacing,
-// sCross = opposite lean in the slip (front dunes only, for deeper shadow).
-const layerDefs = [
-  { base: 48, amp: 13, f1: 1.5, f2: 3.2, ph1: 0.4, ph2: 1.1, sC: 14, sH: 16, core: [0.03, 0.45], sCore: 6, lxH: 8, lxCore: -10, sCross: 0 },
-  { base: 90, amp: 18, f1: 1.9, f2: 3.8, ph1: 2.1, ph2: 0.3, sC: 12, sH: 14, core: [0.03, 0.45], sCore: 5, lxH: 8, lxCore: -10, sCross: 12 },
-  { base: 132, amp: 22, f1: 1.6, f2: 3.5, ph1: 3.3, ph2: 2.6, sC: 10, sH: 12, core: [0.03, 0.45], sCore: 4, lxH: 8, lxCore: -11, sCross: 9 },
-  { base: 174, amp: 22, f1: 2.2, f2: 4.1, ph1: 0.9, ph2: 4.2, sC: 9, sH: 10, core: [0.03, 0.42], sCore: 3.5, lxH: 8, lxCore: -11, sCross: 7 },
+// --- deterministic seeded RNG ---
+function mulberry32(seed: number) {
+  let a = seed;
+  return function () {
+    a |= 0;
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+const rnd = mulberry32(20260831);
+
+type Dune = {
+  cx: number;
+  footY: number;
+  h: number;
+  ww: number;
+  ws: number;
+  o: 1 | -1;
+  slipN: number;
+  ripN: number;
+  layer: number;
+};
+
+function cubicPoint(
+  x0: number, y0: number,
+  x1: number, y1: number,
+  x2: number, y2: number,
+  x3: number, y3: number,
+  t: number,
+): { x: number; y: number } {
+  const u = 1 - t;
+  return {
+    x: u * u * u * x0 + 3 * u * u * t * x1 + 3 * u * t * t * x2 + t * t * t * x3,
+    y: u * u * u * y0 + 3 * u * u * t * y1 + 3 * u * t * t * y2 + t * t * t * y3,
+  };
+}
+
+function buildDune(d: Dune) {
+  const peakX = d.cx;
+  const peakY = d.footY - d.h;
+  const windX = d.cx - d.o * d.ww;
+  const windY = d.footY;
+  const slipX = d.cx + d.o * d.ws;
+  const slipY = d.footY + d.h * 0.12;
+
+  const wc1x = windX + 0.62 * (peakX - windX);
+  const wc1y = windY;
+  const wc2x = peakX - 0.1 * (peakX - windX);
+  const wc2y = peakY;
+  const sc1x = peakX + 0.12 * (slipX - peakX);
+  const sc1y = peakY;
+  const sc2x = slipX - 0.18 * (slipX - peakX);
+  const sc2y = slipY;
+
+  const crest = `M ${windX.toFixed(1)} ${windY.toFixed(1)} C ${wc1x.toFixed(1)} ${wc1y.toFixed(1)}, ${wc2x.toFixed(1)} ${wc2y.toFixed(1)}, ${peakX.toFixed(1)} ${peakY.toFixed(1)} C ${sc1x.toFixed(1)} ${sc1y.toFixed(1)}, ${sc2x.toFixed(1)} ${sc2y.toFixed(1)}, ${slipX.toFixed(1)} ${slipY.toFixed(1)}`;
+
+  // Slip face: dense short near-vertical strokes down the lee side.
+  let slip = "";
+  for (let k = 0; k < d.slipN; k++) {
+    const t = 0.03 + (0.94 * k) / Math.max(1, d.slipN - 1);
+    const p = cubicPoint(peakX, peakY, sc1x, sc1y, sc2x, sc2y, slipX, slipY, t);
+    const len = d.h * 0.65 + rnd() * 3;
+    slip += `M ${p.x.toFixed(1)} ${p.y.toFixed(1)} L ${(p.x + d.o * len * 0.32).toFixed(1)} ${(p.y + len).toFixed(1)} `;
+  }
+  // Cross strokes in the slip face (front layers only) -> deeper shadow.
+  let cross = "";
+  if (d.layer >= 1) {
+    const n2 = Math.round(d.slipN * 0.7);
+    for (let k = 0; k < n2; k++) {
+      const t = 0.05 + (0.9 * k) / Math.max(1, n2 - 1);
+      const p = cubicPoint(peakX, peakY, sc1x, sc1y, sc2x, sc2y, slipX, slipY, t);
+      const len = d.h * 0.4;
+      cross += `M ${p.x.toFixed(1)} ${p.y.toFixed(1)} L ${(p.x - d.o * len * 0.5).toFixed(1)} ${(p.y + len).toFixed(1)} `;
+    }
+  }
+
+  // Windward ripples: long horizontal contours trailing off the crest.
+  let ripples = "";
+  const fracs = [0.12, 0.24, 0.36, 0.48, 0.6, 0.72, 0.83, 0.92].slice(0, d.ripN);
+  for (const f of fracs) {
+    const s = cubicPoint(windX, windY, wc1x, wc1y, wc2x, wc2y, peakX, peakY, f);
+    const rl = d.ww + 80 + rnd() * 70;
+    const ex = s.x - d.o * rl;
+    const ey = d.footY + (rnd() * 2 - 1) * 5;
+    const c1x = s.x - d.o * 0.2 * rl;
+    const c1y = s.y;
+    const c2x = ex + d.o * 0.16 * rl;
+    const c2y = ey;
+    ripples += `M ${s.x.toFixed(1)} ${s.y.toFixed(1)} C ${c1x.toFixed(1)} ${c1y.toFixed(1)}, ${c2x.toFixed(1)} ${c2y.toFixed(1)}, ${ex.toFixed(1)} ${ey.toFixed(1)} `;
+  }
+
+  return { crest, slip, cross, ripples };
+}
+
+// --- assemble the field ---
+const layerPlan = [
+  { n: 6, footY: 46, h: [22, 30], ww: [120, 160], ws: [12, 18], slipN: [16, 20], ripN: 7, phase: 0, phaseOff: 0 },
+  { n: 5, footY: 82, h: [30, 42], ww: [150, 200], ws: [16, 22], slipN: [20, 24], ripN: 8, phase: 0.5, phaseOff: 1.2 },
+  { n: 4, footY: 122, h: [40, 54], ww: [190, 250], ws: [20, 28], slipN: [26, 32], ripN: 9, phase: 0.25, phaseOff: 2.4 },
 ];
 
-const N = 20; // crest anchor samples
+const range = (a: number, b: number) => a + rnd() * (b - a);
+const pick = (a: number, b: number) => Math.round(range(a, b));
 
-// --- crest anchors, enforcing min separation so strips never invert ---
-const crests: [number, number][][] = [];
-let prevY: number[] | null = null;
-for (const L of layerDefs) {
-  const pts: [number, number][] = [];
-  for (let s = 0; s <= N; s++) {
-    const x = (s / N) * W;
-    const u =
-      Math.sin((x / W) * Math.PI * 2 * L.f1 + L.ph1) +
-      0.55 * Math.sin((x / W) * Math.PI * 2 * L.f2 + L.ph2);
-    let y = L.base + (L.amp * u) / 1.55;
-    if (prevY) y = Math.max(y, prevY[s] + 12);
-    y = Math.min(y, H - 8);
-    pts.push([x, y]);
+const dunes: Dune[] = [];
+for (let li = 0; li < layerPlan.length; li++) {
+  const L = layerPlan[li];
+  const spacing = W / L.n;
+  for (let i = 0; i < L.n; i++) {
+    const baseX = (i + L.phase) * spacing;
+    const cx = Math.max(20, Math.min(W - 20, baseX + (rnd() * 2 - 1) * spacing * 0.12));
+    const o: 1 | -1 = Math.sin((cx / W) * Math.PI * 2 * 1.5 + L.phaseOff + 0.6) >= 0 ? 1 : -1;
+    const ridge = rnd() < 0.25;
+    const ww = range(L.ww[0], L.ww[1]) * (ridge ? 1.5 : 1);
+    const h = range(L.h[0], L.h[1]) * (ridge ? 0.7 : 1);
+    const ws = range(L.ws[0], L.ws[1]) * (ridge ? 0.8 : 1);
+    dunes.push({
+      cx,
+      footY: L.footY,
+      h,
+      ww,
+      ws,
+      o,
+      slipN: pick(L.slipN[0], L.slipN[1]),
+      ripN: L.ripN,
+      layer: li,
+    });
   }
-  crests.push(pts);
-  prevY = pts.map((p) => p[1]);
 }
+dunes.sort((a, b) => a.layer - b.layer || a.cx - b.cx);
 
-// Gently wavy bottom edge of the band (the front dune's windward toe).
-const bottomPts: [number, number][] = crests[3].map(([x]) => [
-  x,
-  H - 6 + 3.5 * Math.sin((x / W) * Math.PI * 2 * 2.4 + 1.3),
-]);
+const built = dunes.map((d) => ({ ...buildDune(d), layer: d.layer }));
 
-// --- Catmull-Rom -> cubic bezier ---
-function splineSegs(pts: [number, number][]): string {
-  const n = pts.length;
-  let d = "";
-  for (let i = 0; i < n - 1; i++) {
-    const p0 = pts[Math.max(0, i - 1)];
-    const p1 = pts[i];
-    const p2 = pts[i + 1];
-    const p3 = pts[Math.min(n - 1, i + 2)];
-    const c1x = p1[0] + (p2[0] - p0[0]) / 6;
-    const c1y = p1[1] + (p2[1] - p0[1]) / 6;
-    const c2x = p2[0] - (p3[0] - p1[0]) / 6;
-    const c2y = p2[1] - (p3[1] - p1[1]) / 6;
-    d += ` C ${c1x.toFixed(1)} ${c1y.toFixed(1)}, ${c2x.toFixed(1)} ${c2y.toFixed(1)}, ${p2[0]} ${p2[1].toFixed(1)}`;
+// Ground ripples below the front dune line (wind-blown sand surface).
+let ground = "";
+for (let g = 0; g < 3; g++) {
+  const gy = layerPlan[2].footY + 4 + g * 8;
+  let d = `M 0 ${gy.toFixed(1)} `;
+  for (let s = 1; s <= 32; s++) {
+    const x = (s / 32) * W;
+    const y = gy + Math.sin((x / W) * Math.PI * 2 * 2.6 + g * 1.1) * 3;
+    d += `L ${x.toFixed(1)} ${y.toFixed(1)} `;
   }
-  return d;
-}
-const splineD = (pts: [number, number][]): string =>
-  `M ${pts[0][0]} ${pts[0][1].toFixed(1)}` + splineSegs(pts);
-
-// Region between a top crest and a bottom curve, as a closed clip path.
-function clipBetween(top: [number, number][], bot: [number, number][]): string {
-  const topD = splineD(top);
-  const botD = splineD([...bot].reverse());
-  const topSegs = topD.replace(/^M [\d.]+ [\d.]+/, "");
-  const botSegs = botD.replace(/^M [\d.]+ [\d.]+/, "");
-  const t0 = top[0][1];
-  const b0 = bot[0][1];
-  const bW = bot[bot.length - 1][1];
-  return `M 0 ${b0.toFixed(1)} L 0 ${t0.toFixed(1)} ${topSegs} L ${W} ${bW.toFixed(1)} ${botSegs} Z`;
-}
-
-// Offset + laterally sheared copies of the crest — the single mechanism for
-// all shading. Lines follow the crest's curvature, so they stay parallel and
-// connected to the dune tops.
-function shear(
-  pts: [number, number][],
-  lx: number,
-  dy: number,
-  start: number,
-  count: number,
-): string {
-  let d = "";
-  for (let k = start; k < start + count; k++) {
-    const shifted = pts.map(([x, y]) => [x + lx * k, y + dy * k]) as [number, number][];
-    d += splineD(shifted) + " ";
-  }
-  return d;
-}
-
-const ridge = (pts: [number, number][], dy: number): [number, number][] =>
-  pts.map(([x, y]) => [x, y + dy]) as [number, number][];
-
-const avgGap = (a: [number, number][], b: [number, number][]): number => {
-  let s = 0;
-  for (let i = 0; i < a.length; i++) s += b[i][1] - a[i][1];
-  return s / a.length;
-};
-
-// --- build each strip's passes ---
-type Strip = {
-  id: number;
-  clip: string;
-  slipClip?: string;
-  contours: string;
-  baseDiag: string;
-  slipDiag?: string;
-  slipCross?: string;
-};
-
-const strips: Strip[] = [];
-
-for (let i = 0; i < 4; i++) {
-  const L = layerDefs[i];
-  const top = crests[i];
-  const bot = i < 3 ? crests[i + 1] : bottomPts;
-  const gap = avgGap(top, bot);
-
-  // Whole face: horizontal contours + moderate down-right diagonal.
-  const contours = shear(top, 0, L.sC, Math.round(8 / L.sC) + 1, Math.ceil(gap / L.sC) + 2);
-  const baseDiag = shear(top, L.lxH, L.sH, Math.round(6 / L.sH) + 1, Math.ceil(gap / L.sH) + 2);
-
-  const strip: Strip = { id: i, clip: clipBetween(top, bot), contours, baseDiag };
-
-  // Slip face: dense steep down-left + sparse opposite lean.
-  const [from, to] = L.core;
-  const slipTop = ridge(top, Math.max(3, from * gap));
-  const slipBot = ridge(top, to * gap);
-  strip.slipClip = clipBetween(slipTop, slipBot);
-  strip.slipDiag = shear(top, L.lxCore, L.sCore, Math.round((from * gap) / L.sCore) + 1, Math.ceil(((to - from) * gap) / L.sCore) + 2);
-  if (L.sCross > 0) {
-    strip.slipCross = shear(top, -L.lxCore, L.sCross, Math.round((from * gap) / L.sCross) + 1, Math.ceil(((to - from) * gap) / L.sCross) + 1);
-  }
-
-  strips.push(strip);
+  ground += d;
 }
 ---
 
@@ -158,48 +175,20 @@ for (let i = 0; i < 4; i++) {
     preserveAspectRatio="none"
     aria-hidden="true"
   >
-    <defs>
-      {strips.map((s) => (
-        <clipPath id={`dune-strip-${s.id}`}>
-          <path d={s.clip} />
-        </clipPath>
-      ))}
-      {strips.map((s) =>
-        s.slipClip ? (
-          <clipPath id={`dune-slip-${s.id}`}>
-            <path d={s.slipClip} />
-          </clipPath>
-        ) : null,
-      )}
-    </defs>
-
-    {strips.map((s) => (
-      <g clip-path={`url(#dune-strip-${s.id})`} fill="none" stroke="currentColor">
-        <path d={s.contours} stroke-width="0.9" vector-effect="non-scaling-stroke" />
-        <path d={s.baseDiag} stroke-width="0.85" vector-effect="non-scaling-stroke" stroke-linecap="round" />
-        {s.slipDiag && s.slipClip ? (
-          <g clip-path={`url(#dune-slip-${s.id})`}>
-            <path d={s.slipDiag} stroke-width="0.9" vector-effect="non-scaling-stroke" stroke-linecap="round" />
-            {s.slipCross && (
-              <path d={s.slipCross} stroke-width="0.8" vector-effect="non-scaling-stroke" stroke-linecap="round" />
-            )}
-          </g>
-        ) : null}
+    <path d={ground} stroke-width="0.7" fill="none" stroke="currentColor" vector-effect="non-scaling-stroke" stroke-linecap="round" />
+    {built.map((b) => (
+      <g fill="none" stroke="currentColor">
+        <path d={b.ripples} stroke-width="0.85" vector-effect="non-scaling-stroke" stroke-linecap="round" />
+        <path d={b.cross} stroke-width="0.7" vector-effect="non-scaling-stroke" stroke-linecap="round" />
+        <path d={b.slip} stroke-width="1" vector-effect="non-scaling-stroke" stroke-linecap="round" />
+        <path
+          d={b.crest}
+          stroke-width={(1.2 + 0.18 * b.layer).toFixed(2)}
+          vector-effect="non-scaling-stroke"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
       </g>
-    ))}
-
-    {/* Crests drawn last so the ridge lines stay crisp over the shading.
-        Front (lower) crests slightly heavier = nearer = bolder. */}
-    {crests.map((c, i) => (
-      <path
-        d={splineD(c)}
-        fill="none"
-        stroke="currentColor"
-        stroke-width={(1.15 + 0.15 * i).toFixed(2)}
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        vector-effect="non-scaling-stroke"
-      />
     ))}
   </svg>
 </div>
