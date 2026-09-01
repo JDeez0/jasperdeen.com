@@ -31,9 +31,7 @@ export const dialogue: ChatMessage[] = [
   },
   {
     side: "jasper",
-    text:
-      "Writing is weird. It\u2019s like shouting \u2014 almost advertising \u2014 " +
-      "one\u2019s ego into the world. Self-conscious ego, at that.",
+    text: "Writing is weird. Very self-conscious.",
   },
   {
     side: "reader",
