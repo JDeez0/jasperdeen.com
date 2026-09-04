@@ -74,3 +74,48 @@ kept fighting the sticky runway geometry. If footer-in-runway is pursued again, 
 ## Not done / open
 - The footer "fly up with the last bubble as part of the runway" idea is still not achieved in a
   satisfying way — reverted rather than solved. Revisit only with a clean approach if we want it.
+---
+
+# Session notes — 2026-09-05 (footer-in-runway, attempt #2: pin release — fully reverted)
+
+Second attempt at the footer-in-runway goal ("footer reveals like a bubble on tall screens;
+on short screens the pin releases and the footer is normal content"). Like attempt #1, it
+ended in a **full revert** — the working tree was reset to `f963976` with nothing committed.
+Read this before trying again.
+
+## What was built (all reverted)
+- Footer appended to the reveal list as the last item (same `.message` machinery), with two
+  variants: **A** (default: footer = one full STEP after the last bubble, page ends as it
+  lands) and **B** (`?tail=b`: footer 80px after last bubble, then 260px settle tail).
+  Tall screens never released; footer fly-in worked there.
+- **Pin release** for short viewports: when the next unrevealed bubble's threshold arrives
+  and its resting spot would sit at/below the fold (40px early), the pin stops sticking so
+  normal scrolling carries the rest; remaining bubbles reveal on viewport entry
+  (`r.top < vh`); footer became plain content permanently after the first release.
+
+## Failure modes found (each verified with a Playwright scroll probe, /tmp/pwtest/)
+1. **Height-change releases get scroll-clamped.** Releasing by clearing `chat.style.height`
+   shrank the document ~1100px mid-scroll; the browser clamped scrollY upward — the page
+   visibly "scrolls back up" with no input. The clamped position then fell below the re-stick
+   threshold → restick → immediate re-release → oscillation.
+2. **Margin-collapse defeat.** Compensating with `margin-top` on `.pin` collapsed through
+   `.chat`'s top edge (no border/padding/BFC on the chat), moving the whole chat box down
+   ~1081px instead of the pin — giant blank void, docH ballooned 2845→3809.
+3. **Footer toggling.** Re-adding `.message` in restick() re-hid the footer at an unreachable
+   threshold (seen for a second, then gone).
+4. Dev (:4321) vs build (:4528) were proven byte-identical in behavior — perceived
+   differences were test-sequence/window-size luck on an unstable system.
+
+## The design that WAS working when the session was reverted (start point next time)
+`release()`: `position: static` + `transform: translateY(shift)` holding the pin's exact
+visual position (shift = pin viewport top + scrollY − chat top) — **zero layout change**,
+so no clamp, no jump, no forced reveals. Release gated on `scrollY >= thresholdFor(k)` of
+the first unshown bubble (so scrolling UP never re-releases). `restick()`: clear transform
+and set `pin.style.top` to the pin's current viewport top — seamless re-engagement; ladder
+resumes and bubbles unwind on the way up. Final probe: footer revealed in viewport, no
+oscillation, on both variants. It was reverted for trust reasons, not because it misbehaved.
+
+## Tooling
+`/tmp/pwtest/probe.mjs`, `probe2.mjs`, `cmp.mjs` (playwright-core + installed chromium)
+drive the real page through a scroll sweep and log docH/chat/pin/footer geometry — use
+these instead of eyeballing; eyeballing is how three regressions shipped in a row.
