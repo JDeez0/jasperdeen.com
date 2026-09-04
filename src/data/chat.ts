@@ -10,28 +10,28 @@ export interface ChatMessage {
 }
 
 /** The answer to "What's going on here?" — sits on the page statically. */
-export const heroAnswer =
-  "Building a space to \u2018express myself\u2019.";
+export const heroAnswer = "Making space to write";
 
 /**
  * The scroll-revealed dialogue. Right side = the reader's hypothetical
  * thoughts/questions; left side = Jasper's replies.
- *
- * Copy continues after the final "..." — drop the rest of the storytelling
- * into this array as more messages.
  */
 export const dialogue: ChatMessage[] = [
   {
     side: "reader",
-    text: "About what? Who cares?",
+    text: "About what?",
+  },
+  {
+    side: "reader",
+    text: "Who cares?",
   },
   {
     side: "jasper",
-    text: "Nothing and no one \u2014 hopefully.",
+    text: "Only me, I think. Right where we should be.",
   },
   {
     side: "jasper",
-    text: "Writing is weird. Very self-conscious.",
+    text: "Stories. Sad machinations? Some pieces on culture or tech, maybe.",
   },
   {
     side: "reader",
@@ -40,21 +40,19 @@ export const dialogue: ChatMessage[] = [
   {
     side: "jasper",
     text:
-      "It\u2019s always been my academic strength, and I particularly leaned into the " +
-      "\u2018writer\u2019 identity in college through internships and big, nerdy projects. " +
-      "But in the past year, my perspective on this passion was prompted to change.",
-  },
-  {
-    side: "reader",
-    text: "?",
+      "I was slapped with new perspective(s) on my professional " +
+      "identity after being diagnosed with frequent seizures in my temporal " +
+      "lobe for the last four years. Aside from spooky deja vu, side effects " +
+      "include compulsion to write (hypergraphia) and intense preoccupation " +
+      "with moral / religious ideas.",
   },
   {
     side: "jasper",
     text:
-      "My passion was revealed to be not just an academic skill for which I could receive " +
-      "praise, but the product of an acute and intensely impactful medical circumstance. " +
-      "After experiencing spooky d\u00e9j\u00e0 vu and increased emotions throughout college, " +
-      "during my final year I was diagnosed with temporal lobe seizures (and have been working " +
-      "with the healthcare system to get my meds right ever since)\u2026",
+      "This site is a way for me to work through my disability (and " +
+      "passions) while living with my parents post-grad. Braving the " +
+      "medical system to get my meds right for eleven months and counting, " +
+      "I admit I don\u2019t have a \u2018plan\u2019. Only critical thinking and values " +
+      "which should (hopefully) better my next year and career.",
   },
 ];

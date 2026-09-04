@@ -31,9 +31,9 @@ import { dialogue, heroAnswer } from "../data/chat";
         <p class="caption">Word wonk and inexorable optimist.</p>
       </div>
       <p class="intro">
-        I get excited when honest communication moves motivation.
+        I get excited by honest communication that moves motivations.
         <br />
-        This is a chance to do that. For myself!
+        Here’s a chance to do that. For myself.
       </p>
     </section>
 
@@ -47,11 +47,14 @@ import { dialogue, heroAnswer } from "../data/chat";
           <p class="bubble message">{heroAnswer}</p>
         </div>
         {
-          dialogue.map((message) => (
-            <div class="chat-row" data-side={message.side}>
-              <p class="bubble message">{message.text}</p>
-            </div>
-          ))
+          dialogue.map((message, i) => {
+            const isWide = i >= dialogue.length - 2;
+            return (
+              <div class="chat-row" data-side={message.side}>
+                <p class={"bubble message" + (isWide ? " wide" : "")}>{message.text}</p>
+              </div>
+            );
+          })
         }
       </div>
     </section>

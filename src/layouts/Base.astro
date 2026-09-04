@@ -13,6 +13,22 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
 <!doctype html>
 <html lang="en">
   <head>
+    <script is:inline>
+      // Set the theme before first paint (no flash): stored choice wins,
+      // otherwise follow the OS preference.
+      (() => {
+        try {
+          const stored = localStorage.getItem("jd-theme");
+          const theme =
+            stored === "dark" || stored === "light"
+              ? stored
+              : matchMedia("(prefers-color-scheme: dark)").matches
+                ? "dark"
+                : "light";
+          document.documentElement.dataset.theme = theme;
+        } catch {}
+      })();
+    </script>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
@@ -37,6 +53,31 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
       <slot />
       <footer class="site-footer">
         <p>&copy; {new Date().getFullYear()} Jasper H. Deen</p>
+        <button
+          class="theme-toggle"
+          type="button"
+          aria-label="Toggle light and dark mode"
+          title="Toggle light / dark mode"
+        >
+          <svg class="icon-moon" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+            <path
+              d="M13.5 9.7A6 6 0 0 1 6.3 2.5a6 6 0 1 0 7.2 7.2Z"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.25"
+              stroke-linejoin="round"
+            />
+          </svg>
+          <svg class="icon-sun" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+            <circle cx="8" cy="8" r="3" fill="none" stroke="currentColor" stroke-width="1.25" />
+            <path
+              d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.42 1.42M11.53 11.53l1.42 1.42M12.95 3.05l-1.42 1.42M4.47 11.53l-1.42 1.42"
+              stroke="currentColor"
+              stroke-width="1.25"
+              stroke-linecap="round"
+            />
+          </svg>
+        </button>
       </footer>
     </div>
 
@@ -140,6 +181,16 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
         apply();
         requestAnimationFrame(onRaf);
       }
+
+      // Theme toggle: flips data-theme on <html> and remembers the choice.
+      const toggle = document.querySelector(".theme-toggle");
+      toggle?.addEventListener("click", () => {
+        const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+        document.documentElement.dataset.theme = next;
+        try {
+          localStorage.setItem("jd-theme", next);
+        } catch {}
+      });
     </script>
   </body>
 </html>
