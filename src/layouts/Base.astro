@@ -88,13 +88,19 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
       // the top it STAYS there and the page keeps accepting scroll while the
       // conversation doesn't move. New messages reveal from how far the
       // runway has been consumed, stacking below the pinned first bubble.
-      // Each message demands REVEAL_STEP px of extra scroll (super-staggered),
-      // and reversing scroll unwinds them last-in-first-out. When you stop
-      // scrolling, nothing changes. With JS off this is a normal page with
-      // all text visible; reduced-motion still runs the progressive reveal
-      // but with a gentle fade (see global.css).
+      // Each message demands STEP px of extra scroll (super-staggered).
+      // Reveal is a ONE-WAY LATCH: once shown, a bubble never hides again
+      // (until page refresh). Scrolling UP past the high-water mark releases
+      // the sticky pin entirely (one-way): the page becomes a normal flowing
+      // document, bubbles keep their positions, and any not-yet-revealed
+      // bubble reveals as it enters the viewport. The rAF loop below is the
+      // scroll mechanism ON PURPOSE: on iOS, scroll events don't fire during
+      // momentum, but scrollY does update — polling is the reliable pattern.
+      // With JS off this is a normal page with all text visible; reduced-
+      // motion still runs the progressive reveal but with a gentle fade
+      // (see global.css).
       const messages = Array.from(document.querySelectorAll(".message"));
-      const chat = document.querySelector(".chat");
+      const chat = document.querySelector<HTMLElement>(".chat");
 
       if (messages.length > 0 && chat) {
         document.documentElement.classList.add("js-scrub");
@@ -108,10 +114,12 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
         //   Threshold for message i:  anchor + LEAD + i × STEP
         const LEAD = 60;   // a little extra before the first bubble
         const STEP = 200;  // scroll distance between messages after the first
-        const HYST = 60;   // unwind happens HYST px before the entry point
         const TRAIL = 260; // runway left after the last reveal
+        const RELEASE_UP = 10; // px of upward scroll past the peak that releases the pin
         const n = messages.length;
-        const vh = window.innerHeight || document.documentElement.clientHeight;
+        // vh is `let` because it must track the window: every threshold and
+        // the runway height are derived from it (see the resize handler).
+        let vh = window.innerHeight || document.documentElement.clientHeight;
         const arrow = document.querySelector(".scroll-indicator");
 
         // Absolute scroll position where the question sits at the TOP TWO-
@@ -127,49 +135,254 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
         // window load, guarded so we only trust measurements taken near the
         // top of the page (after the sticky pin engages, the question's
         // document offset stops being scroll-invariant).
-        const question = document.querySelector(".question");
-        const measureAnchor = () => {
-          if (!question) return vh * 0.6;
-          return question.getBoundingClientRect().top + (window.scrollY || 0) - vh * 0.4;
-        };
-        const refreshAnchor = () => {
-          const early = (window.scrollY || 0) < 300; // don't re-measure mid-scroll
-          requestAnimationFrame(() => {
-            if (!early) return;
-            const a = measureAnchor();
-            if (Math.abs(a - anchor) > 2) {
-              anchor = a;
-              chat.style.height = anchor + LEAD + n * STEP + TRAIL + "px";
-            }
-          });
-        };
-        let anchor = measureAnchor();
-        if (document.fonts && document.fonts.ready) {
-          document.fonts.ready.then(refreshAnchor).catch(() => {});
-        }
-        window.addEventListener("load", refreshAnchor);
+        const question = document.querySelector<HTMLElement>(".question");
+        const pinEl = document.querySelector<HTMLElement>(".pin");
+        // The pin's NATURAL flow offset inside the chat, captured before
+        // the sticky pin ever engages. Once stuck, offsetTop reports the
+        // STUCK position (it grows with scroll), so it must not be read
+        // later — the resize handler relies on this stable value.
+        const pinNaturalTop = pinEl?.offsetTop ?? 0;
+        const footerEl = document.querySelector(".site-footer");
+        // The pin's sticky offset (CSS: top: 1.5rem). While STUCK, the pin's
+        // viewport top equals this value exactly — used to detect engagement.
+        const stickyTop = pinEl ? parseFloat(getComputedStyle(pinEl).top) || 24 : 24;
+        // One-way state (until refresh). peak starts at the load-time scroll
+        // position so a mid-page load (refresh, back-nav scroll restoration)
+        // never fires an instant release; iOS rubber-band can push scrollY
+        // negative, so every read is clamped before use.
+        let peak = Math.max(0, window.pageYOffset || window.scrollY || 0);
+        let released = false;
 
-        // Build the runway so the last message's threshold is reachable.
-        chat.style.height = anchor + LEAD + n * STEP + TRAIL + "px";
+        // One-way pin release: unwind the pin to the NATURAL page layout.
+        // At the release instant everything above the pin is off-screen (the
+        // viewport is filled by the pinned conversation), so we can delete
+        // the consumed runway and scroll back by exactly the same amount —
+        // the pin keeps its exact viewport position (zero visual jump) and
+        // the document becomes the plain flowing page: question right after
+        // the hero (the natural gap), footer at the bottom, no overlap, no
+        // leftover scroll. A transform-hold here was tried and REJECTED: it
+        // froze the pin mid-runway, leaving a giant blank above the question
+        // and the pin overlapping the footer permanently.
+        const release = () => {
+          if (released || !pinEl || !chat) return;
+          released = true;
+          const y = Math.max(0, window.pageYOffset || window.scrollY || 0);
+          // How far the pin sits BELOW its natural flow slot right now.
+          const shift =
+            pinEl.getBoundingClientRect().top -
+            chat.getBoundingClientRect().top -
+            pinNaturalTop;
+          pinEl.style.paddingBottom = ""; // drop the short-screen release padding
+          pinEl.style.position = "static";
+          chat.style.height = ""; // collapse the runway: natural page layout
+          // The pin just moved UP in the document by `shift`; scroll up by
+          // the same amount so its viewport position (and every revealed
+          // bubble's screen position) is unchanged at the release instant.
+          window.scrollTo(0, y - shift);
+          // Clamp safety: only reachable near the very bottom of the page.
+          const k = Math.max(0, y - shift + vh - document.documentElement.scrollHeight);
+          if (k > 0) window.scrollTo(0, y - shift - k);
+          (window as any).__jd = {
+            ...(window as any).__jd,
+            released: true,
+            releasedAt: Math.round(y),
+          };
+        };
+
+        // ─────────────────────────────────────────────────────────────
+        // RELEASE PLANNER.
+        // On a tall viewport every bubble fits inside the pinned screen
+        // and the baseline ladder/runway is used unchanged. On a shorter
+        // viewport some bubble would fly up BELOW the fold — invisible.
+        // For those sizes this planner computes, from real layout
+        // measurements, the scroll position at which the sticky pin must
+        // let go (the RELEASE LINE): the threshold of the first bubble
+        // that cannot fit. The runway is sized so the pin runs out of
+        // sticky room at exactly that line (CSS does the releasing — no
+        // JS state machine), the bubble stack gets extra bottom padding
+        // so enough scroll remains after release, and the thresholds of
+        // the too-tall bubbles are DELAYED by their measured overflow, so
+        // each one flies only once it has scrolled fully into view. Every
+        // bubble therefore appears on-screen, at every window size.
+        // ─────────────────────────────────────────────────────────────
+        const FIT_MARGIN = 40;    // bubble must clear the fold by this much
+        const MIN_SPACING = 120;  // never let two reveals get closer than this
+        let anchor = 0;           // scroll position of the reveal start line
+        let thresholds: number[] = [];
+        let releaseLine: { at: number; bubble: number } | null = null;
+
+        const plan = () => {
+          if (released || !pinEl || !question) return;
+          // All measurements are layout-derived (offsetTop/offsetHeight are
+          // immune to both scroll position and the reveal transforms), so
+          // this is valid at ANY scroll position and safe to re-run.
+          const chatTopDoc =
+            chat.getBoundingClientRect().top + (window.scrollY || 0);
+          anchor = chatTopDoc + pinNaturalTop + question.offsetTop - vh * 0.4;
+          const chatPad =
+            parseFloat(getComputedStyle(chat).paddingBottom) || 0;
+          const footerH = footerEl
+            ? (footerEl as HTMLElement).offsetHeight
+            : 0;
+          const stack = (messages as HTMLElement[]).map((m) => ({
+            off: m.offsetTop,
+            h: m.offsetHeight,
+          }));
+          const restBottom = (k: number, top: number) =>
+            top + stack[k].off + stack[k].h;
+          const contentH = stack[n - 1].off + stack[n - 1].h;
+
+          // First bubble whose resting spot would not clear the fold while
+          // pinned. Monotone: offsets only grow, so this is well-defined.
+          let kstar = -1;
+          for (let k = 0; k < n; k++) {
+            if (restBottom(k, stickyTop) > vh - FIT_MARGIN) {
+              kstar = k;
+              break;
+            }
+          }
+
+          if (kstar <= 0) {
+            // Tall screen — everything fits (or bubble №0, which flies
+            // before the pin engages, is the first non-fitter): baseline
+            // behavior, no release.
+            thresholds = messages.map((_, k) => anchor + LEAD + k * STEP);
+            pinEl.style.paddingBottom = "";
+            releaseLine = null;
+            chat.style.height = anchor + LEAD + n * STEP + TRAIL + "px";
+            (window as any).__jd = {
+              thresholds: [...thresholds],
+              releaseLine: null,
+              anchor,
+            };
+            return;
+          }
+
+          // Release line: the threshold of the first non-fitting bubble.
+          // (kstar >= 1 is always past the pin-engage point — see the
+          // threshold math — so there is something to release.)
+          const U = anchor + LEAD + kstar * STEP;
+          const overflow = (k: number) =>
+            restBottom(k, stickyTop) - (vh - FIT_MARGIN);
+          const overflowLast = overflow(n - 1);
+
+          // Extra scroll after the pin releases = pin height + pads + footer
+          // − viewport. Make sure at least DESIRED_TAIL of it remains after
+          // the last bubble becomes visible, via bottom padding on the pin
+          // (invisible while pinned — it sits below the fold).
+          const budget = (h: number) =>
+            h + stickyTop + chatPad + footerH - vh;
+          const pinH0 = Math.max(vh, contentH);
+          const pinPad = Math.max(
+            0,
+            Math.min(
+              600,
+              Math.round(overflowLast + 260 - budget(pinH0))
+            )
+          );
+          const pinH = Math.max(vh, contentH + pinPad);
+          pinEl.style.paddingBottom = pinPad + "px";
+
+          // Delayed thresholds: each too-tall bubble flies once the slid-up
+          // pin has carried it fully into view; keep the original ladder
+          // when it is later, and keep a minimum rhythm between reveals.
+          const t = [];
+          let prev = -Infinity;
+          for (let k = 0; k < n; k++) {
+            let v =
+              k < kstar
+                ? anchor + LEAD + k * STEP
+                : Math.max(anchor + LEAD + k * STEP, U + overflow(k));
+            v = Math.max(v, prev + MIN_SPACING);
+            t.push(v);
+            prev = v;
+          }
+          thresholds = t;
+          releaseLine = { at: Math.round(U), bubble: kstar };
+          // Publish the plan so the annotated-site overlay (and anything
+          // else) can read the REAL thresholds instead of re-deriving them.
+          (window as any).__jd = {
+            thresholds: [...thresholds],
+            releaseLine: { ...releaseLine },
+            anchor,
+          };
+
+          // Runway sized so natural sticky exhaustion happens at exactly U:
+          // unstick scrollY = chatTop + (chatHeight − chatPad) − pinH − top.
+          chat.style.height =
+            U + pinH + stickyTop + chatPad - chatTopDoc + "px";
+        };
+
+        const refreshLayout = () => {
+          requestAnimationFrame(plan);
+        };
+        plan();
+        if (document.fonts && document.fonts.ready) {
+          document.fonts.ready.then(refreshLayout).catch(() => {});
+        }
+        window.addEventListener("load", refreshLayout);
+
+        // RESIZE: the whole plan is layout-derived, valid at any scroll
+        // position, so a resize just recomputes it against the new window
+        // height. Debounced so a drag-resize measures once. On mobile,
+        // innerHeight churns as the URL bar collapses/expands DURING scroll
+        // and fires spurious resizes — so height-only changes are ignored:
+        // the plan is only recomputed when the viewport SHAPE (width)
+        // changes. Once released, the layout is natural and frozen.
+        let resizeTimer = 0;
+        let lastW = window.innerWidth;
+        window.addEventListener("resize", () => {
+          clearTimeout(resizeTimer);
+          resizeTimer = window.setTimeout(() => {
+            const newVh = window.innerHeight || document.documentElement.clientHeight;
+            const newW = window.innerWidth;
+            if (released || !question || !chat || newVh === vh || newW === lastW) return;
+            lastW = newW;
+            vh = newVh;
+            plan();
+          }, 150);
+        });
+
+        // Post-release viewport-entry reveals measure the ROW, not the
+        // bubble: the bubble carries the 44vh entrance transform, and
+        // getBoundingClientRect INCLUDES transforms, so measuring the bubble
+        // would trigger ~44vh late. The row is never transformed.
+        const rows = messages.map((el) => el.parentElement);
 
         const apply = () => {
-          const scrollY = window.pageYOffset || window.scrollY || 0;
+          const scrollY = Math.max(0, window.pageYOffset || window.scrollY || 0);
           // The fixed arrow fades out as the user nears the end of the page.
           if (arrow) {
             const nearBottom =
               scrollY >= ((document.documentElement || document.body).scrollHeight - vh - 120);
             arrow.classList.toggle("is-hidden", nearBottom);
           }
+          if (!released) {
+            peak = Math.max(peak, scrollY);
+            // Release on meaningful upward scroll, but only once the pin is
+            // actually stuck (its viewport top equals the sticky offset; in
+            // the hero it sits lower, so early jitter can't trigger it).
+            if (
+              peak - scrollY > RELEASE_UP &&
+              pinEl &&
+              pinEl.getBoundingClientRect().top <= stickyTop + 1
+            ) {
+              release();
+            }
+          }
           for (let i = 0; i < n; i++) {
             const el = messages[i];
-            const inAt = anchor + LEAD + i * STEP;
-            const outAt = inAt - HYST;
-            if (!el.__shown && scrollY >= inAt) {
+            if (el.__shown) continue; // one-way latch: never un-reveal
+            let show = false;
+            if (!released) {
+              show = scrollY >= (thresholds[i] ?? anchor + LEAD + i * STEP);
+            } else {
+              const row = rows[i];
+              show = !!row && row.getBoundingClientRect().top < vh - 40;
+            }
+            if (show) {
               el.__shown = true;
               el.classList.add("revealed");
-            } else if (el.__shown && scrollY < outAt) {
-              el.__shown = false;
-              el.classList.remove("revealed");
             }
           }
         };

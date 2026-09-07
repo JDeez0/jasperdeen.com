@@ -306,7 +306,18 @@ html.js-scrub .pin {
      the top of .pin, so this keeps it a short distance below the viewport
      top, and the page effectively stops scrolling there. */
   top: 1.5rem;
-  min-height: 100vh;
+  /* svh, not vh: vh equals the LARGE viewport on mobile, so with the URL
+     bar shown the pin would be taller than the visible screen and every
+     fold/fits calculation would be off. svh is the stable small viewport,
+     matching the hero above. */
+  min-height: 100svh;
+  /* clip, not visible: hidden bubbles sit at translateY(44vh), and WITHOUT
+     clipping those displaced boxes inflate the document's scrollable
+     overflow (~44vh past the pin), making scrollHeight depend on how many
+     bubbles have revealed. The pin's bottom edge is at/below the fold
+     whenever a bubble is flying, so the clip line is never visible. clip
+     (not hidden) creates no scroll container, so sticky is unaffected. */
+  overflow: clip;
 }
 /* ---------- Display type ----------
    The hero name is the outlined treatment (transparent fill + 1px ink

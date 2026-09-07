@@ -1,15 +1,90 @@
-# Session notes — 2026-09-04 (footer scroll rework, theme toggle, copy)
+# Session notes — 2026-09-06 (one-way latch + scroll-up pin release — IMPLEMENTED & VERIFIED)
 
-Summarized from a long interactive session on the jasperdeen.com Astro site (`~/jasperdeen-site`, `main` branch).
+Reworked the home dialogue's scroll behavior. Read this before touching the reveal code.
 
-## Outcome of this session
+## What we ACCOMPLISHED (all verified with Playwright probes, /tmp/pwtest/)
+
+1. **One-way bubble latch.** Once a bubble reveals it NEVER hides again (until page
+   refresh). Scrolling up no longer unwinds/re-flies bubbles. The old `HYST`/`outAt`
+   unwind logic was deleted entirely.
+2. **One-way pin release on scroll-up.** The sticky pin releases when the user scrolls
+   up more than `RELEASE_UP = 10` px below the high-water mark (`peak`), but only once
+   the pin is actually STUCK (its viewport top ≤ the sticky offset — hero jitter can't
+   trigger it). Release is a **one-way tripwire below the peak**, not a per-event delta
+   — immune to trackpad wobble and down-up oscillation. The 10px threshold follows the
+   industry-standard pattern (Headroom.js `tolerance`, Peek.js default 5px, NN/g's
+   "scroll more than a few pixels"); our high-water-mark variant is the more robust
+   form of it. Once released, the pin NEVER re-sticks (until refresh) — no re-stick
+   teleport, ever.
+3. **Zero-jump release mechanics** (the thing attempts #1/#2 kept breaking):
+   - measure the pin's visual offset from its flow slot while STILL sticky,
+   - swap `position: static` + `transform: translateY(shift)` (visual no-op),
+   - collapse the runway (`chat.style.height = ""`, clear the planner's pin padding),
+   - if the shrink would clamp scrollY, scroll up by exactly the clamped amount and add
+     it to the transform — nothing the user sees moves.
+   Probe-verified **0px visual jump** across the release at vh 600/800/900.
+4. **Post-release reveals** switch to viewport-entry (row top < vh − 40). The ROW
+   (`.chat-row`) is measured, never the bubble — the bubble carries the 44vh entrance
+   transform and `getBoundingClientRect`/IntersectionObserver INCLUDE transforms
+   (CSSOM View + IntersectionObserver specs), so measuring the bubble would trigger
+   ~44vh late. Rows never transform.
+5. **Research-driven hardening** (all researched first, see convo):
+   - scrollY clamped with `Math.max(0, …)` everywhere (iOS rubber-band goes negative);
+   - `peak` initializes to the load-time scrollY (mid-page refresh / back-nav scroll
+     restoration can't instantly release); verified: mid-load → no release, up-scroll
+     then releases correctly;
+   - resize re-plans ONLY when width changes — mobile URL-bar collapse/expands churn
+     `innerHeight` during scroll and fire spurious resizes (iOS fires them mid-scroll,
+     Android throttles/misses them); height-only changes are ignored;
+   - bfcache restores the entire JS heap + scroll position atomically, so the latch
+     and released state survive back/forward perfectly — never add an `unload`
+     listener to this site (kills bfcache);
+   - the rAF polling loop is the scroll mechanism ON PURPOSE: iOS scroll events don't
+     fire during momentum, but scrollY does update. Do not "optimize" it into a
+     scroll-event listener.
+
+## What we REMOVED / changed deliberately
+
+- **`HYST` (60px) and the whole unwind branch** — dead code under the latch.
+- **The "every pass is identical" position-purity invariant** — intentionally traded
+  away: first scroll-down differs from every later pass (later = everything stays).
+- **The release planner's re-stick assumptions** — the planner still handles SHORT
+  viewports on the way down (delayed thresholds, pin padding, runway sized to the
+  release line U), but its "CSS naturally re-sticks on scroll-up" behavior is now
+  superseded: any meaningful up-scroll releases permanently. `plan()` no-ops once
+  released; resize re-plan too.
+- **`.pin { min-height: 100vh }` → `100svh`** — vh = LARGE viewport on mobile, so the
+  pinned screen was taller than the visible screen with the URL bar shown, skewing
+  every fold calculation. Hero already used svh.
+- **NEW: `html.js-scrub .pin { overflow: clip }`** — hidden bubbles sit at
+  `translateY(44vh)`, and unclipped those displaced boxes inflated the document's
+  scrollable overflow, making `scrollHeight` depend on how many bubbles had revealed
+  (docH decayed during post-release reveals — a latent scroll-clamp risk).
+  `overflow: clip` (NOT `hidden` — that would create a scroll container and kill
+  sticky) pins the scroll area; the clip line sits at/below the fold whenever a
+  bubble is flying, so it's never visible. Verified: docH constant post-release.
+
+## Verified behaviors (release-probe.mjs + edges.mjs in /tmp/pwtest/)
+- 0px pin jump across release (vh 600/800/900); docH collapse clean; 0px leftover
+  scroll below footer; no oscillation under 10 up/down wiggles; hero jitter does NOT
+  release; mid-page load does NOT release; latch never decreases shown-count.
+- On release, bubbles still hidden but inside the pinned viewport reveal at once
+  (a quick fly-in burst) — inherent to the latch; the alternative is invisible gaps
+  in the thread.
+
+## Not done / open
 We **reverted** the footer/scroll rework back to the committed known-good state (git HEAD,
 `e2534a4`) and kept only the changes that were stable and wanted. If you see this note in the
 future, the project is back to the original working scroll system, and the below documents what
 happened so we don't re-walk the same rabbit hole.
 
-## What we KEPT (committed to working tree, diff vs HEAD)
-These are the only remaining uncommitted changes as of this note:
+---
+
+# Session notes — 2026-09-04 (footer scroll rework, theme toggle, copy)
+
+Summarized from a long interactive session on the jasperdeen.com Astro site (`~/jasperdeen-site`, `main` branch).
+
+What happened this session:
 
 1. **Copy** — `src/data/chat.ts` and the home `index.astro` intro:
    - Hero answer bubble = **"Making space to write"**.
@@ -119,3 +194,57 @@ oscillation, on both variants. It was reverted for trust reasons, not because it
 `/tmp/pwtest/probe.mjs`, `probe2.mjs`, `cmp.mjs` (playwright-core + installed chromium)
 drive the real page through a scroll sweep and log docH/chat/pin/footer geometry — use
 these instead of eyeballing; eyeballing is how three regressions shipped in a row.
+
+## CORRECTION (2026-09-07): release is UNWIND-TO-NATURAL, not transform-hold
+
+The 2026-09-06 notes above describe `release()` as transform-hold
+(`position: static` + `translateY(shift)`). That shipped briefly and was
+REJECTED by the user — with proof, not vibes:
+
+- transform-hold leaves the pin displaced below its flow slot FOREVER: the
+  vacated slot = `shift`px of blank above the question (measured 466px), and
+  the pin lands ON the footer (measured overlap; footer buried mid-page,
+  bubble block at the document bottom, header floating above the blank when
+  scrolling up). Exactly the reported "too much space above the question".
+
+The shipped release() now UNWINDS to the natural page:
+1. measure `shift` = pin visual top − pin flow top (while still sticky);
+2. clear planner padding, `position: static`, `chat.style.height = ""` —
+   the document becomes the natural page (pin in flow right after the hero);
+3. `scrollTo(0, y − shift)` — pin moved up by `shift`, scroll up by `shift`,
+   so the pin and every revealed bubble keep their EXACT viewport positions
+   at the release instant (probe: 0px jump);
+4. clamp safety net (unreachable in practice; post-release scroll lands at
+   ≈ heroBottom + 24).
+
+Why it works: at the release instant everything ABOVE the pin is off-screen
+above the viewport, so deleting the consumed runway changes nothing visible;
+below the fold, content moves up but the footer stays below the fold
+(measured post-release footer viewport ≈ 1045px vs 800px fold at all sizes
+tested: 450/600/800/1000).
+
+New probe: /tmp/pwtest/release-fixed.mjs asserts 12 invariants (natural gap
+restored, no overlap, footer = doc end, 0px jump, below-fold stability, all
+revealed, no leftover, no oscillation) — ALL PASS on :4321 and :4500 at four
+viewport sizes. The annotated overlay also needed: measure with itself
+`display:none` (its markers inflated scrollHeight) and `#x-layer { overflow:
+hidden }` (delayed-threshold markers dangle past the natural footer after
+release and would re-inflate the page).
+
+## Dev environment (2026-09-07): :4321 dev / :4500 annotated preview
+- :4321 = `astro dev` (binds ::1 — use `http://localhost:4321/`).
+- :4500 = python http.server serving `/tmp/jd-annotated/site` — the current
+  build PLUS the scroll-mechanics explanation overlay (overlay.js/overlay.css,
+  injected by `/tmp/jd-annotated/rebuild.sh`). **The overlay is the only
+  difference from the real site.**
+- Watcher `~/.pi/agent/jd-watch.cjs` (log `/tmp/jd-watch.log`) polls src/+
+  public/ mtimes every 2s and runs rebuild.sh (build → copy → inject).
+  Polling, not inotify — fs events don't cross this machine's session
+  sandboxes. Both background processes die on reboot; restart with:
+  `setsid nohup node ~/.pi/agent/jd-watch.cjs &>/tmp/jd-watch.log &`
+  `setsid nohup python3 -m http.server 4500 --bind 127.0.0.1 --directory /tmp/jd-annotated/site &>/tmp/http-4500.log &`
+- Overlay was updated for the new model: shows the scroll-up RELEASED state
+  (no pin, viewport-entry reveals), the actual releasedAt scroll position,
+  and measures with itself hidden (display:none) — its absolutely-positioned
+  markers previously inflated scrollHeight and blocked the post-release
+  runway collapse.
