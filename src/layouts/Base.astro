@@ -173,6 +173,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
             chat.getBoundingClientRect().top -
             pinNaturalTop;
           pinEl.style.paddingBottom = ""; // drop the short-screen release padding
+          pinEl.style.minHeight = ""; // and the shaved viewport reservation
           pinEl.style.position = "static";
           chat.style.height = ""; // collapse the runway: natural page layout
           // The pin just moved UP in the document by `shift`; scroll up by
@@ -224,6 +225,20 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
           const footerH = footerEl
             ? (footerEl as HTMLElement).offsetHeight
             : 0;
+          // The pin does NOT need to reserve a full viewport. Its minimum
+          // height only has to keep everything after the chat (the footer)
+          // below the fold while the screen is frozen, and leave exactly
+          // enough room for that content to be fully revealed at page end:
+          // viewport − (chatPad + stickyTop + footer height). Reserving the
+          // FULL viewport over-provides by those ~165px, which is the
+          // "large gap" between the last bubble and the footer on
+          // fits-screens (conversation shorter than the viewport).
+          const reserved =
+            chatPad + stickyTop + (footerH || 0);
+          // Shrink the pin's reservation accordingly (CSS keeps 100svh as
+          // the no-JS default).
+          pinEl.style.minHeight =
+            Math.max(vh - reserved, 0) + "px";
           const stack = (messages as HTMLElement[]).map((m) => ({
             off: m.offsetTop,
             h: m.offsetHeight,
@@ -272,7 +287,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
           // (invisible while pinned — it sits below the fold).
           const budget = (h: number) =>
             h + stickyTop + chatPad + footerH - vh;
-          const pinH0 = Math.max(vh, contentH);
+          const pinH0 = Math.max(vh - reserved, contentH);
           const pinPad = Math.max(
             0,
             Math.min(
@@ -280,7 +295,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
               Math.round(overflowLast + 60 - budget(pinH0))
             )
           );
-          const pinH = Math.max(vh, contentH + pinPad);
+          const pinH = Math.max(vh - reserved, contentH + pinPad);
           pinEl.style.paddingBottom = pinPad + "px";
 
           // Delayed thresholds: each too-tall bubble flies once the slid-up

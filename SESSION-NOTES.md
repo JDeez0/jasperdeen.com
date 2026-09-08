@@ -345,3 +345,24 @@ naturally — no reveal machinery), with the validated tail tuning:
 Probes (footer-end / release-fixed ×5 sizes / edges) ALL PASS on :4321+ :4500.
 Known irreducible cost: fits-screens show the pin's min-height fill between
 the conversation and the footer (inherent to the full-height frozen screen).
+
+## 2026-09-07 (latest): the pin does NOT need a full-viewport reservation
+
+Investigated `min-height: 100svh` on `.pin`. Its only job: keep everything
+after the chat (the footer) below the fold while the screen is frozen, and
+leave room for it to be fully revealed at page end. The MINIMUM reservation
+that guarantees both is:
+
+    vh − (chatPad + stickyTop + footerH)   ≈ vh − 165
+
+Reserving the full viewport over-provides by exactly those ~165px — which was
+the "large gap" on fits-screens (381px at vh1300 → 256px; 106 → 64 at vh1000).
+
+Implementation: `plan()` measures `reserved = chatPad + stickyTop + footerH`
+and sets `pinEl.style.minHeight = (vh − reserved)px` (CSS keeps `100svh` as
+the no-JS default); all `Math.max(vh, …)` pin-height calcs became
+`Math.max(vh − reserved, …)`; `release()` clears minHeight. On non-fits
+screens (content > vh − 165) nothing changes — pinH = content as before.
+Probes: footer-end + release-fixed ×5 sizes + edges ALL PASS on :4321/:4500.
+On fits-screens the footer now scrolls in naturally during the last ~77px,
+exactly at exhaustion, resting at the viewport bottom at page end.
