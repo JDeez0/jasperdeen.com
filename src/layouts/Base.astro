@@ -114,7 +114,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
         //   Threshold for message i:  anchor + LEAD + i × STEP
         const LEAD = 60;   // a little extra before the first bubble
         const STEP = 200;  // scroll distance between messages after the first
-        const TRAIL = 260; // runway left after the last reveal
+        const TRAIL = 40; // scroll left after the last reveal — the frozen screen ends almost immediately after bubble №7, then the footer is simply scrolled to
         const RELEASE_UP = 10; // px of upward scroll past the peak that releases the pin
         const n = messages.length;
         // vh is `let` because it must track the window: every threshold and
@@ -277,7 +277,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
             0,
             Math.min(
               600,
-              Math.round(overflowLast + 260 - budget(pinH0))
+              Math.round(overflowLast + 60 - budget(pinH0))
             )
           );
           const pinH = Math.max(vh, contentH + pinPad);

@@ -248,3 +248,100 @@ release and would re-inflate the page).
   and measures with itself hidden (display:none) — its absolutely-positioned
   markers previously inflated scrollHeight and blocked the post-release
   runway collapse.
+
+## 2026-09-07 (latest): footer fly-in REVERTED — tail tuned instead
+
+User saw the footer-in-pin fly-up and rejected it: the footer must not move
+faster than the user's scroll (must not behave like a bubble). Reverted to
+`sept7-adequate` (footer back outside the pin in Base.astro; SiteFooter.astro
+deleted). The overlay's TRAIL/FOOTER regions restored accordingly.
+
+Two tweaks kept on top of sept7-adequate (both in Base.astro):
+- `TRAIL` 260 → **40**: on fits-screens the pin now exhausts ≈ 80px after
+  bubble №7's threshold (exhaustion ≈ T7 + TRAIL + 40) — "almost immediately".
+- Planner tail `overflowLast + 260` → `+ 60`: short screens' post-№7 slide
+  before the footer arrives shrinks proportionally.
+- Result (footer-end.mjs, all PASS on :4321 + :4500, vh 450–1300): doc gap
+  final paragraph → footer 49–112px (was ~324; ~635 on fits-screens);
+  pin releases right at/just after №7 everywhere; footer fully visible at
+  page end; no leftover scroll. On fits-screens the remaining visual gap
+  between last bubble and footer is the pin's own min-height fill
+  (pre-existing pinned-screen design, vh − 24 − contentH) — flagged to user.
+- Metrics note: "pin releases" = exhaustion (chatTop + chatH − chatPad −
+  pinH − stickyTop); on short screens it lands at the first non-fitting
+  bubble (№7 rides the slide) — the near-№7 release only exists on fits
+  screens, per the user's scoping.
+
+## 2026-09-07 (final): chat tail tightened to 1.5rem
+`.chat { padding-bottom: 4rem → 1.5rem }` — the footer now follows the final
+paragraph almost directly (measured doc gap 0–10px on short screens, 66px
+residual slide at vh1000, min-height fill on fits-screens). All release math
+reads chatPad at runtime, so no JS changes were needed. Probes: footer-end,
+release-fixed, edges — ALL PASS on :4321 + :4500.
+
+## 2026-09-07 (latest): footer IN the pin as PLAIN STATIC content (no animation)
+
+The footer-in-pin fly-up was rejected (footer must not move faster than the
+user's scroll), reverted, tail tuned — but the remaining large gap on
+fits-screens was the pin's min-height fill (vh − 24 − contentH), which no
+tail tuning could remove while the footer lived OUTSIDE the pin.
+
+Final design: the footer is back INSIDE `.pin` (`.footer-row` wrapper,
+`margin-top: 2rem`) as PLAIN STATIC content — **no `.message` class, no
+reveal, no animation**. It always moves exactly at scroll speed:
+- fits-screens: visible at the conversation's bottom the whole time; page
+  ends right after №7 (tall branch: exhaustion == T7, page end = T7 +
+  chatPad + stickyTop; measured 17–60px past №7 across vh 450–1300).
+- shorter screens: slides into view with the pin after №7 lands, resting at
+  viewport bottom − chatPad exactly when the page ends.
+- gap final paragraph → footer: exactly the 2rem margin at EVERY size
+  (was ~324px originally, ~375 even after tail tuning on fits-screens).
+- scroll-up release unwind now leaves the footer at the natural page bottom
+  automatically (footer rides the pin).
+
+Script: footer no longer a `.message` (n = 8 again); `overflowFoot`/
+FOOTER_SPACING/`footerH` budget term all gone; tall branch runway sized to
+`lastThreshold − chatTopDoc + chatPad + pinH + stickyTop`; planner branch
+keeps `pinPad = overflowLast + 60 − budget`.
+
+Probes ALL PASS (repeated runs): footer-end.mjs (static-footer semantics),
+release-fixed.mjs ×5 sizes, edges.mjs, on :4321 and :4500.
+Probe flakiness note: snapshots taken <0.6s after a reveal measure bubbles
+mid-flight (their rect includes the 44vh transform) — always wait out the
+transition before asserting geometry.
+
+## 2026-09-07 (final resolution): footer OUTSIDE the pin, scrolled to — and why
+
+The static-footer-inside-pin attempt (with a visibility gate) was rejected:
+the hidden→visible flip was obvious, and on fits-screens a footer inside the
+pin can ONLY be "visible from №1" or "hidden then pops" — there is no
+natural-scroll behavior for content inside a frozen screen.
+
+THE STRUCTURAL TRUTH (why the simple design kept failing): the pinned screen
+is a full-viewport frozen frame. While stuck, NOTHING inside the pin scrolls,
+so "scrolled to naturally" requires the footer to live OUTSIDE the pin. But on
+fits-screens (conversation shorter than viewport) the pin's min-height fill
+(vh − 24 − contentH) physically sits between the conversation and anything
+below it — so fits-screens must either show the footer early, pop it, or keep
+a gap. All three were tried; the user chose the gap.
+
+Final state (= sept7-adequate + validated tail tweaks, footer outside):
+- TRAIL 40, planner tail 60, chatPad 1.5rem.
+- Footer is plain static content after the chat — no reveal machinery, simply
+  scrolled to. Measured: doc gap 24px (short screens), fits-screens carry the
+  min-height fill (81px @vh1000, 381px @vh1300) — flagged as irreducible
+  without changing the full-height frozen-screen design.
+- footer-end.mjs (outside-footer semantics), release-fixed.mjs ×5 sizes
+  (repeated runs), edges.mjs — ALL PASS on :4321 + :4500.
+
+## BEST STATE YET (2026-09-07) — tagged `sept7-best`, the revert target
+Footer OUTSIDE the pin (plain static content after the chat, scrolled to
+naturally — no reveal machinery), with the validated tail tuning:
+- `TRAIL = 40` (tall branch): pin exhaustion ≈ bubble №7's threshold + 40px —
+  the frozen screen ends just barely under the last paragraph.
+- Planner tail `overflowLast + 60` (short screens): slide after №7 is minimal.
+- `.chat` padding-bottom 4rem (the 1.5rem experiment was reverted).
+- One-way bubble latch + scroll-up unwind release from `sept7-adequate`.
+Probes (footer-end / release-fixed ×5 sizes / edges) ALL PASS on :4321+ :4500.
+Known irreducible cost: fits-screens show the pin's min-height fill between
+the conversation and the footer (inherent to the full-height frozen screen).
