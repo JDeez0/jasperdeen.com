@@ -1,0 +1,92 @@
+---
+import { getCollection } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import { sortProjects } from "../../lib/content";
+
+const current = sortProjects(await getCollection("current"));
+---
+
+<Base
+  title="Current — Jasper Deen"
+  description="Current work from Jasper Deen."
+>
+  <main class="page">
+    <header class="content-head">
+      <h1 class="display display--small">Current</h1>
+    </header>
+
+    <section class="project-grid" aria-label="Current work">
+      {current.length === 0 && <p class="coming-soon">Nothing here yet — coming soon.</p>}
+      {current.map((project) => (
+        <a class="project-card" href={`/current/${project.id}/`}>
+          <div class="project-card-head">
+            <h2>{project.data.title}</h2>
+            {project.data.status && (
+              <span class={`status status--${project.data.status}`}>
+                {project.data.status}
+              </span>
+            )}
+          </div>
+          {project.data.description && <p>{project.data.description}</p>}
+        </a>
+      ))}
+    </section>
+  </main>
+</Base>
+
+<style>
+  .project-grid {
+    /* Two tiles per row, each filling half the width — card 1 left, card 2
+       right, card 3 left, and so on (grid flows left-to-right). */
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+  .coming-soon {
+    color: var(--muted);
+    font-family: var(--font-sans);
+    font-size: 1.0625rem;
+  }
+  .project-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    aspect-ratio: 7 / 6;
+    padding: 1.25rem;
+    border: 1px solid var(--line-strong);
+    border-radius: 1.125rem;
+    text-decoration: none;
+    color: var(--ink);
+    transition: border-color 0.2s ease, transform 0.2s ease;
+  }
+  .project-card:hover {
+    border-color: var(--outline);
+    transform: translateY(-2px);
+  }
+  .project-card-head {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .project-card h2 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 1.3rem;
+    margin: 0;
+  }
+  .project-card p {
+    margin: 0.6rem 0 0;
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+  .status {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.1rem 0.5rem;
+    border-radius: 999px;
+    border: 1px solid var(--line-strong);
+    color: var(--muted);
+  }
+</style>

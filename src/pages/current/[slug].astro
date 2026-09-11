@@ -1,0 +1,87 @@
+---
+import { getCollection, render } from "astro:content";
+import Base from "../../layouts/Base.astro";
+
+export async function getStaticPaths() {
+  const current = await getCollection("current");
+  return current.map((project) => ({
+    params: { slug: project.id },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+---
+
+<Base
+  title={`${project.data.title} — Jasper Deen`}
+  description={project.data.description}
+>
+  <main class="page">
+    <article>
+      <header class="post-header">
+        <a class="post-back" href="/current/">← Current</a>
+        <div class="project-title-row">
+          <h1 class="display display--small">{project.data.title}</h1>
+          {project.data.status && (
+            <span class={`status status--${project.data.status}`}>
+              {project.data.status}
+            </span>
+          )}
+        </div>
+        {project.data.description && (
+          <p class="project-desc">{project.data.description}</p>
+        )}
+        {project.data.link && (
+          <a class="project-link" href={project.data.link} target="_blank" rel="noopener">
+            Visit → {new URL(project.data.link).hostname}
+          </a>
+        )}
+      </header>
+      {project.body && (
+        <div class="post-body prose">
+          <Content />
+        </div>
+      )}
+    </article>
+  </main>
+</Base>
+
+<style>
+  .post-back {
+    display: inline-block;
+    font-size: 0.9rem;
+    color: var(--muted);
+    text-decoration: none;
+    margin-bottom: 1.5rem;
+  }
+  .project-title-row {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  .project-desc {
+    margin: 0.75rem 0 0;
+    color: var(--muted);
+    font-family: var(--font-sans);
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    max-width: 34rem;
+  }
+  .status {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 0.15rem 0.6rem;
+    border-radius: 999px;
+    border: 1px solid var(--line-strong);
+    color: var(--muted);
+  }
+  .project-link {
+    display: inline-block;
+    margin-top: 1rem;
+    color: var(--ink);
+  }
+</style>

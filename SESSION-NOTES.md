@@ -1,3 +1,94 @@
+# Session notes — 2026-09-10: reveal pacing, the metered-view attempt, final state
+
+Long session on the pinned conversation's reveal pacing. Multiple approaches
+were built, verified with probes, and rejected. Final shipped state below.
+
+## The original ask
+"the bubbles should appear at a similar speed if the user scrolls down fast
+as if they scroll down slow." Measured pre-fix: fast flick = 16-17ms reveal
+gaps (bursts), slow scroll = 66ms spread. Root cause: reveals were bound to
+absolute scroll thresholds (STEP = 200px apart), so reveal rate = scroll
+velocity.
+
+## Shipped (verified): minimum time-gap pacing gate
+`REVEAL_GAP = 500` ms between bubble reveals, bubble №0 immediate, dispatch
+gated in apply()'s reveal loop. Reveals stay threshold-based (scroll
+eligibility); only the dispatch is time-gated. Measured: fast ≈ 500ms gaps,
+slow ≈ 500ms gaps — velocity-independent cadence ✓ (reveal-timing2.mjs).
+Knob: REVEAL_GAP in Base.astro (380-620ms verified window).
+
+Known accepted cost: a violent flick to the bottom strands the user there
+while the remaining bubbles trickle in on-screen (~4s for 8 bubbles). The
+bubbles are on-screen while pinned (spots visible), so it reads as the
+conversation filling in — accepted by the user after seeing the alternatives.
+
+## Attempted and REJECTED this session (do not repeat blindly)
+
+### A. Adaptive runway hold (document-height cap)
+`ensureDoc()` held maxScroll at the next unrevealed bubble's threshold by
+growing chat.style.height monotonically per reveal ("the website appears
+longer"). Works on fits-screens (kstar ≤ 0) — verified: flick lands at №0's
+threshold, runway extends per reveal, cannot outrun. BUT:
+- Rejected as jittery: between reveals maxScroll is static — the user's
+  momentum hits the hold and freezes (stop-go at 500ms intervals).
+- CONFLICTS with the short-screen planner: growing chatH delays the pin's
+  exhaustion past U, so the planner's delayed thresholds fire while the pin
+  is stuck — late bubbles fly to below-fold resting spots → INVISIBLE. The
+  adaptive hold is only provably clean on fits-screens; short screens keep
+  the planner + pacing gate (bounded on-screen trickle).
+
+### B. Metered-view takeover (Lenis-style, attempted and reverted)
+A metered `viewY` chases window.scrollY at REVEAL_RATE and
+`window.scrollTo(viewY)` each frame. FAILED structurally: our own per-frame
+scrollTo resets window.scrollY to viewY, so the limiter's target is always
+itself — the metered crawl stalls the moment the user stops actively
+scrolling (verified: flick → view frozen at the crawl start forever). The
+user's fast-scroll input (a single large jump) is discarded by the first
+clamp; only continuous input (trackpad momentum) drives it. The proper fix
+is input interception (Lenis-style: wheel/touch preventDefault + own
+momentum/inertia animation driving the real scroll position — sticky-safe
+because it's real scrolling), which is a standalone subsystem (~50 lines +
+wiring + a11y care), NOT a patch. The user's commit 8a16150 committed the
+broken metered rewrite; it also dropped the FIT_MARGIN/MIN_SPACING
+declarations (restored in the final state).
+
+### C. Hard clamp to a hold line (deadlock variant)
+Clamping scrollY to threshold[next] deadlocks: after the clamp, nativeY <
+revealStart → the limiter's engagement condition goes false → frozen
+forever. Requires a persistent phase flag (tried), but even then the
+discarded-flick-input problem remains. Also produces large backward yanks.
+
+## Also shipped this session
+- `overflow-anchor: none` on html — browser scroll anchoring fights the
+  explicit release compensation scroll.
+- Dual-anchor release(): anchor the PIN when the conversation is on screen,
+  anchor the FOOTER when the footer is on screen (release from the end).
+  Fixes a ~44-60px footer drift on short screens (footerH scope bug fixed:
+  declared outer-scope, measured in plan()).
+- Content system (separate commits): Astro 7 Content Layer, blog + current
+  collections, RSS, /current rename, square tiles.
+
+## Probe state (/tmp/pwtest/)
+- scroll-helper.mjs — scrollThroughReveals(): the ONLY correct way to
+  traverse the sequence in probes (fixed scroll targets exit at the first
+  reveal moment; the sequence is time-paced).
+- reveal-timing2.mjs — asserts ~500ms reveal gaps under fast AND slow
+  scroll (the pacing acceptance test). PASS.
+- footer-end.mjs, release-fixed.mjs (×4 sizes), edges.mjs — ALL PASS.
+- Known probe lesson: snapshots <0.6s after a reveal measure bubbles
+  mid-flight (rect includes the 44vh transform) — always wait out the
+  transition before asserting geometry. Also: give apply() a frame (~400ms)
+  after scrolling before reading peak-dependent state.
+
+## Deferred (needs a dedicated session)
+- Lenis-style input interception for the true "scrollbar physically slowed
+  down" feel (the metered takeover done properly). ~50 lines + wiring +
+  careful sticky/anchor/momentum handling. The research is in this file's
+  context: scrub smoothing 0.5-1.5, fastScrollEnd, anticipatePin; NN/g
+  scroll-jacking guidance (short, below-fold, progressive disclosure OK).
+- Short-screen release footer drift ≤ ~60px (one wheel notch) — tolerated.
+
+
 # Session notes — 2026-09-06 (one-way latch + scroll-up pin release — IMPLEMENTED & VERIFIED)
 
 Reworked the home dialogue's scroll behavior. Read this before touching the reveal code.
@@ -366,3 +457,83 @@ screens (content > vh − 165) nothing changes — pinH = content as before.
 Probes: footer-end + release-fixed ×5 sizes + edges ALL PASS on :4321/:4500.
 On fits-screens the footer now scrolls in naturally during the last ~77px,
 exactly at exhaustion, resting at the viewport bottom at page end.
+
+## 2026-09-09: Content system (Astro 7 Content Layer)
+
+Blog + Projects are now collection-driven local Markdown/MDX, no CMS.
+- `src/content.config.ts` — `blog` + `projects` collections, `glob()` loader
+  from `astro/loaders` (NOT `astro:loaders` — that virtual module isn't wired
+  in astro 7.2.9; use the physical path). `z` from `astro/zod` (Zod 4; use
+  `z.url()` not `z.string().url()`).
+- Published blog posts at `src/content/blog/*.md|mdx`; projects at
+  `src/content/projects/*.md|mdx`.
+- Dynamic pages: `src/pages/blog/[slug].astro`, `src/pages/projects/[slug].astro`
+  via `getStaticPaths()` + `render()`.
+- `src/lib/content.ts` — isPublished/isScheduled (draft + pubDate), sorters,
+  formatDate. Drafts/future posts excluded from build.
+- RSS: `src/pages/rss.xml.ts` via @astrojs/rss; auto-discovery <link> in Base.
+- MDX/RSS deps: `@astrojs/mdx@7.0.8` + `@astrojs/rss@^4.0.19`. IMPORTANT:
+  mdx@8.x wants markdown-remark ^7.3.0 but astro 7.2.9 pins 7.2.4 — use mdx
+  7.x to avoid the peer conflict.
+- Prose styles: `.post-body.prose` in global.css.
+- Versions: Astro 7.2.9, Satteri .md default. `astro check` target: 0 errors.
+- Refactored `__shown` ad-hoc prop in Base.astro to a WeakSet (type-safe).
+
+Sample content added (blog/setting-my-own-table.md, projects/kbdprobe.md) to
+demonstrate the pipeline — replace/remove as the real content lands.
+Preview static build on :4530 (python http.server on dist/).
+
+## 2026-09-09 (requested): overscroll at bottom on every page
+User wants the satisfying "overscroll then spring-back" at the bottom of
+scroll / behavior on ALL pages. On the homepage it emerges (as a side effect)
+because the pinned chat runway's tall document creates extra inertia. Need to
+investigate whether it's the overscroll glow (content-overscroll-behavior) or
+just scroll momentum, and reproduce it as a shared treatment for blog/projects.
+
+## 2026-09-10: velocity-independent pacing + adaptive runway ("can't outrun")
+
+Two-part change to the pinned conversation's reveal engine:
+
+### 1. Minimum time-gap pacing (REVEAL_GAP = 500ms)
+Reveal *eligibility* stays threshold-based (scroll position), but the
+*dispatch* is time-gated: at most one bubble per 500ms, bubble №0 immediate.
+Measured (reveal-timing2.mjs): fast flick ≈ 500ms gaps, slow scroll ≈ 500ms
+gaps — cadence is now scroll-velocity-independent. (Pre-fix: fast = 16ms
+bursts, slow = 66ms spread.)
+
+### 2. Adaptive runway (fits-screens): the page cannot be outrun
+The pacing gate alone lets a fast flick reach maxScroll with bubbles still
+trickling (verified: flick → 0/8 revealed at the bottom). Fix: the
+document's scrollable height is held at the NEXT unrevealed bubble's
+threshold — `ensureDoc()` grows `chat.style.height` (monotonically, never
+shrinks) as bubbles land, so maxScroll always sits at the next reveal.
+`ensureDoc` runs each frame on fits-screens only (kstar ≤ 0): short screens
+keep the planner's slide choreography, whose late-bubble visibility depends
+on exact exhaustion geometry — growing the runway there would make late
+bubbles reveal below the fold. Short-screen stranding is bounded (the slide
+carries resting spots into view; the trickle happens on-screen).
+
+Mechanics: initial tall-branch chatH = max(pin+chatPad natural,
+threshold[0]+TRAIL+vh−footerH−chatTopDoc); each reveal grows it by one STEP.
+`plan()` replans are growth-only (curH = max(...,curH)).
+
+### 3. Release reworked for the grown runway
+The release can now fire from the fully-revealed grown state (or deep in the
+runway). release() anchors whichever element the user is LOOKING at:
+- pin visible (mid-hold release) → pin-anchored scroll compensation (0px
+  jump of the conversation), or
+- footer on screen (released from the end) → footer-anchored (the footer
+  stays at its exact viewport position; the grown runway collapses).
+Measured: fits 0px, short screens ≤ ~60px residual (documented tolerance).
+`html { overflow-anchor: none }` added — browser scroll anchoring must not
+fight the explicit scroll compensation.
+
+### Probe updates (all in /tmp/pwtest/)
+- `scroll-helper.mjs` — scrollThroughReveals(): scrolls through the paced
+  sequence to the fully-revealed true end (fixed scroll targets hit the hold
+  line early — the user CANNOT reach the bottom by distance alone now).
+- footer-end / release-fixed / edges all use it; release-fixed asserts
+  release + footer continuity; edges B (mid-load release) and C (latch
+  monotonicity) updated for the hold model.
+- Known residual: short-screen release-from-end footer drift ≤ ~60px
+  (one wheel notch); fits-screens are pixel-continuous.
