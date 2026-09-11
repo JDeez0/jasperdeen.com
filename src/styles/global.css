@@ -14,7 +14,14 @@
   margin: 0;
 }
 
-html, body {
+html, /* We manage scroll position explicitly (pinned conversation, release
+   compensation, adaptive runway). Chrome's scroll anchoring would fight
+   those explicit scrollTo calls when the runway collapses — disable it. */
+html {
+  overflow-anchor: none;
+}
+
+body {
   height: 100%;
 }
 
@@ -65,6 +72,9 @@ button, input, select, textarea {
   --muted: #6f6a61;
   --line: #e8e4db;
   --line-strong: #a8a198;
+  /* Light grey for the hero outline + the conversation bubbles (borders and
+     text) — one shared tone, theme-independent by design. */
+  --outline: #8a857c;
   /* Height of the dune line-art band across the top of the home page. */
   --dunes-h: clamp(72px, 11.5vw, 144px);
   /* Height of the sticky-free top header (brand 2.75rem + vertical padding
@@ -83,6 +93,7 @@ button, input, select, textarea {
     --muted: #9d978c;
     --line: #292620;
     --line-strong: #57514a;
+    --outline: #8f8a80;
     --hairline: color-mix(in oklab, var(--ink) 16%, var(--surface));
   }
 }
@@ -94,7 +105,31 @@ button, input, select, textarea {
   --muted: #9d978c;
   --line: #292620;
   --line-strong: #57514a;
+  --outline: #8f8a80;
   --hairline: color-mix(in oklab, var(--ink) 16%, var(--surface));
+}
+
+/* Manual LIGHT theme. Needed so toggling to light actually wins over the
+   prefers-color-scheme: dark media query above (which otherwise forces dark
+   whenever the OS is in dark mode regardless of data-theme). Placed later in
+   source so it has the same specificity but wins by source order. */
+:root[data-theme="light"] {
+  --surface: #fbfaf7;
+  --ink: #1b1a17;
+  --muted: #6f6a61;
+  --line: #e8e4db;
+  --line-strong: #a8a198;
+  /* Darker grey for light mode so the outlined title, bubbles and question
+     read clearly against the paper surface (was #b5b1a8 — too faint). */
+  --outline: #8a857c;
+  --hairline: color-mix(in oklab, var(--ink) 12%, var(--surface));
+}
+
+/* We manage scroll position explicitly (pinned conversation, release
+   compensation, adaptive runway). Chrome's scroll anchoring would fight
+   those explicit scrollTo calls when the runway collapses — disable it. */
+html {
+  overflow-anchor: none;
 }
 
 body {
@@ -115,7 +150,18 @@ body {
   max-width: 56rem;
   margin-inline: auto;
   border-inline: 1px solid var(--hairline);
-  min-height: 100dvh;
+  /* Barely taller than the viewport so pages are only just scrollable —
+     enough for native overscroll to engage, no more. Real content grows
+     beyond this naturally. */
+  min-height: calc(100dvh + 24px);
+  /* Flex column so the footer sits at the bottom of the sheet (a short
+     scroll below the fold on short pages, at the true bottom on long). */
+  display: flex;
+  flex-direction: column;
+}
+
+.sheet > .site-footer {
+  margin-top: auto;
 }
 
 .page,
@@ -335,7 +381,7 @@ html.js-scrub .pin {
   letter-spacing: 0.01em;
   text-align: center;
   color: transparent;
-  -webkit-text-stroke: 1px var(--ink);
+  -webkit-text-stroke: 1px var(--outline);
 }
 
 .display .word {
@@ -440,6 +486,8 @@ html.js-scrub .pin {
   font-weight: 400;
   letter-spacing: -0.005em;
   text-wrap: balance;
+  /* Same light grey as the hero outline + bubbles. */
+  color: var(--outline);
 }
 
 .scroll-indicator {
@@ -477,7 +525,9 @@ html.js-scrub .scroll-indicator.is-hidden {
 .bubble {
   max-width: min(80%, 36rem);
   margin: 0;
-  border: 1px solid var(--line-strong);
+  /* Border and text share the hero outline's light grey (--outline). */
+  border: 1px solid var(--outline);
+  color: var(--outline);
   border-radius: 1.125rem;
   padding: 0.6rem 1rem;
   font-size: 1.0625rem;
@@ -561,4 +611,100 @@ html.js-scrub .message.revealed {
   html.js-scrub .message.revealed {
     opacity: 1;
   }
+}
+
+/* ---------- Content prose (rendered .md / .mdx) ----------
+   Simple reading styles for blog/project bodies. The site's typographic
+   tokens (--ink/--muted/--line-strong) keep prose on the same visual voice
+   as the rest of the page. */
+.post-/* We manage scroll position explicitly (pinned conversation, release
+   compensation, adaptive runway). Chrome's scroll anchoring would fight
+   those explicit scrollTo calls when the runway collapses — disable it. */
+html {
+  overflow-anchor: none;
+}
+
+body {
+  max-width: 40rem;
+}
+
+.post-body.prose p,
+.post-body.prose ul,
+.post-body.prose ol,
+.post-body.prose blockquote {
+  font-family: var(--font-sans);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  color: var(--ink);
+  margin: 0 0 1.1rem;
+}
+
+.post-body.prose h2 {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 1.25rem;
+  color: var(--ink);
+  margin: 1.6rem 0 0.4rem;
+}
+
+.post-body.prose h3 {
+  font-family: var(--font-sans);
+  font-weight: 600;
+  font-size: 1.1rem;
+  color: var(--ink);
+  margin: 1.3rem 0 0.4rem;
+}
+
+.post-body.prose a {
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.post-body.prose ul,
+.post-body.prose ol {
+  padding-left: 1.4rem;
+}
+
+.post-body.prose blockquote {
+  border-left: 3px solid var(--line-strong);
+  padding-left: 1rem;
+  color: var(--muted);
+}
+
+.post-body.prose code {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.9em;
+  background: color-mix(in oklab, var(--surface) 92%, var(--ink));
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  padding: 0 0.3em;
+}
+
+.post-body.prose pre {
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  border: 1px solid var(--line-strong);
+  border-radius: 1rem;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  line-height: 1.5;
+}
+
+.post-body.prose hr {
+  border: none;
+  border-top: 1px solid var(--line-strong);
+  margin: 2rem 0;
+}
+
+/* ---------- Content page header (blog / projects / etc.) ----------
+   The home `.hero`/`.intro` classes are tuned for the linkout homepage
+   (full-viewport min-height + clamped intro margin). Content listing pages
+   must NOT reuse them — they get this tight, non-scaling header instead so
+   the title sits close to the content below it. */
+.content-head {
+  padding-top: clamp(2.5rem, 6vh, 4.5rem);
+}
+
+.content-head h1 {
+  margin: 0 0 clamp(1.5rem, 4vh, 2.5rem);
 }
