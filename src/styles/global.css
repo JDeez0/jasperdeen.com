@@ -125,13 +125,6 @@ button, input, select, textarea {
   --hairline: color-mix(in oklab, var(--ink) 12%, var(--surface));
 }
 
-/* We manage scroll position explicitly (pinned conversation, release
-   compensation, adaptive runway). Chrome's scroll anchoring would fight
-   those explicit scrollTo calls when the runway collapses — disable it. */
-html {
-  overflow-anchor: none;
-}
-
 body {
   font-family: var(--font-sans);
   background-color: var(--surface);
@@ -617,17 +610,14 @@ html.js-scrub .message.revealed {
    Simple reading styles for blog/project bodies. The site's typographic
    tokens (--ink/--muted/--line-strong) keep prose on the same visual voice
    as the rest of the page. */
-.post-/* We manage scroll position explicitly (pinned conversation, release
-   compensation, adaptive runway). Chrome's scroll anchoring would fight
-   those explicit scrollTo calls when the runway collapses — disable it. */
-html {
-  overflow-anchor: none;
-}
-
-body {
+.post-body {
   max-width: 40rem;
 }
 
+/* We manage scroll position explicitly (pinned conversation, release
+   compensation, adaptive runway). Chrome's scroll anchoring would fight
+   those explicit scrollTo calls when the runway collapses — disable it.
+   (Declared once, at the top of the file.) */
 .post-body.prose p,
 .post-body.prose ul,
 .post-body.prose ol,
