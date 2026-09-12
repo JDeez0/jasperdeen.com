@@ -1,6 +1,5 @@
 ---
 import Base from "../layouts/Base.astro";
-import Dunes from "../components/Dunes.astro";
 import { dialogue, heroAnswer } from "../data/chat";
 ---
 
@@ -12,7 +11,7 @@ import { dialogue, heroAnswer } from "../data/chat";
     <!-- Above the fold: static name, caption, intro, question, and answer.
          No motion here — the flying-up starts with the dialogue below. -->
     <section class="hero">
-      <Dunes />
+      <img class="dunes-img" src="/jasper3200.png" alt="" />
       <div class="name-block">
         <h1 class="display" aria-label="Jasper Deen">
         {
