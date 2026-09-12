@@ -292,7 +292,10 @@ body {
    Without JS / prefers-reduced-motion this is just a normal scrolling
    block with all text visible. */
 .chat {
-  padding-bottom: 4rem;
+  /* Tight close: the footer follows the final paragraph almost directly —
+     the old 4rem pause read as a mystery gap after the first scroll-down.
+     All release math reads this value at runtime, so shrinking is safe. */
+  padding-bottom: 1.5rem;
   position: relative;
 }
 
