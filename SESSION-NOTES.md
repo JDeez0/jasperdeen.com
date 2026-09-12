@@ -537,3 +537,50 @@ fight the explicit scroll compensation.
   monotonicity) updated for the hold model.
 - Known residual: short-screen release-from-end footer drift ≤ ~60px
   (one wheel notch); fits-screens are pixel-continuous.
+
+---
+
+## Work-state map (2026-09-12) — how to recreate any past state
+
+All refs are pushed to origin (github.com:JDeez0/jasperdeen.com).
+
+### Tags (exact states)
+| Tag | Commit | What it is |
+|---|---|---|
+| `sept7-best` | dcf35d5 | sept7-best scroll engine (TRAIL 40, reservation shave) — the chosen engine |
+| `release-sept7-best-scroll` | dcf35d5 | same, alias |
+| `release-content-system` | aa2f235 | content system (blog + current, RSS) on top of sept7-best |
+| `footer-gap-fix` | 9e30898 | sept7-best + footer-gap fixes (chat tail 1.5rem + pin min-height 0 release) |
+| `pre-reconcile-origin` | e608f3d | old remote tip: content + banner + centering + PACING gate |
+| `sept7-adequate` | cbcb4f9 | Sept 7 adequate (TRAIL 260, one-way latch) |
+| `known-good-scroll-baseline` | d52ef69 | pre-latch known good |
+
+### Branches
+- `main` — LIVE SITE: banner + centering + content system + sept7-best engine + footer-gap fix, NO pacing (c9cea87)
+- `wip-session-20260910` (f63810e) — full Sept 10 session incl. pacing experiments (adaptive runway, metered views)
+- `history-20260910-full` (ebe094c) — main lineage through the pacing-revert
+
+### Recreating the content system (what the user asked to preserve)
+- `src/content.config.ts` — blog + current collections via `glob()` from `astro/loaders`
+  (NOT `astro:loaders` — that alias is not wired in astro 7.2.9; import from the physical path).
+- `src/content/blog/`, `src/content/current/` (with `_TEMPLATE.md` each)
+- `src/pages/blog/[slug].astro`, `src/pages/blog/index.astro`,
+  `src/pages/current/[slug].astro`, `src/pages/current/index.astro`
+- `src/pages/rss.xml.ts`, `src/lib/content.ts` (draft/schedule filtering)
+- `scripts/new-post.mjs` + `npm run new-post -- "Title"` → scaffolds a draft
+  (`draft: true`, hidden from build/RSS until flipped)
+- Packages: `@astrojs/mdx@7.0.8`, `@astrojs/rss`
+- If a post "doesn't appear": it's usually `draft: true` in frontmatter, or the
+  dev server needs a restart (`npx astro sync`).
+
+### Footer-gap fix (the real one — 2026-09-12)
+Root cause was NOT chat padding (that was c57e5d8, a partial fix). The real
+bug: `release()` set `pinEl.style.minHeight = ""` which fell back to CSS
+`html.js-scrub .pin { min-height: 100svh }` — reserving a FULL viewport of
+dead space under the last bubble after release (53/253/553px at 800/1000/1300).
+Fix (9e30898): `pinEl.style.minHeight = "0"`. Gap now flat 38px at all sizes.
+
+### Probes
+/tmp/pwtest/: footer-end.mjs, release-fixed.mjs, edges.mjs — all ALL PASS at
+800/1000/1300 after 9e30898 (including the previously-failing footer-continuity
+cases).
