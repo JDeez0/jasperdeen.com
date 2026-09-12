@@ -116,7 +116,6 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
         const LEAD = 60;   // a little extra before the first bubble
         const STEP = 200;  // scroll distance between messages after the first
         const TRAIL = 40; // scroll left after the last reveal
-        const REVEAL_GAP = 500; // ms minimum between bubble reveals (velocity-independent pacing) — the frozen screen ends almost immediately after bubble №7, then the footer is simply scrolled to
         const RELEASE_UP = 10; // px of upward scroll past the peak that releases the pin
         const n = messages.length;
         // vh is `let` because it must track the window: every threshold and
@@ -155,7 +154,6 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
         // negative, so every read is clamped before use.
         let peak = Math.max(0, window.pageYOffset || window.scrollY || 0);
         let released = false;
-        let lastRevealAt = Number.NEGATIVE_INFINITY;
 
         // One-way pin release: unwind the pin to the NATURAL page layout.
         // At the release instant everything above the pin is off-screen (the
@@ -414,17 +412,8 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
               show = !!row && row.getBoundingClientRect().top < vh - 40;
             }
             if (show) {
-              // Pacing gate: reveal the first bubble immediately, then at
-              // most one per REVEAL_GAP so reveal cadence is stable
-              // regardless of scroll velocity (bubbles are on-screen while
-              // pinned, so a brief wait reads fine).
-              const nowMs = performance.now();
-              if (lastRevealAt !== Number.NEGATIVE_INFINITY && nowMs - lastRevealAt < REVEAL_GAP) {
-                continue;
-              }
               el.__shown = true;
               el.classList.add("revealed");
-              lastRevealAt = nowMs;
             }
           }
         };
