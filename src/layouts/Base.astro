@@ -115,8 +115,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
         //   Threshold for message i:  anchor + LEAD + i × STEP
         const LEAD = 60;   // a little extra before the first bubble
         const STEP = 200;  // scroll distance between messages after the first
-        const TRAIL = 40; // scroll left after the last reveal
-        const REVEAL_GAP = 500; // ms minimum between bubble reveals (velocity-independent pacing) — the frozen screen ends almost immediately after bubble №7, then the footer is simply scrolled to
+        const TRAIL = 40; // scroll left after the last reveal — the frozen screen ends almost immediately after bubble №7, then the footer is simply scrolled to
         const RELEASE_UP = 10; // px of upward scroll past the peak that releases the pin
         const n = messages.length;
         // vh is `let` because it must track the window: every threshold and
@@ -145,7 +144,6 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
         // later — the resize handler relies on this stable value.
         const pinNaturalTop = pinEl?.offsetTop ?? 0;
         const footerEl = document.querySelector(".site-footer");
-        let footerH = 0; // measured in plan(), used by release()
         // The pin's sticky offset (CSS: top: 1.5rem). While STUCK, the pin's
         // viewport top equals this value exactly — used to detect engagement.
         const stickyTop = pinEl ? parseFloat(getComputedStyle(pinEl).top) || 24 : 24;
@@ -155,7 +153,6 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
         // negative, so every read is clamped before use.
         let peak = Math.max(0, window.pageYOffset || window.scrollY || 0);
         let released = false;
-        let lastRevealAt = Number.NEGATIVE_INFINITY;
 
         // One-way pin release: unwind the pin to the NATURAL page layout.
         // At the release instant everything above the pin is off-screen (the
@@ -180,22 +177,13 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
           pinEl.style.minHeight = ""; // and the shaved viewport reservation
           pinEl.style.position = "static";
           chat.style.height = ""; // collapse the runway: natural page layout
-          // ── Release anchor ─────────────────────────────────────────
-          // Anchor whichever element the user is actually LOOKING at:
-          //  · the pin, when the conversation is still on screen — it
-          //    keeps its exact viewport position; or
-          //  · the footer, when it is on screen (released from the end) —
-          //    the footer stays at its exact viewport position.
-          const naturalDocH = document.documentElement.scrollHeight;
-          const footVp = footerEl.getBoundingClientRect().top;
-          let anchorScroll = y - shift; // pin-anchored (default)
-          if (footVp < vh - 8) {
-            anchorScroll = (naturalDocH - footerH) - footVp;
-          }
-          window.scrollTo(0, Math.max(0, anchorScroll));
+          // The pin just moved UP in the document by `shift`; scroll up by
+          // the same amount so its viewport position (and every revealed
+          // bubble's screen position) is unchanged at the release instant.
+          window.scrollTo(0, y - shift);
           // Clamp safety: only reachable near the very bottom of the page.
-          const k = Math.max(0, anchorScroll + vh - document.documentElement.scrollHeight);
-          if (k > 0) window.scrollTo(0, anchorScroll - k);
+          const k = Math.max(0, y - shift + vh - document.documentElement.scrollHeight);
+          if (k > 0) window.scrollTo(0, y - shift - k);
           (window as any).__jd = {
             ...(window as any).__jd,
             released: true,
@@ -235,7 +223,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
           anchor = chatTopDoc + pinNaturalTop + question.offsetTop - vh * 0.4;
           const chatPad =
             parseFloat(getComputedStyle(chat).paddingBottom) || 0;
-          footerH = footerEl
+          const footerH = footerEl
             ? (footerEl as HTMLElement).offsetHeight
             : 0;
           // The pin does NOT need to reserve a full viewport. Its minimum
@@ -409,17 +397,8 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
               show = !!row && row.getBoundingClientRect().top < vh - 40;
             }
             if (show) {
-              // Pacing gate: reveal the first bubble immediately, then at
-              // most one per REVEAL_GAP so reveal cadence is stable
-              // regardless of scroll velocity (bubbles are on-screen while
-              // pinned, so a brief wait reads fine).
-              const nowMs = performance.now();
-              if (lastRevealAt !== Number.NEGATIVE_INFINITY && nowMs - lastRevealAt < REVEAL_GAP) {
-                continue;
-              }
               el.__shown = true;
               el.classList.add("revealed");
-              lastRevealAt = nowMs;
             }
           }
         };
