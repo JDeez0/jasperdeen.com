@@ -173,7 +173,12 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
             chat.getBoundingClientRect().top -
             pinNaturalTop;
           pinEl.style.paddingBottom = ""; // drop the short-screen release padding
-          pinEl.style.minHeight = ""; // and the shaved viewport reservation
+          // Release BOTH the shaved reservation (plan()) AND the CSS base
+          // min-height: 100svh. Clearing to "" would fall back to that CSS
+          // rule and leave a full viewport of dead space under the last
+          // bubble after release — the 'mystery gap before the footer' on
+          // the second scroll-down. 0 lets the pin shrink to its content.
+          pinEl.style.minHeight = "0";
           pinEl.style.position = "static";
           chat.style.height = ""; // collapse the runway: natural page layout
           // The pin just moved UP in the document by `shift`; scroll up by
