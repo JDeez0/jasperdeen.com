@@ -610,62 +610,63 @@ html.js-scrub .scroll-indicator.is-hidden {
      triangle that continues the bubble's 1px stroke — the classic
      double-triangle technique: a --outline triangle (::before) with a
      --surface triangle (::after) inset 1px inside it, so a 1px rim reads on
-     the tip and both slants while the open base blends into the page. */
+     the tip and both slants while the open base blends into the page. Tails
+     hang DOWN from the bottom edge, offset toward the outer side. */
   position: relative;
-  /* Tuning knobs for the tail: width = how far it points out, height = half
-     the triangle height (full triangle is 2× this, ~ a first line tall),
-     y = its top offset (aligned with the first line of text). */
-  --tail-w: 12px;
-  --tail-h: 9px;
-  --tail-y: 0.9rem;
+  /* Tail tuning: --tail-w = half the triangle's base width, --tail-h2 = its
+     height (how far it hangs below the bubble), --tail-x = horizontal inset
+     from the outer edge. */
+  --tail-w: 7px;
+  --tail-h2: 9px;
+  --tail-x: 18px;
 }
 
-/* Reader's thoughts (right side) — tail on the RIGHT, pointing right, tucked
-   under the first line at the top. Mirrors iOS's sent-message tail. */
+/* Reader's thoughts (right side) — tail at the BOTTOM, hanging down toward
+   the right, mirroring iOS's sent-message tail. */
 .chat-row[data-side="reader"] .bubble::before,
 .chat-row[data-side="reader"] .bubble::after {
   content: "";
   width: 0;
   height: 0;
   position: absolute;
-  top: var(--tail-y);
+  right: var(--tail-x);
 }
 .chat-row[data-side="reader"] .bubble::before {
-  right: calc(-1 * var(--tail-w));
-  border-top: var(--tail-h) solid transparent;
-  border-bottom: var(--tail-h) solid transparent;
-  border-left: var(--tail-w) solid var(--outline);
+  bottom: calc(-1 * var(--tail-h2));
+  border-top: var(--tail-h2) solid var(--outline);
+  border-left: var(--tail-w) solid transparent;
+  border-right: var(--tail-w) solid transparent;
 }
 .chat-row[data-side="reader"] .bubble::after {
-  right: calc(-1 * var(--tail-w) + 1px);
-  top: calc(var(--tail-y) + 1px);
-  border-top: calc(var(--tail-h) - 1px) solid transparent;
-  border-bottom: calc(var(--tail-h) - 1px) solid transparent;
-  border-left: calc(var(--tail-w) - 1px) solid var(--surface);
+  right: calc(var(--tail-x) + 1px);
+  bottom: calc(-1 * var(--tail-h2) + 1px);
+  border-top: calc(var(--tail-h2) - 1px) solid var(--surface);
+  border-left: calc(var(--tail-w) - 1px) solid transparent;
+  border-right: calc(var(--tail-w) - 1px) solid transparent;
 }
 
-/* Jasper's replies (left side) — tail on the LEFT, pointing left. Mirrors
-   iOS's received-message tail. */
+/* Jasper's replies (left side) — tail at the BOTTOM, hanging down toward the
+   left, mirroring iOS's received-message tail. */
 .chat-row[data-side="jasper"] .bubble::before,
 .chat-row[data-side="jasper"] .bubble::after {
   content: "";
   width: 0;
   height: 0;
   position: absolute;
-  top: var(--tail-y);
+  left: var(--tail-x);
 }
 .chat-row[data-side="jasper"] .bubble::before {
-  left: calc(-1 * var(--tail-w));
-  border-top: var(--tail-h) solid transparent;
-  border-bottom: var(--tail-h) solid transparent;
-  border-right: var(--tail-w) solid var(--outline);
+  bottom: calc(-1 * var(--tail-h2));
+  border-top: var(--tail-h2) solid var(--outline);
+  border-left: var(--tail-w) solid transparent;
+  border-right: var(--tail-w) solid transparent;
 }
 .chat-row[data-side="jasper"] .bubble::after {
-  left: calc(-1 * var(--tail-w) + 1px);
-  top: calc(var(--tail-y) + 1px);
-  border-top: calc(var(--tail-h) - 1px) solid transparent;
-  border-bottom: calc(var(--tail-h) - 1px) solid transparent;
-  border-right: calc(var(--tail-w) - 1px) solid var(--surface);
+  left: calc(var(--tail-x) + 1px);
+  bottom: calc(-1 * var(--tail-h2) + 1px);
+  border-top: calc(var(--tail-h2) - 1px) solid var(--surface);
+  border-left: calc(var(--tail-w) - 1px) solid transparent;
+  border-right: calc(var(--tail-w) - 1px) solid transparent;
 }
 
 /* The two long closing paragraphs breathe so their text sits in a thin
