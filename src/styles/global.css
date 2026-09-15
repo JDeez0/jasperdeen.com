@@ -332,6 +332,9 @@ body {
   height: var(--dunes-h);
   object-fit: fill; /* stretch across the full banner width, centered on the page */
   margin-inline: calc(clamp(1.25rem, 4vw, 3rem) * -1);
+  /* Darken + desaturate so the dunes recede as a flat grey, matching the muted
+     grey text (--muted / --outline) instead of reading as a lighter photo. */
+  filter: grayscale(1) brightness(0.72);
   /* Pull the band up to tuck under the header (see .dunes); the hairlined
      edge now runs along the bottom edge of the picture. */
   margin-top: -2rem;
