@@ -430,9 +430,10 @@ html.js-scrub .pin {
 .display--small {
   text-align: left;
   font-size: clamp(2.5rem, 6vw, 4rem);
-  /* Smaller display lines (page titles, e.g. "Blog") stay filled — the
-     outline treatment belongs to the hero alone. */
-  color: var(--ink);
+  /* Smaller display lines (page titles, e.g. "Blog") stay filled but match
+     the muted grey of the rest of the typography — the outline treatment
+     below belongs to the hero alone. */
+  color: var(--muted);
   -webkit-text-stroke: 0;
   letter-spacing: -0.02em;
 }
@@ -503,6 +504,8 @@ html.js-scrub .pin {
   max-width: 34rem;
   font-size: 1.0625rem;
   line-height: 1.65;
+  /* Same muted grey as the surrounding text. */
+  color: var(--muted);
 }
 
 .question {
