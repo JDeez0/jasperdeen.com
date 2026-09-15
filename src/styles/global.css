@@ -170,10 +170,15 @@ body {
   gap: 1rem;
   padding-top: 1.25rem;
   padding-bottom: 1rem;
-  /* No rule under the header: the hairlined edge has moved down to sit at the
-     bottom edge of the dune band (see .dunes-img border-bottom). The header
-     also paints above the dunes so the JD mark + nav stay readable even where
-     the band tucks up behind them. */
+  border-bottom: 1px solid var(--hairline);
+}
+
+/* Home page only: drop the header rule (the hairlined edge moves down to sit
+   at the bottom edge of the dune band instead). The header still paints above
+   the dunes so the JD mark + nav stay readable where the band tucks up behind
+   them. */
+.site-header.no-rule {
+  border-bottom: 0;
   position: relative;
   z-index: 1;
 }
