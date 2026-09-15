@@ -137,11 +137,12 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* Light mode only: a soft slate wash at the very top that folds into the
-   slate surface by mid-page. Subtle, and strictly scoped so the dark themes
-   stay perfectly flat. */
+/* Light mode only: a clear top wash from near-white cool down to the slate
+   surface, settling by ~80vh. Scoped so dark themes stay flat; vh-anchored to
+   the top so it reads across the first screen; settles early enough that the
+   chat tails below sit on a flat surface (no seam). */
 body {
-  background-image: linear-gradient(180deg, #eef0f3 0%, var(--surface) 45%);
+  background-image: linear-gradient(180deg, #f7f9fb 0%, var(--surface) 80vh);
   background-repeat: no-repeat;
 }
 
@@ -168,7 +169,7 @@ body::after {
 :root[data-theme="dark"] body::after { opacity: 0; }
 /* Manual light wins over the OS-dark media query above (source order). */
 :root[data-theme="light"] body {
-  background-image: linear-gradient(180deg, #eef0f3 0%, var(--surface) 45%);
+  background-image: linear-gradient(180deg, #f7f9fb 0%, var(--surface) 80vh);
   background-repeat: no-repeat;
 }
 :root[data-theme="light"] body::after { opacity: 0.04; }
