@@ -137,12 +137,13 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* Light mode only: a clear top wash from near-white cool down to the slate
-   surface, settling by ~80vh. Scoped so dark themes stay flat; vh-anchored to
-   the top so it reads across the first screen; settles early enough that the
-   chat tails below sit on a flat surface (no seam). */
+/* Light mode only: a clear, viewport-anchored wash — near-white at the very
+   top deepening to a cooler slate by one viewport down, then flat. vh stops
+   keep it visible in the first screen (a %-based gradient would smear it
+   across the tall body) and the end tone hugs the surface token so chat
+   tails still blend. Dark themes stay perfectly flat. */
 body {
-  background-image: linear-gradient(180deg, #f7f9fb 0%, var(--surface) 80vh);
+  background-image: linear-gradient(180deg, #ffffff 0%, #e7eaf0 100vh);
   background-repeat: no-repeat;
 }
 
@@ -169,7 +170,7 @@ body::after {
 :root[data-theme="dark"] body::after { opacity: 0; }
 /* Manual light wins over the OS-dark media query above (source order). */
 :root[data-theme="light"] body {
-  background-image: linear-gradient(180deg, #f7f9fb 0%, var(--surface) 80vh);
+  background-image: linear-gradient(180deg, #ffffff 0%, #e7eaf0 100vh);
   background-repeat: no-repeat;
 }
 :root[data-theme="light"] body::after { opacity: 0.04; }
