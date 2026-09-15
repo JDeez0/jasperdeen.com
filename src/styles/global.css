@@ -170,7 +170,12 @@ body {
   gap: 1rem;
   padding-top: 1.25rem;
   padding-bottom: 1rem;
-  border-bottom: 1px solid var(--hairline);
+  /* No rule under the header: the hairlined edge has moved down to sit at the
+     bottom edge of the dune band (see .dunes-img border-bottom). The header
+     also paints above the dunes so the JD mark + nav stay readable even where
+     the band tucks up behind them. */
+  position: relative;
+  z-index: 1;
 }
 
 /* Graphical brand mark: a "JD" monogram inside an outlined rounded
@@ -296,10 +301,11 @@ body {
 .dunes {
   height: var(--dunes-h);
   margin-inline: calc(clamp(1.25rem, 4vw, 3rem) * -1);
-  /* Pull the band up toward the header rule; the svg compresses with the
-     shorter band (preserveAspectRatio: none), non-scaling strokes keep
-     the linework at 1px. */
-  margin-top: -1.25rem;
+  /* Pull the band up to tuck under the header (no header rule anymore); the
+     svg compresses with the shorter band (preserveAspectRatio: none),
+     non-scaling strokes keep the linework at 1px. */
+  margin-top: -2rem;
+  border-bottom: 1px solid var(--hairline);   /* hairlined edge under the band */
   /* Soft grey instead of full-ink: the band recedes behind the name
      instead of competing with it. 55% ink into the surface — theme-aware,
      so it greys correctly in dark mode too. */
@@ -321,7 +327,10 @@ body {
   height: var(--dunes-h);
   object-fit: fill; /* stretch across the full banner width, centered on the page */
   margin-inline: calc(clamp(1.25rem, 4vw, 3rem) * -1);
-  margin-top: -1.25rem;
+  /* Pull the band up to tuck under the header (see .dunes); the hairlined
+     edge now runs along the bottom edge of the picture. */
+  margin-top: -2rem;
+  border-bottom: 1px solid var(--hairline); /* line right at the picture's bottom edge */
 }
 
 .hero .display {
