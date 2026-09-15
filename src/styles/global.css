@@ -615,10 +615,10 @@ html.js-scrub .scroll-indicator.is-hidden {
   position: relative;
   /* Tail tuning: --tail-w = half the triangle's base width, --tail-h2 = its
      height (how far it hangs below the bubble), --tail-x = horizontal inset
-     from the outer edge. */
-  --tail-w: 7px;
-  --tail-h2: 9px;
-  --tail-x: 18px;
+     from the outer edge. tail-x ≈ tail-w so the beak hugs the corner. */
+  --tail-w: 8px;
+  --tail-h2: 10px;
+  --tail-x: 8px;
 }
 
 /* Reader's thoughts (right side) — tail at the BOTTOM, hanging down toward
@@ -667,6 +667,16 @@ html.js-scrub .scroll-indicator.is-hidden {
   border-top: calc(var(--tail-h2) - 1px) solid var(--surface);
   border-left: calc(var(--tail-w) - 1px) solid transparent;
   border-right: calc(var(--tail-w) - 1px) solid transparent;
+}
+
+/* Tighten the tail-side bottom corner (the beak anchors on a flatter edge and
+   the tail reads as a corner, mirroring the reference bubble). The opposite
+   corners keep the full 18px radius. */
+.chat-row[data-side="reader"] .bubble {
+  border-bottom-right-radius: 6px;
+}
+.chat-row[data-side="jasper"] .bubble {
+  border-bottom-left-radius: 6px;
 }
 
 /* The two long closing paragraphs breathe so their text sits in a thin
