@@ -67,17 +67,17 @@ button, input, select, textarea {
    direction: off-white paper + warm ink, not pure gray). No brand colors:
    minimalism by default. */
 :root {
-  --surface: #f9f4ec;
-  --ink: #2a2720;
-  --muted: #756c5c;
-  --line: #e6dfcf;
-  --line-strong: #a89e8b;
+  --surface: #e9ebee;
+  --ink: #2b2d30;
+  --muted: #767b80;
+  --line: #dcdee1;
+  --line-strong: #a3a7ab;
   /* Light grey for the hero outline + the conversation bubbles (borders and
      text) — one shared tone, theme-independent by design. */
-  --outline: #8f8677;
-  /* Single sparing warm accent — the one confident colour, spent only on
-     interactive hovers + status chips (rust/terracotta). */
-  --accent: #a34f2c;
+  --outline: #8d9196;
+  /* Single sparing accent, slung to the smooth coolness of the slate — a
+     muted slate-blue, spent only on interactive hovers + status chips. */
+  --accent: #5b6c86;
   /* Height of the dune line-art band across the top of the home page. */
   --dunes-h: clamp(72px, 11.5vw, 144px);
   /* Height of the sticky-free top header (brand 2.75rem + vertical padding
@@ -117,15 +117,15 @@ button, input, select, textarea {
    whenever the OS is in dark mode regardless of data-theme). Placed later in
    source so it has the same specificity but wins by source order. */
 :root[data-theme="light"] {
-  --surface: #f9f4ec;
-  --ink: #2a2720;
-  --muted: #756c5c;
-  --line: #e6dfcf;
-  --line-strong: #a89e8b;
-  /* Warmer grey for light mode so the outlined title, bubbles and question
-     read clearly against the paper surface. */
-  --outline: #8f8677;
-  --accent: #a34f2c;
+  --surface: #e9ebee;
+  --ink: #2b2d30;
+  --muted: #767b80;
+  --line: #dcdee1;
+  --line-strong: #a3a7ab;
+  /* Cooler grey so the outlined title, bubbles and question read clearly
+     against the slate surface. */
+  --outline: #8d9196;
+  --accent: #5b6c86;
   --hairline: color-mix(in oklab, var(--ink) 12%, var(--surface));
 }
 
@@ -137,11 +137,11 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* Light mode only: a soft warm wash at the very top that folds into the cream
-   surface by mid-page. Subtle (tiny delta), and strictly scoped so the dark
-   themes stay perfectly flat. */
+/* Light mode only: a soft slate wash at the very top that folds into the
+   slate surface by mid-page. Subtle, and strictly scoped so the dark themes
+   stay perfectly flat. */
 body {
-  background-image: linear-gradient(180deg, #fbf6ee 0%, var(--surface) 38%);
+  background-image: linear-gradient(180deg, #eef0f3 0%, var(--surface) 45%);
   background-repeat: no-repeat;
 }
 
@@ -156,7 +156,7 @@ body::after {
   pointer-events: none;
   background-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cfilter%20id%3D%22g%22%3E%3CfeTurbulence%20type%3D%22fractalNoise%22%20baseFrequency%3D%220.9%22%20numOctaves%3D%222%22%20stitchTiles%3D%22stitch%22%2F%3E%3CfeColorMatrix%20type%3D%22saturate%22%20values%3D%220%22%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20filter%3D%22url%28%23g%29%22%2F%3E%3C%2Fsvg%3E");
   background-size: 640px 640px;
-  opacity: 0.03;
+  opacity: 0.04;
 }
 
 /* Dark themes: the light-only gradient + grain are switched off (flat). */
@@ -168,10 +168,10 @@ body::after {
 :root[data-theme="dark"] body::after { opacity: 0; }
 /* Manual light wins over the OS-dark media query above (source order). */
 :root[data-theme="light"] body {
-  background-image: linear-gradient(180deg, #fbf6ee 0%, var(--surface) 38%);
+  background-image: linear-gradient(180deg, #eef0f3 0%, var(--surface) 45%);
   background-repeat: no-repeat;
 }
-:root[data-theme="light"] body::after { opacity: 0.03; }
+:root[data-theme="light"] body::after { opacity: 0.04; }
 
 /* ---------- Layout: the hairline sheet ----------
    Everything lives inside a document "sheet": vertical hairline rails at
