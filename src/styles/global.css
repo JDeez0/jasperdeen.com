@@ -185,7 +185,7 @@ body {
   height: 2.75rem;
   border: 1.5px solid var(--line-strong);
   border-radius: 0.875rem;
-  color: var(--ink);
+  color: var(--muted);
   font-family: var(--font-display);
   font-size: 1.35rem;
   font-weight: 400;
@@ -196,6 +196,7 @@ body {
 
 .brand:hover {
   border-color: var(--ink);
+  color: var(--ink);
 }
 
 .site-nav {
@@ -305,9 +306,18 @@ body {
   color: color-mix(in oklab, var(--ink) 42%, var(--surface));
 }
 
+/* Unlike the .dunes div (which auto-stretches to fill its line box), an <img>
+   is a replaced element: width:100% + negative margins would be an
+   over-constrained box, and the reset's max-width:100% caps it — so only the
+   left margin applied and the right edge fell ~a gutter short of the sheet
+   rail. To get a true field stretch we size the border box to the content
+   width plus both gutters and clear max-width, so the negative margins cancel
+   the page padding symmetrically (100% + 2g - g - g = 100%: balanced, not
+   over-constrained, so both margins hold). */
 .dunes-img {
   display: block;
-  width: 100%;
+  width: calc(100% + 2 * clamp(1.25rem, 4vw, 3rem));
+  max-width: none; /* override the reset's img max-width:100% */
   height: var(--dunes-h);
   object-fit: fill; /* stretch across the full banner width, centered on the page */
   margin-inline: calc(clamp(1.25rem, 4vw, 3rem) * -1);
