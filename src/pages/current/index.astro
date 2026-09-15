@@ -60,7 +60,7 @@ const current = sortProjects(await getCollection("current"));
     transition: border-color 0.2s ease, transform 0.2s ease;
   }
   .project-card:hover {
-    border-color: var(--outline);
+    border-color: var(--accent);
     transform: translateY(-2px);
   }
   .project-card-head {
@@ -86,7 +86,8 @@ const current = sortProjects(await getCollection("current"));
     letter-spacing: 0.08em;
     padding: 0.1rem 0.5rem;
     border-radius: 999px;
-    border: 1px solid var(--line-strong);
-    color: var(--muted);
+    /* The status chips wear the site's single accent. */
+    border: 1px solid var(--accent);
+    color: var(--accent);
   }
 </style>

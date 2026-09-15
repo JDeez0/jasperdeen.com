@@ -67,14 +67,17 @@ button, input, select, textarea {
    direction: off-white paper + warm ink, not pure gray). No brand colors:
    minimalism by default. */
 :root {
-  --surface: #fbfaf7;
-  --ink: #1b1a17;
-  --muted: #6f6a61;
-  --line: #e8e4db;
-  --line-strong: #a8a198;
+  --surface: #f6f0e6;
+  --ink: #2a2720;
+  --muted: #756c5c;
+  --line: #e6dfcf;
+  --line-strong: #a89e8b;
   /* Light grey for the hero outline + the conversation bubbles (borders and
      text) — one shared tone, theme-independent by design. */
-  --outline: #8a857c;
+  --outline: #8d8474;
+  /* Single sparing warm accent — the one confident colour, spent only on
+     interactive hovers + status chips (rust/terracotta). */
+  --accent: #a34f2c;
   /* Height of the dune line-art band across the top of the home page. */
   --dunes-h: clamp(72px, 11.5vw, 144px);
   /* Height of the sticky-free top header (brand 2.75rem + vertical padding
@@ -114,23 +117,45 @@ button, input, select, textarea {
    whenever the OS is in dark mode regardless of data-theme). Placed later in
    source so it has the same specificity but wins by source order. */
 :root[data-theme="light"] {
-  --surface: #fbfaf7;
-  --ink: #1b1a17;
-  --muted: #6f6a61;
-  --line: #e8e4db;
-  --line-strong: #a8a198;
-  /* Darker grey for light mode so the outlined title, bubbles and question
-     read clearly against the paper surface (was #b5b1a8 — too faint). */
-  --outline: #8a857c;
+  --surface: #f6f0e6;
+  --ink: #2a2720;
+  --muted: #756c5c;
+  --line: #e6dfcf;
+  --line-strong: #a89e8b;
+  /* Warmter grey for light mode so the outlined title, bubbles and question
+     read clearly against the paper surface. */
+  --outline: #8d8474;
+  --accent: #a34f2c;
   --hairline: color-mix(in oklab, var(--ink) 12%, var(--surface));
 }
 
 body {
   font-family: var(--font-sans);
+  /* Warm cream base, lightened very slightly toward the top for a whisper of
+     depth (a large, gentle delta is avoided so the transparent sheet + tail
+     fills stay seamless). Falls back gracefully to the flat token. */
   background-color: var(--surface);
+  background-image: linear-gradient(180deg, #faf6f0 0%, var(--surface) 45%);
+  background-repeat: no-repeat;
   color: var(--ink);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+}
+
+/* Light-mode paper grain: a fixed, subliminal film-grain layer over the whole
+   viewport so the warm cream surface reads as printed paper instead of a flat
+   glowing screen. Static (not animated) so it can't tax the fly-up animation;
+   buried at ~3% it's felt more than seen. It paints above every interactive
+   layer (max z-index) but never intercepts input. */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cfilter%20id%3D%22g%22%3E%3CfeTurbulence%20type%3D%22fractalNoise%22%20baseFrequency%3D%220.9%22%20numOctaves%3D%222%22%20stitchTiles%3D%22stitch%22%2F%3E%3CfeColorMatrix%20type%3D%22saturate%22%20values%3D%220%22%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20filter%3D%22url%28%23g%29%22%2F%3E%3C%2Fsvg%3E");
+  background-size: 640px 640px;
+  opacity: 0.035;
 }
 
 /* ---------- Layout: the hairline sheet ----------
@@ -205,8 +230,8 @@ body {
 }
 
 .brand:hover {
-  border-color: var(--ink);
-  color: var(--ink);
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 .site-nav {
@@ -221,7 +246,7 @@ body {
 }
 
 .site-nav a:hover {
-  color: var(--ink);
+  color: var(--accent);
   text-decoration: underline;
   text-underline-offset: 4px;
 }

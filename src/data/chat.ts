@@ -52,7 +52,7 @@ export const dialogue: ChatMessage[] = [
       "This site is a way for me to work through my disability (and " +
       "passions) while living with my parents post-grad. Braving the " +
       "medical system to get my meds right for eleven months and counting, " +
-      "I admit I don\u2019t have a \u2018plan\u2019. Only critical thinking and values " +
+      "I admit I don\u2019t have a \u2018plan\u2019. Just critical thinking and values " +
       "which should (hopefully) better my next year and career.",
   },
 ];

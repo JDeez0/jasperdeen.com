@@ -56,6 +56,10 @@ const { Content } = await render(project);
     text-decoration: none;
     margin-bottom: 1.5rem;
   }
+  .post-back:hover {
+    color: var(--accent);
+    text-decoration: none;
+  }
   .project-title-row {
     display: flex;
     align-items: baseline;
@@ -76,8 +80,9 @@ const { Content } = await render(project);
     letter-spacing: 0.08em;
     padding: 0.15rem 0.6rem;
     border-radius: 999px;
-    border: 1px solid var(--line-strong);
-    color: var(--muted);
+    /* Status chips wear the site's single accent. */
+    border: 1px solid var(--accent);
+    color: var(--accent);
   }
   .project-link {
     display: inline-block;
