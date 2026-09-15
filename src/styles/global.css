@@ -67,14 +67,14 @@ button, input, select, textarea {
    direction: off-white paper + warm ink, not pure gray). No brand colors:
    minimalism by default. */
 :root {
-  --surface: #f6f0e6;
+  --surface: #f9f4ec;
   --ink: #2a2720;
   --muted: #756c5c;
   --line: #e6dfcf;
   --line-strong: #a89e8b;
   /* Light grey for the hero outline + the conversation bubbles (borders and
      text) — one shared tone, theme-independent by design. */
-  --outline: #8d8474;
+  --outline: #8f8677;
   /* Single sparing warm accent — the one confident colour, spent only on
      interactive hovers + status chips (rust/terracotta). */
   --accent: #a34f2c;
@@ -117,36 +117,37 @@ button, input, select, textarea {
    whenever the OS is in dark mode regardless of data-theme). Placed later in
    source so it has the same specificity but wins by source order. */
 :root[data-theme="light"] {
-  --surface: #f6f0e6;
+  --surface: #f9f4ec;
   --ink: #2a2720;
   --muted: #756c5c;
   --line: #e6dfcf;
   --line-strong: #a89e8b;
-  /* Warmter grey for light mode so the outlined title, bubbles and question
+  /* Warmer grey for light mode so the outlined title, bubbles and question
      read clearly against the paper surface. */
-  --outline: #8d8474;
+  --outline: #8f8677;
   --accent: #a34f2c;
   --hairline: color-mix(in oklab, var(--ink) 12%, var(--surface));
 }
 
 body {
   font-family: var(--font-sans);
-  /* Warm cream base, lightened very slightly toward the top for a whisper of
-     depth (a large, gentle delta is avoided so the transparent sheet + tail
-     fills stay seamless). Falls back gracefully to the flat token. */
   background-color: var(--surface);
-  background-image: linear-gradient(180deg, #faf6f0 0%, var(--surface) 45%);
-  background-repeat: no-repeat;
   color: var(--ink);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
-/* Light-mode paper grain: a fixed, subliminal film-grain layer over the whole
-   viewport so the warm cream surface reads as printed paper instead of a flat
-   glowing screen. Static (not animated) so it can't tax the fly-up animation;
-   buried at ~3% it's felt more than seen. It paints above every interactive
-   layer (max z-index) but never intercepts input. */
+/* Light mode only: a soft warm wash at the very top that folds into the cream
+   surface by mid-page. Subtle (tiny delta), and strictly scoped so the dark
+   themes stay perfectly flat. */
+body {
+  background-image: linear-gradient(180deg, #fbf6ee 0%, var(--surface) 38%);
+  background-repeat: no-repeat;
+}
+
+/* Light-mode paper grain: subliminal film grain so the cream surface reads as
+   printed paper. Static (no tax on the fly-up animation), topmost, never
+   intercepts input. Dark themes toggle it off below. */
 body::after {
   content: "";
   position: fixed;
@@ -155,8 +156,22 @@ body::after {
   pointer-events: none;
   background-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cfilter%20id%3D%22g%22%3E%3CfeTurbulence%20type%3D%22fractalNoise%22%20baseFrequency%3D%220.9%22%20numOctaves%3D%222%22%20stitchTiles%3D%22stitch%22%2F%3E%3CfeColorMatrix%20type%3D%22saturate%22%20values%3D%220%22%2F%3E%3C%2Ffilter%3E%3Crect%20width%3D%22100%25%22%20height%3D%22100%25%22%20filter%3D%22url%28%23g%29%22%2F%3E%3C%2Fsvg%3E");
   background-size: 640px 640px;
-  opacity: 0.035;
+  opacity: 0.03;
 }
+
+/* Dark themes: the light-only gradient + grain are switched off (flat). */
+@media (prefers-color-scheme: dark) {
+  body { background-image: none; }
+  body::after { opacity: 0; }
+}
+:root[data-theme="dark"] body { background-image: none; }
+:root[data-theme="dark"] body::after { opacity: 0; }
+/* Manual light wins over the OS-dark media query above (source order). */
+:root[data-theme="light"] body {
+  background-image: linear-gradient(180deg, #fbf6ee 0%, var(--surface) 38%);
+  background-repeat: no-repeat;
+}
+:root[data-theme="light"] body::after { opacity: 0.03; }
 
 /* ---------- Layout: the hairline sheet ----------
    Everything lives inside a document "sheet": vertical hairline rails at
@@ -486,7 +501,7 @@ html.js-scrub .pin {
      --header-h + (100svh − --header-h)/2 = 50svh + --header-h/2 from the
      viewport top, i.e. 50svh − --header-h/2 from the hero's top edge. */
   margin-top: calc(
-    50svh - var(--header-h) / 2 - var(--dunes-h) - 0.565 * var(--display-scale)
+    50svh - var(--header-h) / 2 - var(--dunes-h) - 0.565 * var(--display-scale) - 0.6rem
   );
 }
 
