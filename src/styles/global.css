@@ -504,8 +504,6 @@ html.js-scrub .pin {
   max-width: 34rem;
   font-size: 1.0625rem;
   line-height: 1.65;
-  /* Same muted grey as the surrounding text. */
-  color: var(--muted);
 }
 
 .question {
