@@ -502,8 +502,12 @@ html.js-scrub .pin {
      --header-h + (100svh − --header-h)/2 = 50svh + --header-h/2 from the
      viewport top, i.e. 50svh − --header-h/2 from the hero's top edge. */
   margin-top: calc(
-    50svh - var(--header-h) / 2 - var(--dunes-h) - 0.565 * var(--display-scale) - 0.6rem
+    50svh - var(--header-h) / 2 - var(--dunes-h) - 0.565 * var(--display-scale)
   );
+  /* Raise ONLY the name + caption a touch without disturbing the flow: a
+     transform is purely visual, so the intro/question keep their positions
+     (a margin-top change here would have lifted the whole column). */
+  transform: translateY(-1.25rem);
 }
 
 .caption {
