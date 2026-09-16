@@ -43,6 +43,7 @@ import { dialogue, heroAnswer } from "../data/chat";
       <div class="pin">
         <p class="question">What&rsquo;s going on here?</p>
         <div class="chat-row hero-answer" data-side="jasper">
+          <span class="tail" aria-hidden="true" />
           <p class="bubble message">{heroAnswer}</p>
         </div>
         {
@@ -50,6 +51,7 @@ import { dialogue, heroAnswer } from "../data/chat";
             const isWide = i >= dialogue.length - 2;
             return (
               <div class="chat-row" data-side={message.side}>
+                <span class="tail" aria-hidden="true" />
                 <p class={"bubble message" + (isWide ? " wide" : "")}>{message.text}</p>
               </div>
             );

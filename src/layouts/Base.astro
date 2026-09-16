@@ -156,17 +156,57 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
         // negative, so every read is clamped before use.
         let peak = Math.max(0, window.pageYOffset || window.scrollY || 0);
         let released = false;
+        // The previous frame's scrollY, used ONLY as a downward-motion gate
+        // after release: post-release reveals must be triggered by the user
+        // actively scrolling DOWN, never by the release itself or by upward
+        // scroll (which would instantly fly in every hidden bubble as the
+        // runway collapse pulls rows into the reading band).
+        let prevScrollY = Math.max(0, window.pageYOffset || window.scrollY || 0);
+        // True while the pin has been SOFT-released (un-stuck mid-conversation
+        // with bubbles still hidden). In that state the runway is kept so the
+        // still-hidden bubbles keep revealing by their thresholds as the user
+        // scrolls down; the runway is fully collapsed (and this flag cleared)
+        // lazily the instant the last bubble reveals.
+        let softRelease = false;
 
-        // One-way pin release: unwind the pin to the NATURAL page layout.
-        // At the release instant everything above the pin is off-screen (the
-        // viewport is filled by the pinned conversation), so we can delete
-        // the consumed runway and scroll back by exactly the same amount —
-        // the pin keeps its exact viewport position (zero visual jump) and
-        // the document becomes the plain flowing page: question right after
-        // the hero (the natural gap), footer at the bottom, no overlap, no
-        // leftover scroll. A transform-hold here was tried and REJECTED: it
-        // froze the pin mid-runway, leaving a giant blank above the question
-        // and the pin overlapping the footer permanently.
+        // Un-stick the pin and return it to NON-sticky flow, keeping the
+        // current layout (runway + reservation) intact so the reading
+        // position and all runway scroll coordinates stay valid. Used by the
+        // soft (mid-read) release path.
+        const unstick = () => {
+          if (!pinEl) return;
+          pinEl.style.position = "static";
+        };
+        // Collapse the runway to the NATURAL page layout (conversation then
+        // footer, no dead slab). Keeps the conversation at its current
+        // viewport slot: the pin is already in static flow, so shrinking the
+        // chat only pulls the footer up; any resulting scroll clamp is
+        // applied so the content the user is looking at doesn't jump.
+        const collapseRunway = () => {
+          if (!pinEl || !chat) return;
+          const y = Math.max(0, window.pageYOffset || window.scrollY || 0);
+          pinEl.style.paddingBottom = "";
+          pinEl.style.minHeight = "0";
+          chat.style.height = "";
+          // Keep the conversation's current viewport slot after the shrink.
+          let anchorScroll = Math.min(y, document.documentElement.scrollHeight - vh);
+          window.scrollTo(0, Math.max(0, anchorScroll));
+        };
+
+        // One-way pin release. Two shapes:
+        //  · END release (every bubble already shown): fully unwind the pin
+        //    to the NATURAL page layout — delete the consumed runway, shrink
+        //    the reservation to zero, anchor the footer when it is on screen
+        //    (the user released from the very end).
+        //  · MID-READ release (bubbles still hidden): SOFT — un-stick the pin
+        //    but keep the runway so the hidden bubbles can still reveal by
+        //    their thresholds as the user continues scrolling down. The page
+        //    only collapses to natural once the last bubble has revealed
+        //    (see collapseRunway in apply()). Without this, the collapse of
+        //    a short fits-screen conversation would yank every not-yet-
+        //    revealed row up into the reading band (and leave ~no scroll
+        //    room to reveal them) — the reported "scrolling up makes all the
+        //    bubbles reveal at once" bug.
         const release = () => {
           if (released || !pinEl || !chat) return;
           released = true;
@@ -176,6 +216,46 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
             pinEl.getBoundingClientRect().top -
             chat.getBoundingClientRect().top -
             pinNaturalTop;
+          const anyHidden = (messages as HTMLElement[]).some((m) => !m.__shown);
+
+          if (anyHidden) {
+            // MID-READ soft release. Drop the sticky so the page scrolls
+            // normally, but leave the runway + reservation in place: the
+            // thresholds stay valid and there is still scroll room, so the
+            // hidden bubbles reveal progressively as the user scrolls DOWN
+            // (never on the upward scroll that triggered this).
+            unstick();
+            softRelease = true;
+            let anchorScroll = y - shift; // keep the conversation's slot
+            // Clamp in case the runway ever sits before the current scroll.
+            const k = Math.max(0, anchorScroll + vh - document.documentElement.scrollHeight);
+            window.scrollTo(0, Math.max(0, anchorScroll - k));
+            (window as any).__jd = {
+              ...(window as any).__jd,
+              released: true,
+              releasedAt: Math.round(y),
+              releaseAnchor: "pin",
+              soft: true,
+            };
+            return;
+          }
+
+          // END release: unwind fully to the natural page layout.
+          // At the release instant everything above the pin is off-screen
+          // (the viewport is filled by the pinned conversation), so we can
+          // delete the consumed runway and scroll back by exactly the same
+          // amount — the pin keeps its exact viewport position (zero visual
+          // jump) and the document becomes the plain flowing page: question
+          // right after the hero (the natural gap), footer at the bottom.
+          // A transform-hold here was tried and REJECTED: it froze the pin
+          // mid-runway, leaving a giant blank above the question and the
+          // pin overlapping the footer permanently.
+          // Was the footer already on screen BEFORE we collapse? That's the
+          // tell for "released from the very end" (the footer is what the
+          // user was looking at). Captured pre-collapse: the collapse itself
+          // pulls the footer up, so a post-collapse read would wrongly
+          // report "end" for a mid-read release too.
+          const footVpPre = footerEl ? footerEl.getBoundingClientRect().top : vh;
           pinEl.style.paddingBottom = ""; // drop the short-screen release padding
           // Release BOTH the shaved reservation (plan()) AND the CSS base
           // min-height: 100svh. Clearing to "" would fall back to that CSS
@@ -192,9 +272,10 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
           //  · the footer, when it is on screen (released from the end) —
           //    the footer stays at its exact viewport position.
           const naturalDocH = document.documentElement.scrollHeight;
-          const footVp = footerEl.getBoundingClientRect().top;
+          const footVp = footerEl ? footerEl.getBoundingClientRect().top : vh;
           let anchorScroll = y - shift; // pin-anchored (default)
-          if (footVp < vh - 8) {
+          const fromEnd = footVpPre < vh - 8;
+          if (fromEnd) {
             anchorScroll = (naturalDocH - footerH) - footVp;
           }
           window.scrollTo(0, Math.max(0, anchorScroll));
@@ -205,6 +286,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
             ...(window as any).__jd,
             released: true,
             releasedAt: Math.round(y),
+            releaseAnchor: fromEnd ? "footer" : "pin",
           };
         };
 
@@ -407,17 +489,45 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
             const el = messages[i];
             if (el.__shown) continue; // one-way latch: never un-reveal
             let show = false;
-            if (!released) {
+            if (!released || softRelease) {
+              // While pinned, or after a MID-READ (soft) release where the
+              // runway is still in place, reveal by SCROLL THRESHOLD. The
+              // one-way latch + threshold comparison mean an upward scroll
+              // can never reveal a bubble (thresholds are crossed only by
+              // scrolling down) — the fix for "scrolling up made every
+              // hidden bubble appear at once."
               show = scrollY >= (thresholds[i] ?? anchor + LEAD + i * STEP);
             } else {
+              // Hard-released end-of-page: nothing should remain hidden at
+              // this point (the runway collapses once all are shown), but
+              // keep a down-scroll viewport-entry fallback for safety so a
+              // late-comer row can still reveal itself.
               const row = rows[i];
-              show = !!row && row.getBoundingClientRect().top < vh - 40;
+              if (row) {
+                const t = row.getBoundingClientRect().top;
+                const b = row.getBoundingClientRect().bottom;
+                show = scrollY > prevScrollY && t < vh - 40 && b > 0;
+              }
             }
             if (show) {
               el.__shown = true;
               el.classList.add("revealed");
             }
           }
+          // Lazy end of the reveal runway: the moment every bubble has shown
+          // during a soft release, collapse to the natural page so the
+          // footer follows the last bubble (no dead runway slab), and the
+          // page becomes the plain short document.
+          if (
+            released &&
+            softRelease &&
+            (messages as HTMLElement[]).every((m) => m.__shown)
+          ) {
+            softRelease = false;
+            collapseRunway();
+          }
+          // Keep the gate state for the next frame.
+          prevScrollY = scrollY;
         };
 
         const onRaf = () => {
