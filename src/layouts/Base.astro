@@ -216,7 +216,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
             pinEl.getBoundingClientRect().top -
             chat.getBoundingClientRect().top -
             pinNaturalTop;
-          const anyHidden = (messages as HTMLElement[]).some((m) => !m.__shown);
+          const anyHidden = messages.some((m) => !(m as { __shown?: boolean }).__shown);
 
           if (anyHidden) {
             // MID-READ soft release. Drop the sticky so the page scrolls
@@ -486,7 +486,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
             }
           }
           for (let i = 0; i < n; i++) {
-            const el = messages[i];
+            const el = messages[i] as HTMLElement & { __shown?: boolean };
             if (el.__shown) continue; // one-way latch: never un-reveal
             let show = false;
             if (!released || softRelease) {
@@ -521,7 +521,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
           if (
             released &&
             softRelease &&
-            (messages as HTMLElement[]).every((m) => m.__shown)
+            messages.every((m) => !!(m as { __shown?: boolean }).__shown)
           ) {
             softRelease = false;
             collapseRunway();
