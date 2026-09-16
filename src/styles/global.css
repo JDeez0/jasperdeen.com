@@ -616,25 +616,36 @@ html.js-scrub .scroll-indicator.is-hidden {
   /* Tail tuning: --tail-w/h = beak box size, --tail-x = inset from the outer
      edge. The mask SVG is 64×40 with its base stroke at y=1, so the base sits
      --tail-h − (1/40 × --tail-h) above the element's bottom edge. */
-  --tail-w: 27px;
-  --tail-h: 17px;
-  --tail-x: 1px;
+  --tail-w: 22px;
+  --tail-h: 18px;
 }
 
 /* Reader's thoughts (right side) — curved beak at the bottom, toward the
    right, mirroring iOS's sent-message tail. */
 .chat-row[data-side="reader"] .bubble::before {
+  /* Eraser: hides the bubble's own bottom-right border segment so the outline
+     dives into the tail instead of forking. Paints UNDER the beak (::after). */
   content: "";
   position: absolute;
-  right: var(--tail-x);
-  bottom: calc(-1 * var(--tail-h) + 0.4px);
+  right: 0;
+  bottom: 0;
+  width: 15px;
+  height: 6px;
+  background-color: var(--surface);
+  border-bottom-right-radius: 6px;
+}
+.chat-row[data-side="reader"] .bubble::after {
+  content: "";
+  position: absolute;
+  right: -2px;
+  bottom: -11px;
   width: var(--tail-w);
   height: var(--tail-h);
   background-color: var(--outline);
-  -webkit-mask-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2264%22%20height%3D%2240%22%20viewBox%3D%220%200%2064%2040%22%3E%3Cpath%20d%3D%22M4%2C1%20C8%2C18%2030%2C34%2058%2C38%20C61%2C28%2056%2C12%2052%2C1%20L4%2C1%20Z%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E");
+  -webkit-mask-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2244%22%20height%3D%2238%22%20viewBox%3D%22-4%200%2044%2038%22%3E%3Cpath%20d%3D%22M-2%2C14%20C3%2C23%2020%2C33%2036%2C36%20C38%2C27%2036%2C9%2034%2C0%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%222.6%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E");
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: 100% 100%;
-  mask-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2264%22%20height%3D%2240%22%20viewBox%3D%220%200%2064%2040%22%3E%3Cpath%20d%3D%22M4%2C1%20C8%2C18%2030%2C34%2058%2C38%20C61%2C28%2056%2C12%2052%2C1%20L4%2C1%20Z%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E");
+  mask-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2244%22%20height%3D%2238%22%20viewBox%3D%22-4%200%2044%2038%22%3E%3Cpath%20d%3D%22M-2%2C14%20C3%2C23%2020%2C33%2036%2C36%20C38%2C27%2036%2C9%2034%2C0%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%222.6%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E");
   mask-repeat: no-repeat;
   mask-size: 100% 100%;
 }
@@ -644,15 +655,25 @@ html.js-scrub .scroll-indicator.is-hidden {
 .chat-row[data-side="jasper"] .bubble::before {
   content: "";
   position: absolute;
-  left: var(--tail-x);
-  bottom: calc(-1 * var(--tail-h) + 0.4px);
+  left: 0;
+  bottom: 0;
+  width: 15px;
+  height: 6px;
+  background-color: var(--surface);
+  border-bottom-left-radius: 6px;
+}
+.chat-row[data-side="jasper"] .bubble::after {
+  content: "";
+  position: absolute;
+  left: -2px;
+  bottom: -11px;
   width: var(--tail-w);
   height: var(--tail-h);
   background-color: var(--outline);
-  -webkit-mask-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2264%22%20height%3D%2240%22%20viewBox%3D%220%200%2064%2040%22%3E%3Cpath%20d%3D%22M4%2C1%20C8%2C18%2030%2C34%2058%2C38%20C61%2C28%2056%2C12%2052%2C1%20L4%2C1%20Z%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E");
+  -webkit-mask-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2244%22%20height%3D%2238%22%20viewBox%3D%22-4%200%2044%2038%22%3E%3Cpath%20d%3D%22M-2%2C14%20C3%2C23%2020%2C33%2036%2C36%20C38%2C27%2036%2C9%2034%2C0%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%222.6%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E");
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: 100% 100%;
-  mask-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2264%22%20height%3D%2240%22%20viewBox%3D%220%200%2064%2040%22%3E%3Cpath%20d%3D%22M4%2C1%20C8%2C18%2030%2C34%2058%2C38%20C61%2C28%2056%2C12%2052%2C1%20L4%2C1%20Z%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E");
+  mask-image: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2244%22%20height%3D%2238%22%20viewBox%3D%22-4%200%2044%2038%22%3E%3Cpath%20d%3D%22M-2%2C14%20C3%2C23%2020%2C33%2036%2C36%20C38%2C27%2036%2C9%2034%2C0%22%20fill%3D%22none%22%20stroke%3D%22white%22%20stroke-width%3D%222.6%22%20stroke-linecap%3D%22round%22%2F%3E%3C%2Fsvg%3E");
   mask-repeat: no-repeat;
   mask-size: 100% 100%;
 }
