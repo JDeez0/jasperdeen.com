@@ -51,8 +51,8 @@ export const dialogue: ChatMessage[] = [
     text:
       "This site is a way for me to work through my disability (and " +
       "passions) while living with my parents post-grad. Braving the " +
-      "medical system to get my meds right for eleven months and counting, " +
-      "I admit I don\u2019t have a \u2018plan\u2019. Just critical thinking and values " +
-      "which should (hopefully) better my next year and career.",
+      "medical system for twelve months and counting, I'm grateful to be " +
+      "able to focus much-needed attention on the pursuit of health, " +
+      "including the pursuit of solutions to digital problems.",
   },
 ];
