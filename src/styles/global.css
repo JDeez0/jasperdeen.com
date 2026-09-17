@@ -466,6 +466,25 @@ body::after {
   border-bottom: 1px solid var(--hairline); /* line right at the picture's bottom edge */
 }
 
+/* Dark themes: the dunes recede a step further — slightly darker and a touch
+   translucent — so the band sits closer to the surface and the text leads
+   instead of competing with the picture. (Manual light resets, so an OS-dark
+   device with the light toggle still gets the light-mode treatment above.) */
+@media (prefers-color-scheme: dark) {
+  .dunes-img {
+    filter: grayscale(1) brightness(0.6);
+    opacity: 0.85;
+  }
+}
+:root[data-theme="dark"] .dunes-img {
+  filter: grayscale(1) brightness(0.6);
+  opacity: 0.85;
+}
+:root[data-theme="light"] .dunes-img {
+  filter: grayscale(1) brightness(0.72);
+  opacity: 1;
+}
+
 .hero .display {
   /* Horizontal centering only — the vertical position is owned by
      .name-block's viewport-centering margin. */
