@@ -42,7 +42,7 @@ export const dialogue: ChatMessage[] = [
     text:
       "I was slapped with new perspective(s) on my professional " +
       "identity after being diagnosed with frequent seizures in my temporal " +
-      "lobe for the last four years. Aside from spooky deja vu, side effects " +
+      "lobe for the last four years. Aside from spooky déjà vu, side effects " +
       "include compulsion to write (hypergraphia) and intense preoccupation " +
       "with moral / religious ideas.",
   },
@@ -52,7 +52,7 @@ export const dialogue: ChatMessage[] = [
       "This site is a way for me to work through my disability (and " +
       "passions) while living with my parents post-grad. Braving the " +
       "medical system for twelve months and counting, I'm grateful to be " +
-      "able to focus much-needed attention on the pursuit of health, " +
-      "including the pursuit of solutions to digital problems.",
+      "able to focus much-needed attention on the pursuit of health. " +
+      "Including the pursuit of solutions to some digital problems.",
   },
 ];
