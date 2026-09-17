@@ -293,6 +293,9 @@ body::after {
   grid-column: 2;
   justify-self: center;
   white-space: nowrap;
+  /* Nudged 12px left of true centre, as requested. Transform (not layout),
+     so the copyright and toggle stay put. */
+  transform: translateX(-12px);
 }
 
 /* Banner + toggle grouped at the right edge: the banner sits a comfortable
@@ -308,6 +311,9 @@ body::after {
 
 .footer-art {
   white-space: nowrap;
+  /* Nudged 12px left, toward the toggle, as requested — the toggle itself
+     does not move. */
+  transform: translateX(-12px);
 }
 
 .footer-art a {
@@ -344,6 +350,11 @@ body::after {
   }
   .theme-toggle {
     margin: 0;
+  }
+  /* Keep the stacked (centred) mobile layout truly centred. */
+  .footer-made,
+  .footer-art {
+    transform: none;
   }
 }
 
