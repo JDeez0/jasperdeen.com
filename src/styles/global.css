@@ -292,6 +292,9 @@ body::after {
   grid-template-columns: 1fr 1fr 1fr;
   align-items: center;
   gap: 0.5rem;
+  /* Right gutter mirrors the copyright's left gutter: the banner sits as far
+     from the toggle as the copyright sits from the sheet's left edge. */
+  padding-right: clamp(1.25rem, 4vw, 3rem);
 }
 
 .footer-copy {
