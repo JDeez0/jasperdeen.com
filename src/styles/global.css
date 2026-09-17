@@ -472,13 +472,13 @@ body::after {
    device with the light toggle still gets the light-mode treatment above.) */
 @media (prefers-color-scheme: dark) {
   .dunes-img {
-    filter: grayscale(1) brightness(0.6);
-    opacity: 0.85;
+    filter: grayscale(1) brightness(0.64);
+    opacity: 0.88;
   }
 }
 :root[data-theme="dark"] .dunes-img {
-  filter: grayscale(1) brightness(0.6);
-  opacity: 0.85;
+  filter: grayscale(1) brightness(0.64);
+  opacity: 0.88;
 }
 :root[data-theme="light"] .dunes-img {
   filter: grayscale(1) brightness(0.72);
