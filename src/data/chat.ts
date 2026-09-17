@@ -53,6 +53,6 @@ export const dialogue: ChatMessage[] = [
       "passions) while living with my parents post-grad. Braving the " +
       "medical system for twelve months and counting, I'm grateful to be " +
       "able to focus much-needed attention on the pursuit of health. " +
-      "Including the attempt to find solutions to various digital problems.",
+      "Including an attempt to find solutions to various digital problems.",
   },
 ];
