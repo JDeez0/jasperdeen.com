@@ -280,21 +280,26 @@ body::after {
   gap: 1rem;
 }
 
-/* All footer credits on ONE line with the copyright: the bare left edge (the
-   copyright), the tool+artist strip centred, and the toggle far right.
-   Conceptual order: who made it \u2192 what it runs on \u2192 who made the art. */
+/* All footer credits on ONE line: copyright flush left, the tool note EXACTLY
+   centred (middle column = container centre), and the banner artist
+   right-justified against the theme toggle. Three equal grid columns let the
+   middle span land on the true centre regardless of item widths. */
 .footer-line {
+  flex: 1;
   font-size: 0.85rem;
   color: var(--muted);
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
   align-items: center;
-  gap: 0.6rem;
-  flex-wrap: wrap;
-  justify-content: flex-start;
+  gap: 0.5rem;
+}
+
+.footer-copy {
+  justify-self: start;
 }
 
 .footer-made {
-  color: var(--muted);
+  justify-self: center;
   white-space: nowrap;
 }
 
@@ -307,6 +312,17 @@ body::after {
 .footer-art a:hover {
   color: var(--accent);
   text-decoration: underline;
+}
+
+/* Narrow screens: the three credits can't share one line with the toggle, so
+   let them wrap and centre instead of overflowing the viewport. */
+@media (max-width: 640px) {
+  .footer-line {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+  }
 }
 
 /* Theme toggle: a small quiet icon button in the footer. Shows the moon in
