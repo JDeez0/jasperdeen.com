@@ -274,27 +274,22 @@ body::after {
   border-top: 1px solid var(--hairline);
   font-size: 0.85rem;
   color: var(--muted);
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
+  justify-content: center;
 }
 
-/* All footer credits on ONE line: copyright flush left, the tool note EXACTLY
-   centred (middle column = container centre), and the banner artist
-   right-justified against the theme toggle. Three equal grid columns let the
-   middle span land on the true centre regardless of item widths. */
+/* All three credits on one line, COLLECTED into a centred trio: copyright
+   left, “Made with …” centre, banner right — right-justified within the
+   trio, NOT at the sheet edge. The theme toggle floats at the far right. */
 .footer-line {
-  flex: 1;
   font-size: 0.85rem;
   color: var(--muted);
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-columns: auto auto auto;
+  column-gap: 2.5rem;
   align-items: center;
-  gap: 0.5rem;
-  /* Right gutter mirrors the copyright's left gutter: the banner sits as far
-     from the toggle as the copyright sits from the sheet's left edge. */
-  padding-right: clamp(1.25rem, 4vw, 3rem);
 }
 
 .footer-copy {
@@ -317,14 +312,39 @@ body::after {
   text-decoration: underline;
 }
 
+/* The toggle sits at the footer's far right (inside the padding), vertically
+   centred, so the centred trio never pushes the banner out to the edge. */
+.theme-toggle {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  translate: 0 -50%;
+}
+
 /* Narrow screens: the three credits can't share one line with the toggle, so
    let them wrap and centre instead of overflowing the viewport. */
 @media (max-width: 640px) {
+  /* Narrow: stack each credit on its own centred line, then the toggle —
+     block layout guarantees no overlap. */
+  .site-footer {
+    display: block;
+    text-align: center;
+  }
   .footer-line {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
+    display: block;
+    text-align: center;
+  }
+  .footer-copy,
+  .footer-made,
+  .footer-art {
+    display: block;
+    text-align: center;
+    margin: 0.35rem 0;
+  }
+  .theme-toggle {
+    position: static;
+    display: block;
+    margin: 1rem auto 0;
   }
 }
 
