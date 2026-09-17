@@ -70,6 +70,8 @@ button, input, select, textarea {
   --surface: #e9ebee;
   --ink: #2b2d30;
   --muted: #767b80;
+  /* Footer text: a slightly darker grey than --muted. */
+  --muted-strong: #666b70;
   --line: #dcdee1;
   --line-strong: #a3a7ab;
   /* Light grey for the hero outline + the conversation bubbles (borders and
@@ -94,6 +96,7 @@ button, input, select, textarea {
     --surface: #100f0d;
     --ink: #f4f1ea;
     --muted: #9d978c;
+    --muted-strong: #8f8a80;
     --line: #292620;
     --line-strong: #57514a;
     --outline: #8f8a80;
@@ -106,6 +109,7 @@ button, input, select, textarea {
   --surface: #100f0d;
   --ink: #f4f1ea;
   --muted: #9d978c;
+  --muted-strong: #8f8a80;
   --line: #292620;
   --line-strong: #57514a;
   --outline: #8f8a80;
@@ -120,6 +124,7 @@ button, input, select, textarea {
   --surface: #e9ebee;
   --ink: #2b2d30;
   --muted: #767b80;
+  --muted-strong: #666b70;
   --line: #dcdee1;
   --line-strong: #a3a7ab;
   /* Cooler grey so the outlined title, bubbles and question read clearly
@@ -273,7 +278,7 @@ body::after {
   padding-bottom: 1.5rem;
   border-top: 1px solid var(--hairline);
   font-size: 0.85rem;
-  color: var(--muted);
+  color: var(--muted-strong);
   /* Three-part footer on one line: copyright flush left, the tool note EXACTLY
      centred, and the banner + toggle grouped flush right. Equal 1fr outer
      columns put the middle (auto) column on the container's true centre, so
@@ -317,7 +322,7 @@ body::after {
 }
 
 .footer-art a {
-  color: var(--muted);
+  color: var(--muted-strong);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
@@ -368,7 +373,7 @@ body::after {
   padding: 0;
   border: 1px solid var(--line-strong);
   border-radius: 999px;
-  color: var(--muted);
+  color: var(--muted-strong);
   cursor: pointer;
   background: transparent;
   transition: border-color 0.2s ease, color 0.2s ease;
