@@ -280,33 +280,33 @@ body::after {
   gap: 1rem;
 }
 
-/* Footer credit block: “Made with …” + banner artist. Two stacked, small,
-   muted lines centred between the copyright and the theme toggle. */
-.footer-credit {
-  font-size: 0.72rem;
-  color: var(--muted);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.1rem;
-  line-height: 1.15;
-  text-align: center;
-}
-
-.footer-copy {
+/* All footer credits on ONE line with the copyright: the bare left edge (the
+   copyright), the tool+artist strip centred, and the toggle far right.
+   Conceptual order: who made it \u2192 what it runs on \u2192 who made the art. */
+.footer-line {
   font-size: 0.85rem;
   color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  justify-content: flex-start;
 }
 
-.credit-art a {
+.footer-made {
   color: var(--muted);
-  text-decoration: none;
+  white-space: nowrap;
 }
 
-.credit-art a:hover {
-  color: var(--accent);
+.footer-art a {
+  color: var(--muted);
   text-decoration: underline;
   text-underline-offset: 3px;
+}
+
+.footer-art a:hover {
+  color: var(--accent);
+  text-decoration: underline;
 }
 
 /* Theme toggle: a small quiet icon button in the footer. Shows the moon in

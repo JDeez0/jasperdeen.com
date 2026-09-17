@@ -55,12 +55,10 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
       </header>
       <slot />
       <footer class="site-footer">
-        <p class="footer-copy">&copy; {new Date().getFullYear()} Jasper H. Deen</p>
-        <p class="footer-credit">
-          <span>Made with DeepSeek v4 Flash</span>
-          <span class="credit-art">
-            Banner · <a href="https://fiverr.com/stengahsadar" target="_blank" rel="noopener">fiverr.com/stengahsadar</a>
-          </span>
+        <p class="footer-line">
+          <span class="footer-copy">&copy; {new Date().getFullYear()} Jasper H. Deen</span>
+          <span class="footer-made">Made with DeepSeek v4 Flash</span>
+          <span class="footer-art">Banner made by <a href="https://fiverr.com/stengahsadar" target="_blank" rel="noopener">Toha</a>.</span>
         </p>
         <button
           class="theme-toggle"
