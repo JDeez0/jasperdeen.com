@@ -612,7 +612,14 @@ html.js-scrub .scroll-indicator.is-hidden {
 /* Jasper (left): the beak is mirrored, anchored at the bottom-left corner. */
 
 
-.bubble { border-bottom-right-radius: 0; border-bottom-left-radius: 0; }
+/* Square only the OUTER bottom corner: left bubbles square their bottom-LEFT,
+   right bubbles their bottom-RIGHT. The inner bottom corner stays rounded. */
+.chat-row[data-side="jasper"] .bubble {
+  border-bottom-left-radius: 0;
+}
+.chat-row[data-side="reader"] .bubble {
+  border-bottom-right-radius: 0;
+}
 
 
 /* The two long closing paragraphs breathe so their text sits in a thin
