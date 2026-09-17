@@ -43,8 +43,8 @@ export const dialogue: ChatMessage[] = [
       "I was slapped with new perspective(s) on my professional " +
       "identity after being diagnosed with frequent seizures in my temporal " +
       "lobe for the last four years. Aside from spooky déjà vu, side effects " +
-      "include compulsion to write (hypergraphia) and intense preoccupation " +
-      "with moral / religious ideas.",
+      "include compulsion to write (hypergraphia) and unusual preoccupation " +
+      "with moral/religious ideas.",
   },
   {
     side: "jasper",
