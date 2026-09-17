@@ -274,30 +274,39 @@ body::after {
   border-top: 1px solid var(--hairline);
   font-size: 0.85rem;
   color: var(--muted);
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* All three credits on one line, COLLECTED into a centred trio: copyright
-   left, “Made with …” centre, banner right — right-justified within the
-   trio, NOT at the sheet edge. The theme toggle floats at the far right. */
-.footer-line {
-  font-size: 0.85rem;
-  color: var(--muted);
+  /* Three-part footer on one line: copyright flush left, the tool note EXACTLY
+     centred, and the banner + toggle grouped flush right. Equal 1fr outer
+     columns put the middle (auto) column on the container's true centre, so
+     “Made with …” is centred regardless of the two outer items' widths. */
   display: grid;
-  grid-template-columns: auto auto auto;
-  column-gap: 2.5rem;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
 }
 
 .footer-copy {
+  grid-column: 1;
   justify-self: start;
+  white-space: nowrap;
 }
 
 .footer-made {
+  grid-column: 2;
   justify-self: center;
+  white-space: nowrap;
+}
+
+/* Banner + toggle grouped at the right edge: the banner sits a comfortable
+   “close-ish” gap from the toggle, and the toggle holds the footer's right
+   margin (the sheet padding), mirroring the copyright's left margin. */
+.footer-end {
+  grid-column: 3;
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.footer-art {
   white-space: nowrap;
 }
 
@@ -312,39 +321,29 @@ body::after {
   text-decoration: underline;
 }
 
-/* The toggle sits at the footer's far right (inside the padding), vertically
-   centred, so the centred trio never pushes the banner out to the edge. */
-.theme-toggle {
-  position: absolute;
-  right: 0;
-  top: 50%;
-  translate: 0 -50%;
-}
-
 /* Narrow screens: the three credits can't share one line with the toggle, so
-   let them wrap and centre instead of overflowing the viewport. */
+   stack each on its own centred line instead of overflowing the viewport. */
 @media (max-width: 640px) {
-  /* Narrow: stack each credit on its own centred line, then the toggle —
-     block layout guarantees no overlap. */
   .site-footer {
-    display: block;
-    text-align: center;
-  }
-  .footer-line {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
     text-align: center;
   }
   .footer-copy,
   .footer-made,
   .footer-art {
-    display: block;
-    text-align: center;
-    margin: 0.35rem 0;
+    white-space: normal;
+  }
+  .footer-end {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
   }
   .theme-toggle {
-    position: static;
-    display: block;
-    margin: 1rem auto 0;
+    margin: 0;
   }
 }
 
