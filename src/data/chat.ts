@@ -52,7 +52,7 @@ export const dialogue: ChatMessage[] = [
       "This site is a way for me to work through my disability (and " +
       "passions) while living with my parents post-grad. Braving the " +
       "medical system for twelve months and counting, I'm grateful to be " +
-      "able to focus much-needed attention on the pursuit of health. " +
-      "Including my attempts to find solutions to various digital problems.",
+      "able to focus much-needed attention on my pursuit of health. " +
+      "Including attempts to find solutions to various digital problems.",
   },
 ];
