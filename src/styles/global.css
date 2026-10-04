@@ -655,9 +655,10 @@ html.js-scrub .pin {
   max-width: 34rem;
   font-size: 1.0625rem;
   line-height: 1.65;
-  /* Muted grey like the chat bubbles + question — the intro then reads as
-     part of the same dialogue voice as the answer below the fold. */
-  color: var(--outline);
+  /* Between the old full-ink (too bright) and full --outline (too muted):
+     a theme-aware mix leaning ink-ward, so it reads as a quiet but not
+     greyed-out line in both light and dark mode. */
+  color: color-mix(in oklab, var(--ink) 55%, var(--outline));
 }
 
 .question {
