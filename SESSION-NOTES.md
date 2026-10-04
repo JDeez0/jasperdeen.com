@@ -584,3 +584,35 @@ Fix (9e30898): `pinEl.style.minHeight = "0"`. Gap now flat 38px at all sizes.
 /tmp/pwtest/: footer-end.mjs, release-fixed.mjs, edges.mjs — all ALL PASS at
 800/1000/1300 after 9e30898 (including the previously-failing footer-continuity
 cases).
+
+## Session 2026-09-17 — copy fix, type unification, "Current" page shelved
+
+### 1. Hero copy change (c888d07)
+- Homepage question "What's going on here?" → **"What's going on?"**
+  (`src/pages/index.astro:44`, plus the two comments in `chat.ts` / `global.css`).
+
+### 2. Unified type scale (c888d07)
+- Every non-display text now sits at **1.0625rem**: `body` itself is set to it,
+  nav (was 0.95), prose h2 (1.25, keeps 600 weight), prose h3 (1.1), inline
+  `code` (was 0.9em — no longer scales down), back links + post meta (0.9),
+  blog card titles (1.35) + dates (0.85), project card titles (1.3) +
+  descriptions (0.95), status chips (0.75/0.7).
+- EXEMPT by design: footer (0.85rem), the "JD" monogram mark (1.35rem),
+  hero display name (`--display-scale`), `.display--small` titles,
+  the "What's going on?" question clamp, the caption lockup.
+- NOTE: status chips are now full-size uppercase — flagged to Jasper; may
+  want a small-size exception later.
+
+### 3. "Current" (projects) page REMOVED — saved for reinstatement
+Jasper wants only **Home** and **Blog** live. Everything is preserved in-tree:
+- `src/pages-archive/current/index.astro` + `[slug].astro` — the former
+  `src/pages/current/` page files (git-mv'd, so history is intact). They are
+  OUTSIDE `src/pages/`, so Astro does not build them. Their `../../layouts`
+  / `../../lib` imports still resolve at that depth.
+- `src/content/current/` (collection content incl. `_TEMPLATE.md`) and the
+  `current` collection in `src/content.config.ts` + `src/lib/content.ts`
+  helpers are UNTOUCHED and still typecheck — nothing references built pages.
+- `Base.astro` nav now links only Home + Blog.
+
+**To reinstate later:** `git mv src/pages-archive/current src/pages/current`,
+re-add `<a href="/current/">Current</a>` to the nav in `Base.astro`, rebuild.
