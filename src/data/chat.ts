@@ -9,7 +9,7 @@ export interface ChatMessage {
   text: string;
 }
 
-/** The answer to "What's going on here?" — sits on the page statically. */
+/** The answer to "What's going on?" — sits on the page statically. */
 export const heroAnswer = "Making space to write";
 
 /**

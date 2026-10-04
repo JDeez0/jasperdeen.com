@@ -140,6 +140,9 @@ body {
   color: var(--ink);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+  /* Single reading size: every non-display text on the site is this one
+     size (the footer keeps its own smaller size by design). */
+  font-size: 1.0625rem;
 }
 
 /* Light mode only: a soft, viewport-anchored wash — warm off-white at the very
@@ -262,7 +265,7 @@ body::after {
 }
 
 .site-nav a {
-  font-size: 0.95rem;
+  font-size: 1.0625rem;
   color: var(--muted);
   text-decoration: none;
 }
@@ -408,7 +411,7 @@ body::after {
    bottom of that first screen. The dune line-art band lives at the very
    top of the hero, right below the header. */
 .hero {
-  /* "What's going on here?" rests so its text BASELINE lines up with the
+  /* "What's going on?" rests so its text BASELINE lines up with the
      bottom of the scroll indicator. Measured headlessly to be exact (font
      ascent/descent + half-leading accounted for): baseline = arrow bottom.
      The 4.1rem offset is the vertical-tuning dial. */
@@ -829,7 +832,7 @@ html.js-scrub .message.revealed {
 .post-body.prose h2 {
   font-family: var(--font-sans);
   font-weight: 600;
-  font-size: 1.25rem;
+  font-size: 1.0625rem;
   color: var(--ink);
   margin: 1.6rem 0 0.4rem;
 }
@@ -837,7 +840,7 @@ html.js-scrub .message.revealed {
 .post-body.prose h3 {
   font-family: var(--font-sans);
   font-weight: 600;
-  font-size: 1.1rem;
+  font-size: 1.0625rem;
   color: var(--ink);
   margin: 1.3rem 0 0.4rem;
 }
@@ -861,7 +864,6 @@ html.js-scrub .message.revealed {
 
 .post-body.prose code {
   font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
-  font-size: 0.9em;
   background: color-mix(in oklab, var(--surface) 92%, var(--ink));
   border: 1px solid var(--line-strong);
   border-radius: 4px;
