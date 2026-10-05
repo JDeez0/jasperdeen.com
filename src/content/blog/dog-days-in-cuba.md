@@ -1,7 +1,7 @@
 ---
 title: "Dog Days in Cuba"
 description: "A reflection on Paulina Zelitsky's Dog Days in Cuba — political satire told through a Dobermann's eyes."
-pubDate: 2026-09-14
+pubDate: 2026-10-05
 tags: ["books", "reflection"]
 draft: false
 ---
