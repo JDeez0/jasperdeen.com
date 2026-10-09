@@ -1,0 +1,92 @@
+/* === 1995 authenticity layer =====================================
+   Era rules this file deliberately follows (see NOTES.md):
+   - default serif (Times New Roman), 12pt-ish base, no webfonts
+   - default link colors: #0000EE unvisited / #551A8B visited / #FF0000 active
+   - underlined links only; nothing else gets hover decoration
+   - hard background colors, no gradients, no border-radius, no shadows
+   - layout is a 640px table, centered-ish with fixed widths
+   - 1px gray <hr> rules and <table border=1> keylines as structure
+================================================================= */
+
+html {
+  background: #ffffff;
+}
+
+body {
+  font-family: "Times New Roman", Times, serif;
+  font-size: 12pt;             /* pre-CSS default was ~12pt/16px */
+  line-height: 1.2;            /* browser default of the era */
+  color: #000000;
+  margin: 0;
+  padding: 8px;
+  /* -webkit-font-smoothing: auto is the default; we do NOT force
+     antialiasing — old renders were hinted bitmaps, slightly crunchy */
+}
+
+/* Links: era defaults, underline always, plain color swap on active */
+a { color: #0000ee; text-decoration: underline; }
+a:visited { color: #551a8b; }
+a:active { color: #ff0000; }
+
+h1 { font-size: 24pt; font-weight: bold; margin: 0.67em 0; }
+h2 { font-size: 18pt; font-weight: bold; margin: 0.75em 0; }
+h3 { font-size: 15pt; font-weight: bold; margin: 0.83em 0; }
+
+/* the era's <font size="+1"> vibe */
+.bigger { font-size: 14pt; }
+.smaller { font-size: 10pt; }
+
+hr {
+  border: 0;
+  height: 1px;
+  background: #808080;         /* flat gray rule, no styling */
+  margin: 10px 0;
+}
+
+table.layout {
+  width: 640px;
+  margin: 0 auto;
+  background: #ffffff;
+  border-collapse: collapse;
+}
+table.layout td { padding: 4px; vertical-align: top; }
+
+table.boxed {
+  width: 100%;
+  border: 1px solid #000000;
+  border-collapse: collapse;
+}
+table.boxed td, table.boxed th {
+  border: 1px solid #000000;
+  padding: 3px 6px;
+  text-align: left;
+}
+table.boxed th { background: #c0c0c0; font-weight: bold; }
+
+.center { text-align: center; }
+
+/* "under construction" bar — flat, dithered-looking checker */
+.construction {
+  background: repeating-conic-gradient(#ffff00 0% 25%, #000000 0% 50%) 0 0 / 16px 16px;
+  color: #ffff00;
+  background-color: #ffff00;
+  font-weight: bold;
+  text-align: center;
+  padding: 4px;
+}
+.construction span { background: #ffff00; color: #000000; padding: 0 6px; }
+
+/* fake hit counter: monospace digits in a bordered box */
+.counter {
+  font-family: "Courier New", Courier, monospace;
+  font-size: 14pt;
+  border: 1px solid #000000;
+  padding: 1px 6px;
+  letter-spacing: 2px;
+  background: #000000;
+  color: #00ff00;
+  display: inline-block;
+}
+
+.signature { font-style: italic; }
+.lastmod { font-size: 10pt; }

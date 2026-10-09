@@ -23,3 +23,5 @@ dune-generator.html
 dune-*.html
 public/dune-*.html
 public/*.png
+retro/node_modules/
+retro/dist/
