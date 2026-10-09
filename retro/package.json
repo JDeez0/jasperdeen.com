@@ -9,9 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "hyphenation.en-us": "^0.2.1",
-    "solid-js": "^1.9.5",
-    "tex-linebreak": "^0.9.0"
+    "@chenglou/pretext": "^0.0.9",
+    "solid-js": "^1.9.5"
   },
   "devDependencies": {
     "vite": "^6.3.5",

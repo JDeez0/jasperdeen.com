@@ -1,6 +1,5 @@
-import { onMount, onCleanup } from "solid-js";
 import { LAST_UPDATED } from "./data.js";
-import { justifyElements, onResizeRejustify } from "./justify.js";
+import KPBlock from "./KPBlock.jsx";
 
 /* Content lifted from the current jasperdeen.com (Astro) version:
    hero caption/intro, the "What's going on?" dialogue, and the blog. */
@@ -33,15 +32,6 @@ const dialogue = [
 ];
 
 export default function App() {
-  const collectJustifyEls = () =>
-    Array.from(document.querySelectorAll(".j"));
-
-  onMount(() => {
-    requestAnimationFrame(() => void justifyElements(collectJustifyEls()));
-    const dispose = onResizeRejustify(collectJustifyEls);
-    onCleanup(dispose);
-  });
-
   return (
     <>
       <div id="header">
@@ -54,16 +44,20 @@ export default function App() {
       <div id="header-rule"></div>
 
       <div id="content">
-        <p class="intro j">
-          I get excited when honest communications move motivations. Now's a
-          chance to do that.
-        </p>
+        <KPBlock
+          cls="intro"
+          font="17px Georgia, 'Times New Roman', serif"
+          text="I get excited when honest communications move motivations. Now's a chance to do that."
+        />
 
         <div class="qa">
           {dialogue.map((m) => (
-            <p class={m.who === "Q" ? "q j" : "a j"}>
-              <b>{m.who}:</b> {m.text}
-            </p>
+            <KPBlock
+              cls={m.who === "Q" ? "q" : "a"}
+              font="17px Georgia, 'Times New Roman', serif"
+              prefix={m.who}
+              text={m.text}
+            />
           ))}
         </div>
 
@@ -89,6 +83,7 @@ export default function App() {
         <ul>
           <li><a href="https://jasperdeen.com/">jasperdeen.com</a> — the modern site</li>
           <li><a href="http://www.slashdot.org/">Slashdot</a> — news for nerds</li>
+          <li><a href="http://www.yahoo.com/">Yahoo</a></li>
         </ul>
       </div>
 
