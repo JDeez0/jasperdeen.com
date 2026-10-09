@@ -83,7 +83,6 @@ export default function App() {
         <ul>
           <li><a href="https://jasperdeen.com/">jasperdeen.com</a> — the modern site</li>
           <li><a href="http://www.slashdot.org/">Slashdot</a> — news for nerds</li>
-          <li><a href="http://www.yahoo.com/">Yahoo</a></li>
         </ul>
       </div>
 
