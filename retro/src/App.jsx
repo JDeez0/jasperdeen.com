@@ -1,4 +1,5 @@
 import { LAST_UPDATED } from "./data.js";
+import KPBlock from "./KPBlock.jsx";
 
 /* Content lifted from the current jasperdeen.com (Astro) version:
    hero caption/intro, the "What's going on?" dialogue, and the blog. */
@@ -43,16 +44,20 @@ export default function App() {
       <div id="header-rule"></div>
 
       <div id="content">
-        <p class="intro">
-          I get excited when honest communications move motivations. Now's a
-          chance to do that.
-        </p>
+        <KPBlock
+          cls="intro"
+          font="19px Georgia, 'Times New Roman', serif"
+          text="I get excited when honest communications move motivations. Now's a chance to do that."
+        />
 
         <div class="qa">
           {dialogue.map((m) => (
-            <p class={m.who === "Q" ? "q" : "a"}>
-              <b>{m.who}:</b> {m.text}
-            </p>
+            <KPBlock
+              cls={m.who === "Q" ? "q" : "a"}
+              font="17px Georgia, 'Times New Roman', serif"
+              prefix={m.who}
+              text={m.text}
+            />
           ))}
         </div>
 
