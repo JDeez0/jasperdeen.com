@@ -44,8 +44,8 @@ export default function App() {
 
       <div id="content">
         <p class="intro">
-          I get excited when honest communications move motivations.{" "}
-          <b>Now's a chance to do that.</b>
+          I get excited when honest communications move motivations. Now's a
+          chance to do that.
         </p>
 
         <div class="qa">
