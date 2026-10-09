@@ -26,13 +26,15 @@ jobs:
           node-version: 24
           cache: npm
       - name: Install dependencies
+        working-directory: retro
         run: npm ci
       - name: Build
+        working-directory: retro
         run: npm run build
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: retro/dist
 
   deploy:
     needs: build
