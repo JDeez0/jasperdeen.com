@@ -1,6 +1,10 @@
 import { createSignal } from "solid-js";
 import { HITS, VISITS, LAST_UPDATED } from "./data.js";
 
+const NEW = () => (
+  <span class="blink" style="color:#ff0000;font-weight:bold;font-size:9pt;"> NEW!</span>
+);
+
 export default function App() {
   const [count, setCount] = createSignal(VISITS);
   const [guestbook, setGuestbook] = createSignal(HITS.slice());
@@ -17,31 +21,72 @@ export default function App() {
 
   return (
     <>
-      <table class="layout" cellpadding="0" cellspacing="0">
+      <marquee style="color:#ffff00;background:#000000;border:2px ridge #808080;padding:2px;">
+        &#9733; WELCOME TO THE JASPER DEEN HOMEPAGE &#9733; SIGN MY GUESTBOOK
+        BEFORE YOU LEAVE &#9733; BEST VIEWED IN NETSCAPE NAVIGATOR 3.0 AT
+        800x600 &#9733; THIS SITE IS Y2K COMPLIANT &#9733;
+      </marquee>
+
+      <table class="page" cellpadding="0" cellspacing="0">
         <tbody>
           <tr>
-            <td>
-              <h1 class="center">Jasper Deen's Home Page</h1>
-              <p class="center smaller">
-                <b>Welcome to my corner of the World Wide Web!</b> This page is
-                best viewed with <i>Netscape Navigator 3.0</i> at 800x600
-                resolution.
+            <td class="banner" colspan="2">
+              <h1>Jasper Deen's Home Page</h1>
+              <p>
+                <span class="smaller">~*~ The coolest home page on the World Wide Web ~*~</span>
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td class="nav">
+              <p class="navhead">NAVIGATION</p>
+              <ul>
+                <li><a href="#about">About Me</a></li>
+                <li><a href="#interests">Interests</a></li>
+                <li><a href="#links">Cool Links</a><NEW /></li>
+                <li><a href="#new">What's New</a></li>
+                <li><a href="#guestbook">Guestbook</a><NEW /></li>
+              </ul>
+              <p class="navhead">CONTACT</p>
+              <ul>
+                <li><a href="mailto:jasper@jasperdeen.com">E-Mail Me</a></li>
+                <li>ICQ#: 8392047</li>
+              </ul>
+              <p class="navhead">HITS</p>
+              <p style="text-align:center;margin:2px 0 10px;">
+                <span class="counter">{String(count()).padStart(6, "0")}</span>
+              </p>
+              <p class="tiny" style="text-align:center;">
+                <a href="#" onClick={(e) => { e.preventDefault(); setCount((c) => c + 1); }}>
+                  hit the counter
+                </a>
               </p>
               <hr />
+              <p class="tiny" style="text-align:center;">
+                <a class="badge blue" href="http://home.netscape.com/">NETSCAPE<br />NOW!</a>
+                <a class="badge" href="http://www.yahoo.com/">YAHOO!<br />SEARCH</a>
+              </p>
+              <p class="tiny" style="text-align:center;">
+                Made with<br /><b>Windows Notepad</b>
+              </p>
+            </td>
 
-              <h2>About Me</h2>
+            <td class="main">
+              <h2><a name="about"></a>About Me</h2>
               <p>
-                Hello! My name is <b>Jasper Deen</b>. Welcome to my personal
-                home page on the Internet. I made this page myself using a text
-                editor and a lot of coffee. It took a long time.
+                Hello! My name is <b>Jasper Deen</b> and this is my home page.
+                I built it myself using Windows Notepad and a 14.4k modem. It
+                took <i>forever</i> so please sign the guestbook.
               </p>
               <p>
-                On this page you can find out all about me and the things I am
-                interested in. I update it whenever I have time, so be sure to{" "}
-                <a href="#bookmark">bookmark this page</a> and check back often!
+                I am into computers, writing, and surfing the Information
+                Superhighway. Right now this page is always under construction,
+                so check back for new stuff!
               </p>
 
-              <h2>My Interests</h2>
+              <hr class="rainbow" />
+
+              <h2><a name="interests"></a>My Interests</h2>
               <table class="boxed" cellpadding="4" cellspacing="0">
                 <tbody>
                   <tr>
@@ -63,53 +108,37 @@ export default function App() {
                   <tr>
                     <td><b>The Internet</b></td>
                     <td>
-                      Surfing the Information Superhighway. E-mail me anytime —{" "}
+                      E-mail me anytime —{" "}
                       <a href="mailto:jasper@jasperdeen.com">jasper@jasperdeen.com</a>
                     </td>
                   </tr>
                 </tbody>
               </table>
-              <p class="smaller">
-                <i>Click a column header to... actually no, tables can't do
-                that yet. Maybe in a future version of HTML!</i>
-              </p>
 
-              <hr />
+              <hr class="rainbow" />
 
-              <h2>Cool Links</h2>
+              <h2><a name="links"></a>Cool Links</h2>
               <p class="bigger"><b>Places I go on the Web:</b></p>
               <ul>
-                <li><a href="https://jasperdeen.com/">My new fancy modern site (under construction)</a></li>
+                <li><a href="https://jasperdeen.com/">My new fancy modern site</a></li>
                 <li><a href="http://www.yahoo.com/">Yahoo!</a> — my favorite way to find things</li>
-                <li><a href="http://www.altavista.digital.com/">AltaVista</a> — search the whole Web!</li>
-                <li><a href="http://www.slashdot.org/">Slashdot</a> — news for nerds</li>
+                <li><a href="http://www.altavista.digital.com/">AltaVista</a> — search the whole Web!<NEW /></li>
+                <li><a href="http://www.slashdot.org/">Slashdot</a> — news for nerds, stuff that matters</li>
+                <li><a href="http://www.spacejam.com/">Space Jam</a> — the official site. really.</li>
               </ul>
 
-              <hr />
+              <hr class="rainbow" />
 
-              <h3><a name="bookmark"></a>What's New</h3>
+              <h2><a name="new"></a>What's New</h2>
               <ul>
-                <li><b>10/09/96</b> — Added a guestbook! Sign it below!</li>
+                <li><b>10/09/96</b> — Added a guestbook! Sign it below! <NEW /></li>
                 <li><b>10/02/96</b> — Fixed the table (it was all messed up in IE)</li>
                 <li><b>09/28/96</b> — This page went up! Wow!</li>
               </ul>
 
-              <hr />
+              <hr class="rainbow" />
 
-              <h2>Sign My Guestbook</h2>
-              <p>
-                <b>You are visitor number:</b>{" "}
-                <span class="counter">{String(count()).padStart(6, "0")}</span>
-                {" "}
-                <span class="smaller">
-                  (since 09/28/96) —{" "}
-                  <a
-                    href="#"
-                    onClick={(e) => { e.preventDefault(); setCount((c) => c + 1); }}
-                  >reload to count yourself again</a>
-                </span>
-              </p>
-
+              <h2><a name="guestbook"></a>Sign My Guestbook</h2>
               <table class="boxed" cellpadding="4" cellspacing="0">
                 <tbody>
                   <tr>
@@ -156,7 +185,7 @@ export default function App() {
                       </td>
                     </tr>
                     <tr>
-                      <td colspan="2" class="center">
+                      <td colspan="2" style="text-align:center;">
                         <button type="submit"><b>Submit</b></button>{" "}
                         <button type="reset">Clear</button>
                       </td>
@@ -165,12 +194,24 @@ export default function App() {
                 </table>
               </form>
 
-              <hr />
+              <hr class="rainbow" />
+
+              <p class="webring">
+                [ <a href="#">Previous</a> | <a href="#">Random</a> |{" "}
+                <a href="#">Next</a> | <a href="#">Skip One</a> ]<br />
+                This site is a proud member of{" "}
+                <b>The Personal Homepages WebRing</b>.<br />
+                <span class="tiny">
+                  Want to join the ring?{" "}
+                  <a href="mailto:webring-master@aol.com">E-mail the ringmaster</a>.
+                </span>
+              </p>
 
               <p class="construction">
-                <span>&#9888; THIS PAGE IS UNDER CONSTRUCTION &#9888;</span>
+                <span>&#9888; THIS PAGE IS ALWAYS UNDER CONSTRUCTION &#9888;</span>
               </p>
-              <p class="center smaller lastmod">
+
+              <p class="center lastmod" style="text-align:center;">
                 This page last updated: {LAST_UPDATED}<br />
                 &copy; 1996 Jasper Deen. All rights reserved.<br />
                 <a href="mailto:jasper@jasperdeen.com">jasper@jasperdeen.com</a>

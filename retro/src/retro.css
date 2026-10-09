@@ -1,26 +1,37 @@
 /* === 1995 authenticity layer =====================================
    Era rules this file deliberately follows (see NOTES.md):
+   - tiled/starfield page background OUTSIDE the content table
+   - full-width table mosaic: banner row + sidebar nav cell + content cell
+   - colored table cells via bgcolor (silver #c0c0c0 chrome)
    - default serif (Times New Roman), 12pt-ish base, no webfonts
    - default link colors: #0000EE unvisited / #551A8B visited / #FF0000 active
    - underlined links only; nothing else gets hover decoration
-   - hard background colors, no gradients, no border-radius, no shadows
-   - layout is a 640px table, centered-ish with fixed widths
+   - NO border-radius, NO shadows, NO gradients except fake GIF stand-ins
    - 1px gray <hr> rules and <table border=1> keylines as structure
+   - .blink replicates the <blink> tag (Netscape only, pre-1996)
 ================================================================= */
 
 html {
-  background: #ffffff;
+  /* tiled starfield — the Space Jam special */
+  background-color: #000000;
+  background-image:
+    radial-gradient(1px 1px at 20px 30px, #ffffff 50%, transparent 51%),
+    radial-gradient(1px 1px at 90px 110px, #ffffff 50%, transparent 51%),
+    radial-gradient(2px 2px at 160px 60px, #c0c0c0 50%, transparent 51%),
+    radial-gradient(1px 1px at 240px 170px, #ffffff 50%, transparent 51%),
+    radial-gradient(2px 2px at 60px 200px, #ffffff 50%, transparent 51%),
+    radial-gradient(1px 1px at 200px 250px, #c0c0c0 50%, transparent 51%),
+    radial-gradient(2px 2px at 300px 20px, #ffffff 50%, transparent 51%);
+  background-size: 320px 280px;
 }
 
 body {
   font-family: "Times New Roman", Times, serif;
-  font-size: 12pt;             /* pre-CSS default was ~12pt/16px */
-  line-height: 1.2;            /* browser default of the era */
+  font-size: 12pt;
+  line-height: 1.2;
   color: #000000;
   margin: 0;
-  padding: 8px;
-  /* -webkit-font-smoothing: auto is the default; we do NOT force
-     antialiasing — old renders were hinted bitmaps, slightly crunchy */
+  padding: 10px;
 }
 
 /* Links: era defaults, underline always, plain color swap on active */
@@ -28,28 +39,63 @@ a { color: #0000ee; text-decoration: underline; }
 a:visited { color: #551a8b; }
 a:active { color: #ff0000; }
 
-h1 { font-size: 24pt; font-weight: bold; margin: 0.67em 0; }
-h2 { font-size: 18pt; font-weight: bold; margin: 0.75em 0; }
-h3 { font-size: 15pt; font-weight: bold; margin: 0.83em 0; }
+h1 { font-size: 24pt; font-weight: bold; margin: 0.4em 0; }
+h2 { font-size: 17pt; font-weight: bold; margin: 0.5em 0; }
+h3 { font-size: 14pt; font-weight: bold; margin: 0.6em 0; }
 
-/* the era's <font size="+1"> vibe */
 .bigger { font-size: 14pt; }
 .smaller { font-size: 10pt; }
+.tiny { font-size: 8pt; }
 
 hr {
   border: 0;
   height: 1px;
-  background: #808080;         /* flat gray rule, no styling */
-  margin: 10px 0;
+  background: #808080;
+  margin: 8px 0;
 }
 
-table.layout {
-  width: 640px;
-  margin: 0 auto;
-  background: #ffffff;
-  border-collapse: collapse;
+/* rainbow divider bar — 1996's favorite GIF, faked with a gradient */
+.rainbow {
+  border: 0;
+  height: 6px;
+  margin: 10px 0;
+  background: linear-gradient(to right,
+    #ff0000 0% 16%, #ff7f00 16% 33%, #ffff00 33% 50%,
+    #00ff00 50% 66%, #0000ff 66% 83%, #8b00ff 83% 100%);
 }
-table.layout td { padding: 4px; vertical-align: top; }
+
+/* the page mosaic */
+table.page {
+  width: 100%;
+  border: 2px solid #808080;
+  border-collapse: separate;
+  border-spacing: 0;
+  background: #ffffff;
+}
+td.banner {
+  background: #000080;              /* navy banner, white serif title */
+  color: #ffffff;
+  text-align: center;
+  padding: 10px 4px 4px;
+  border-bottom: 2px solid #808080;
+}
+td.banner p { color: #ffff00; margin: 0 0 6px; }
+td.banner h1 { margin: 0; letter-spacing: 1px; }
+td.nav {
+  background: #c0c0c0;              /* silver 3D chrome sidebar */
+  width: 165px;
+  padding: 8px 6px;
+  border-right: 2px solid #808080;
+  vertical-align: top;
+}
+td.nav p.navhead {
+  background: #000080; color: #ffffff; font-weight: bold;
+  font-size: 10pt; padding: 1px 4px; margin: 0 0 4px;
+  text-align: center;
+}
+td.nav ul { margin: 0 0 12px; padding-left: 16px; }
+td.nav li { margin-bottom: 3px; font-size: 10pt; }
+td.main { padding: 10px 14px; vertical-align: top; }
 
 table.boxed {
   width: 100%;
@@ -63,12 +109,26 @@ table.boxed td, table.boxed th {
 }
 table.boxed th { background: #c0c0c0; font-weight: bold; }
 
-.center { text-align: center; }
+/* <blink> — Netscape's most hated gift, in CSS form */
+.blink { animation: blinker 1s step-start infinite; }
+@keyframes blinker { 50% { visibility: hidden; } }
 
-/* "under construction" bar — flat, dithered-looking checker */
+/* badge boxes like the "Netscape Now!" buttons */
+.badge {
+  display: inline-block;
+  border: 2px outset #c0c0c0;
+  background: #c0c0c0;
+  padding: 2px 6px;
+  font-size: 8pt;
+  font-weight: bold;
+  text-decoration: none;
+  margin: 2px 1px;
+}
+.badge.blue { background: #000080; color: #ffffff; border-color: #404080; }
+.badge.yellow { background: #ffff00; border-color: #808000; }
+
 .construction {
   background: repeating-conic-gradient(#ffff00 0% 25%, #000000 0% 50%) 0 0 / 16px 16px;
-  color: #ffff00;
   background-color: #ffff00;
   font-weight: bold;
   text-align: center;
@@ -76,11 +136,10 @@ table.boxed th { background: #c0c0c0; font-weight: bold; }
 }
 .construction span { background: #ffff00; color: #000000; padding: 0 6px; }
 
-/* fake hit counter: monospace digits in a bordered box */
 .counter {
   font-family: "Courier New", Courier, monospace;
   font-size: 14pt;
-  border: 1px solid #000000;
+  border: 2px inset #808080;
   padding: 1px 6px;
   letter-spacing: 2px;
   background: #000000;
@@ -88,5 +147,11 @@ table.boxed th { background: #c0c0c0; font-weight: bold; }
   display: inline-block;
 }
 
-.signature { font-style: italic; }
+.webring {
+  border: 1px solid #808080;
+  background: #e0e0e0;
+  padding: 6px;
+  text-align: center;
+  font-size: 10pt;
+}
 .lastmod { font-size: 10pt; }
