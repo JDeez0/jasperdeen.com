@@ -46,7 +46,7 @@ export default function App() {
       <div id="content">
         <KPBlock
           cls="intro"
-          font="19px Georgia, 'Times New Roman', serif"
+          font="17px Georgia, 'Times New Roman', serif"
           text="I get excited when honest communications move motivations. Now's a chance to do that."
         />
 
