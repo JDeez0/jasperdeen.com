@@ -1,10 +1,41 @@
 import { LAST_UPDATED } from "./data.js";
 
+/* Content lifted from the current jasperdeen.com (Astro) version:
+   hero caption/intro, the "What's going on?" dialogue, and the blog. */
+
+const dialogue = [
+  { who: "Q", text: "What's going on?" },
+  { who: "A", text: "Making space to write" },
+  { who: "Q", text: "About what? Who cares?" },
+  { who: "A", text: "Only me, I think. Right where we should be." },
+  { who: "A", text: "Stories. Sad machinations? Some pieces on culture or tech, maybe." },
+  { who: "Q", text: "Why?" },
+  {
+    who: "A",
+    text:
+      "I was slapped with new perspective(s) on my professional identity after " +
+      "being diagnosed with frequent seizures in my temporal lobe for the last " +
+      "four years. Aside from spooky déjà vu, side effects often include " +
+      "hypergraphia (compulsion to write) and unusual preoccupation with " +
+      "moral/religious ideas.",
+  },
+  {
+    who: "A",
+    text:
+      "This site is a way for me to work through my disability (and passions) " +
+      "while living with my parents post-grad. Braving the medical system for " +
+      "twelve months and counting, I'm grateful to be able to focus " +
+      "much-needed attention on my pursuit of health. Including attempts to " +
+      "find solutions to various digital problems.",
+  },
+];
+
 export default function App() {
   return (
     <>
       <div id="header">
         <h1>Jasper Deen</h1>
+        <span class="caption">Word wonk and inexorable optimist</span>
         <span class="email">
           <a href="mailto:jasper@jasperdeen.com">jasper@jasperdeen.com</a>
         </span>
@@ -12,26 +43,42 @@ export default function App() {
       <div id="header-rule"></div>
 
       <div id="content">
-        <p>
-          I write software. I also keep a journal, some of which ends up on{" "}
-          <a href="https://jasperdeen.com/">my other page</a>.
+        <p class="intro">
+          I get excited when honest communications move motivations.{" "}
+          <b>Now's a chance to do that.</b>
         </p>
 
-        <h2>Links</h2>
-        <div class="cols">
-          <ul>
-            <li><a href="https://jasperdeen.com/">jasperdeen.com</a> — the modern site</li>
-            <li><a href="http://www.slashdot.org/">Slashdot</a> — news for nerds</li>
-            <li><a href="http://www.yahoo.com/">Yahoo</a></li>
-            <li><a href="http://www.altavista.digital.com/">AltaVista</a></li>
-          </ul>
+        <div class="qa">
+          {dialogue.map((m) => (
+            <p class={m.who === "Q" ? "q" : "a"}>
+              <b>{m.who}:</b> {m.text}
+            </p>
+          ))}
         </div>
+
+        <h2>Writing</h2>
+        <ul>
+          <li>
+            <a href="https://jasperdeen.com/blog/dog-days-in-cuba/">Dog Days in Cuba</a>{" "}
+            <span class="date">(Oct 5)</span> — A reflection on Paulina
+            Zelitsky's <i>Dog Days in Cuba</i>: political satire told through a
+            Dobermann's eyes.
+          </li>
+          <li>More to come. <i>Hypergraphia permitting.</i></li>
+        </ul>
 
         <h2>Software</h2>
         <ul>
           <li>kbdprobe — keyboard diagnostics</li>
           <li>aura — device activity tools</li>
           <li>various half-finished things</li>
+        </ul>
+
+        <h2>Elsewhere</h2>
+        <ul>
+          <li><a href="https://jasperdeen.com/">jasperdeen.com</a> — the modern site</li>
+          <li><a href="http://www.slashdot.org/">Slashdot</a> — news for nerds</li>
+          <li><a href="http://www.yahoo.com/">Yahoo</a></li>
         </ul>
       </div>
 

@@ -26,6 +26,12 @@ body {
   margin: 0;
   display: inline;
 }
+#header .caption {
+  margin-left: 10px;
+  font-size: 15px;
+  font-style: italic;
+  color: #555555;
+}
 #header .email {
   float: right;
   padding-top: 0.55em;
@@ -36,9 +42,20 @@ body {
 #header-rule { border-bottom: 2px solid #c0c0c0; }
 
 #content {
-  padding: 28px 32px 36px;
-  max-width: 72em;   /* comfort only, not a document column */
+  padding: 22px 32px 30px;
+  max-width: 62em;   /* comfort only, not a document column */
 }
+
+p.intro {
+  margin: 0 0 20px;
+  font-size: 19px;
+}
+
+/* the FAQ exchange: web-native Q:/A: blocks, not prose paragraphs */
+.qa { margin: 0 0 26px; }
+.qa p { margin: 0 0 9px; }
+.qa p.q { margin-bottom: 2px; }
+.qa p.a { margin-left: 1.6em; }
 
 h2 {
   font-size: 20px;
@@ -51,8 +68,9 @@ h2:not(:first-child) { margin-top: 34px; }
 
 p { margin: 0 0 14px; }
 
-ul { margin: 0 0 8px; padding-left: 1.5em; }
-li { margin-bottom: 7px; }
+ul { margin: 0 0 8px; padding-left: 1.4em; }
+li { margin-bottom: 8px; }
+li .date { color: #555555; font-size: 14px; }
 
 .cols { column-count: 2; column-gap: 56px; }
 @media (max-width: 640px) { .cols { column-count: 1; } }
