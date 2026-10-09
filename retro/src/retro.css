@@ -1,71 +1,74 @@
-/* 1995 — default look, but laid out like a *website*, not a document:
-   full-width header band with border lines, content running edge to edge,
-   a full-width footer line. Still nothing decorative. */
+/* 1995 bones, 2026 spacing.
+   Layout stays: full-width header band, hairline keylines, edge-to-edge
+   content, footer band. But the rhythm is modern: real line-height,
+   generous section spacing, comfortable paddings.
+   Font: Georgia — born 1996 for the web, old-school serif, reads well. */
 
 body {
-  font-family: "Times New Roman", Times, serif;
-  font-size: 12pt;
-  line-height: 1.2;
-  color: #000000;
+  font-family: Georgia, "Times New Roman", Times, serif;
+  font-size: 17px;
+  line-height: 1.65;
+  color: #1a1a1a;
   background: #ffffff;
   margin: 0;
   padding: 0;
 }
 
-/* full-width header, boxed in by hairlines top and bottom */
+/* full-width header, boxed in by hairlines */
 #header {
-  padding: 6px 1em 4px;
-  border-bottom: 1px solid #808080;
+  padding: 20px 32px 16px;
+  border-bottom: 1px solid #c0c0c0;
 }
 #header h1 {
-  font-size: 20pt;
+  font-size: 26px;
   font-weight: bold;
+  letter-spacing: 0.01em;
   margin: 0;
   display: inline;
 }
 #header .email {
   float: right;
-  padding-top: 0.5em;
-  font-size: 10pt;
+  padding-top: 0.55em;
+  font-size: 15px;
 }
 #header::after { content: ""; display: block; clear: both; }
 
-/* a second keyline under the header block */
-#header-rule { border-bottom: 2px solid #808080; }
+#header-rule { border-bottom: 2px solid #c0c0c0; }
 
-#content { padding: 8px 1em 10px; }
+#content {
+  padding: 28px 32px 36px;
+  max-width: 72em;   /* comfort only, not a document column */
+}
 
 h2 {
-  font-size: 17pt;
+  font-size: 20px;
   font-weight: bold;
-  margin: 0.4em 0 0.2em;
-  border-bottom: 1px solid #c0c0c0;
+  margin: 0 0 12px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #d4d4d4;
 }
-h2:first-child { margin-top: 0; }
+h2:not(:first-child) { margin-top: 34px; }
 
-/* two simple columns of links on wide windows, one column when narrow */
-.cols { column-count: 2; column-gap: 2em; }
+p { margin: 0 0 14px; }
+
+ul { margin: 0 0 8px; padding-left: 1.5em; }
+li { margin-bottom: 7px; }
+
+.cols { column-count: 2; column-gap: 56px; }
 @media (max-width: 640px) { .cols { column-count: 1; } }
-.cols ul { margin: 0.2em 0 0.8em; padding-left: 1.4em; }
+.cols ul { margin-bottom: 0; }
 
-a { color: #0000ee; text-decoration: underline; }
-a:visited { color: #551a8b; }
-a:active { color: #ff0000; }
-
-hr {
-  border: 0;
-  height: 1px;
-  background: #808080;
-  margin: 10px 0;
-}
-
-/* footer band: hairline above, small print below, full width */
+/* footer band */
 #footer {
-  border-top: 1px solid #808080;
-  padding: 4px 1em 6px;
-  font-size: 10pt;
+  border-top: 1px solid #c0c0c0;
+  padding: 12px 32px 16px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #555555;
 }
 #footer .right { float: right; }
 #footer::after { content: ""; display: block; clear: both; }
 
-.smaller { font-size: 10pt; }
+a { color: #0000ee; text-decoration: underline; }
+a:visited { color: #551a8b; }
+a:active { color: #ff0000; }
