@@ -69,7 +69,7 @@ export default function App() {
             Zelitsky's <i>Dog Days in Cuba</i>: political satire told through a
             Dobermann's eyes.
           </li>
-          <li>More to come. <i>Hypergraphia permitting.</i></li>
+          <li>More to come.</li>
         </ul>
 
         <h2>Software</h2>
